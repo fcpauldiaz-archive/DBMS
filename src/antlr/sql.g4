@@ -79,10 +79,12 @@ sql_schema_manipulation_statement
         |       show_column_statement
     ;
 sql_data_statement  
-
 	:	 
         select_value 
-	;
+    |   insert_value
+    |   update_value
+    |   delete_value
+    ;
 
 
 schema_definition: 'CREATE' 'DATABASE' ID ';';
@@ -129,12 +131,11 @@ accion:
 show_table_statement: 'SHOW' 'TABLES' ';';
 show_column_statement: 'SHOW' 'COLUMNS' 'FROM' ID ';';
          
-          
-          
+ 
 logic: 'AND' | 'OR' | 'NOT';
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: 'INSERT' 'INTO' (column) 'VALUES' (list_values) ';';
+insert_value: 'INSERT' 'INTO' ID '(' ID (',' ID)* ')'  'VALUES' '(' list_values ')'  ';';
 
 update_value: 'UPDATE' ID 'SET' column '=' value 'WHERE' condition ';' ;
 
