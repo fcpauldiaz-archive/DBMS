@@ -87,61 +87,144 @@ sql_data_statement
     ;
 
 
-schema_definition: 'CREATE' 'DATABASE' ID ';';
+schema_definition: create database ID ';';
 
-table_definition: 'CREATE' 'TABLE' ID '(' (column)+ ')' ';';
+create: 'CREATE'|'create';
 
-drop_schema_statement: 'DROP' 'DATABASE' ID ';';
+database: 'DATABASE'|'database';
 
-alter_table_statement: 'ALTER' 'TABLE' ID accion ';';
+table: 'TABLE'|'table';
 
-drop_table_statement: 'DROP' 'TABLE' ID ';';
+drop: 'DROP'|'drop';
 
-alter_database_statement: 'ALTER' 'DATABASE' ID 'RENAME' 'TO' ID ';' ;
+alter: 'ALTER'|'alter';
 
- show_schema_statement: 'SHOW' 'DATABASES' ';';
+rename: 'RENAME' |'rename';
 
-use_schema_statement: 'USE' 'DATABASE' ID ';';
+to: 'TO'|'to';
 
+show: 'SHOW'|'show';
+
+use: 'USE'|'use';
+
+int: 'INT'|'int';
+
+float: 'FLOAT'|'float';
+
+char: 'CHAR'|'char';
+
+date: 'DATE'|'date';
+
+constraint_terminal: 'CONSTRAINT'|'constraint';
+
+table_definition: create table ID '(' (column)+ ')' ';';
+
+drop_schema_statement: drop database ID ';';
+
+alter_table_statement: alter table ID accion ';';
+
+drop_table_statement: drop table ID ';';
+
+alter_database_statement: alter database ID rename to ID ';' ;
+
+ show_schema_statement: show database ';';
+
+use_schema_statement: use database ID ';';
 
 column: (ID tipo_literal | constraint) ',' ;
 
-tipo_literal: 'INT' | 'FLOAT' | 'CHAR' | 'DATE' ;
+tipo_literal: int | float | char | date ;
 
-constraint: 'CONSTRAINT' constraintType;
+constraint: constraint_terminal constraintType;
+
+primary: 'PRIMARY'|'primary';
+
+key: 'KEY'|'key';
+
+foreign: 'FOREIGN'|'foreign';
+
+references: 'REFERENCES'|'references';
+
+check: 'CHECK'|'check';
 
 constraintType:
-            ID 'PRIMARY' 'KEY' '(' ID (',' ID)*')'
-        |   ID 'FOREIGN' 'KEY'  '(' ID (',' ID)*')' 'REFERENCES' ID '(' ID (',' ID)*')'
-        |   ID 'CHECK'  '('ID exp ID ')'
+            ID primary key '(' ID (',' ID)*')'
+        |   ID foreign key  '(' ID (',' ID)*')' references ID '(' ID (',' ID)*')'
+        |   ID check  '('ID exp ID ')'
         ;
 
 exp: logic | relational;
 
-rename_table_statement: 'ALTER' 'TABLE' ID 'RENAME' 'TO' ID ';';
+rename_table_statement: alter table ID rename to ID ';';
+
+add: 'ADD'|'add';
+
+drop: 'DROP'|'drop';
+
+column_terminal: 'COLUMN'|'column';
 
 accion:
-          'ADD' 'COLUMN' ID tipo_literal (constraint)
-        | 'ADD' constraint
-        | 'DROP' 'COLUMN' ID 
-        | 'DROP' 'CONSTRAINT' ID
+          add column ID tipo_literal (constraint)
+        | add constraint
+        | drop column_terminal ID 
+        | drop constraint_terminal ID
     ;
 
+show: 'SHOW'|'show';
 
-show_table_statement: 'SHOW' 'TABLES' ';';
-show_column_statement: 'SHOW' 'COLUMNS' 'FROM' ID ';';
+tables: 'TABLES'|'tables';
+
+from: 'FROM'|'from';
+
+show_table_statement: show tables ';';
+
+show_column_statement: show column_terminal from ID ';';
          
- 
-logic: 'AND' | 'OR' | 'NOT';
+
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: 'INSERT' 'INTO' ID '(' ID (',' ID)* ')'  'VALUES' '(' list_values ')'  ';';
+insert_value: insert into ID '(' ID (',' ID)* ')'  'VALUES' '(' list_values ')'  ';';
 
-update_value: 'UPDATE' ID 'SET' column '=' value 'WHERE' condition ';' ;
+and: 'AND'|'and';  
 
-delete_value: 'DELETE' 'FROM' ID 'WHERE' condition ';' ;
+or: 'OR'|'or';
 
-select_value: 'SELECT' ('*' | ID (',' ID)* ) 'FROM' ID 'WHERE' condition  ('ORDER' 'BY' ('ASC' | 'DESC'))? ';';
+not: 'NOT'|'not';
+          
+logic: and | or | not;
+relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
+
+insert: 'INSERT'|'insert';
+
+update: 'UPDATE'|'update';
+
+delete: 'DELETE'|'delete';
+
+select: 'SELECT'|'select';
+
+set: 'SET'|'set';
+
+where: 'WHERE'|'where';
+
+order: 'ORDER'|'order';
+
+by: 'BY' | 'by';
+
+asc: 'ASC'|'asc';
+
+desc: 'DESC'|'desc';
+
+into: 'INTO'|'into';
+
+values: 'VALUES'|'values';
+
+
+
+update_value: update ID set column '=' value where condition ';' ;
+
+delete_value: delete from ID where condition ';' ;
+
+select_value: select ('*' | ID (',' ID)* ) from ID where condition  (order by (asc | desc))? ';';
 
               
 condition: ID '=' ID ;         
