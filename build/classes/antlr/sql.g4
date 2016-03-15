@@ -9,8 +9,6 @@ grammar sql;
 
 //LEXER SPECIFICATION
 
-INT :     'int' ;
-CHAR :    'char' ;
 BOOLEAN : 'boolean';
 DATETIME: 'datetime';
 
@@ -21,16 +19,96 @@ fragment TWO_DIGITS   : DIGIT DIGIT ;
 fragment THREE_DIGITS : DIGIT TWO_DIGITS ;
 fragment FOUR_DIGITS  : DIGIT THREE_DIGITS ;
 fragment YEAR      : FOUR_DIGITS ;                   // year
-fragment MONTH       : DIGIT | TWO_DIGITS ;        // month of year.
+fragment MONTH     : DIGIT | TWO_DIGITS ;        // month of year.
 fragment DAY       : DIGIT | TWO_DIGITS ; 
 
 //* \'
 ID : LETTER ( LETTER | DIGIT )* ;
-NUM : DIGIT ( DIGIT )* ;
-FLOAT: DIGIT ( DIGIT )* ('.' (DIGIT)* )? ;
-Char : '\'' ASCII '\'';
-DATE: YEAR '-' MONTH '-' DAY ;
+NUM : DIGIT (DIGIT)*;
+FLOAT:  DIGIT (DIGIT)* ('.' (DIGIT)*);
+CHAR : '\'' ASCII '\'';
+DATE: '\'' YEAR '-' MONTH '-' DAY '\'';
+
+create: 'CREATE'|'create';
+
+database: 'DATABASE'|'database';
+
+database_plural: 'DATABASES' | 'databases';
+
+table: 'TABLE'|'table';
+
+drop: 'DROP'|'drop';
+
+alter: 'ALTER'|'alter';
+
+rename: 'RENAME' |'rename';
+
+to: 'TO'|'to';
+
+show: 'SHOW'|'show';
+
+use: 'USE'|'use';
+
+int_terminal: 'INT'|'int';
+
+float_terminal: 'FLOAT'|'float';
+
+char_terminal: 'CHAR'|'char';
+
+date_terminal: 'DATE'|'date';
+
+constraint_terminal: 'CONSTRAINT'|'constraint';
+
+primary: 'PRIMARY'|'primary';
+
+key: 'KEY'|'key';
+
+foreign: 'FOREIGN'|'foreign';
+
+references: 'REFERENCES'|'references';
+
+check: 'CHECK'|'check';
+
+insert: 'INSERT'|'insert';
+
+update: 'UPDATE'|'update';
+
+delete: 'DELETE'|'delete';
+
+select: 'SELECT'|'select';
+
+set: 'SET'|'set';
+
+where: 'WHERE'|'where';
+
+order: 'ORDER'|'order';
+
+by: 'BY' | 'by';
+
+asc: 'ASC'|'asc';
+
+desc: 'DESC'|'desc';
+
+into: 'INTO'|'into';
+
+values: 'VALUES'|'values';
  
+tables: 'TABLES'|'tables';
+
+from: 'FROM'|'from';
+
+add: 'ADD'|'add';
+
+
+column_terminal: 'COLUMN'|'column';
+
+column_terminal_plural: 'COLUMNS' | 'columns';
+
+and: 'AND'|'and';  
+
+or: 'OR'|'or';
+
+not: 'NOT'|'not';
  
 
 WS : 
@@ -89,33 +167,7 @@ sql_data_statement
 
 schema_definition: create database ID ';';
 
-create: 'CREATE'|'create';
 
-database: 'DATABASE'|'database';
-
-table: 'TABLE'|'table';
-
-drop: 'DROP'|'drop';
-
-alter: 'ALTER'|'alter';
-
-rename: 'RENAME' |'rename';
-
-to: 'TO'|'to';
-
-show: 'SHOW'|'show';
-
-use: 'USE'|'use';
-
-int: 'INT'|'int';
-
-float: 'FLOAT'|'float';
-
-char: 'CHAR'|'char';
-
-date: 'DATE'|'date';
-
-constraint_terminal: 'CONSTRAINT'|'constraint';
 
 table_definition: create table ID '(' (column)+ ')' ';';
 
@@ -127,25 +179,17 @@ drop_table_statement: drop table ID ';';
 
 alter_database_statement: alter database ID rename to ID ';' ;
 
- show_schema_statement: show database ';';
+ show_schema_statement: show database_plural ';';
 
 use_schema_statement: use database ID ';';
 
 column: (ID tipo_literal | constraint) ',' ;
 
-tipo_literal: int | float | char | date ;
+tipo_literal: int_terminal | float_terminal | char_terminal | date_terminal ;
 
 constraint: constraint_terminal constraintType;
 
-primary: 'PRIMARY'|'primary';
 
-key: 'KEY'|'key';
-
-foreign: 'FOREIGN'|'foreign';
-
-references: 'REFERENCES'|'references';
-
-check: 'CHECK'|'check';
 
 constraintType:
             ID primary key '(' ID (',' ID)*')'
@@ -157,66 +201,32 @@ exp: logic | relational;
 
 rename_table_statement: alter table ID rename to ID ';';
 
-add: 'ADD'|'add';
 
-drop: 'DROP'|'drop';
-
-column_terminal: 'COLUMN'|'column';
 
 accion:
-          add column ID tipo_literal (constraint)
+          add column_terminal ID tipo_literal (constraint)
         | add constraint
         | drop column_terminal ID 
         | drop constraint_terminal ID
     ;
 
-show: 'SHOW'|'show';
 
-tables: 'TABLES'|'tables';
 
-from: 'FROM'|'from';
 
 show_table_statement: show tables ';';
 
-show_column_statement: show column_terminal from ID ';';
+show_column_statement: show column_terminal_plural from ID ';';
          
 
-relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: insert into ID '(' ID (',' ID)* ')'  'VALUES' '(' list_values ')'  ';';
+insert_value: insert into ID '(' ID (',' ID)* ')'  values '(' list_values ')'  ';';
 
-and: 'AND'|'and';  
 
-or: 'OR'|'or';
-
-not: 'NOT'|'not';
           
 logic: and | or | not;
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert: 'INSERT'|'insert';
 
-update: 'UPDATE'|'update';
-
-delete: 'DELETE'|'delete';
-
-select: 'SELECT'|'select';
-
-set: 'SET'|'set';
-
-where: 'WHERE'|'where';
-
-order: 'ORDER'|'order';
-
-by: 'BY' | 'by';
-
-asc: 'ASC'|'asc';
-
-desc: 'DESC'|'desc';
-
-into: 'INTO'|'into';
-
-values: 'VALUES'|'values';
 
 
 

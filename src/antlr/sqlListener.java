@@ -9,16 +9,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface sqlListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#accion}.
-	 * @param ctx the parse tree
-	 */
-	void enterAccion(@NotNull sqlParser.AccionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#accion}.
-	 * @param ctx the parse tree
-	 */
-	void exitAccion(@NotNull sqlParser.AccionContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link sqlParser#use_schema_statement}.
 	 * @param ctx the parse tree
 	 */
@@ -39,6 +29,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitTipo(@NotNull sqlParser.TipoContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#select}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelect(@NotNull sqlParser.SelectContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#select}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelect(@NotNull sqlParser.SelectContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#table_definition}.
 	 * @param ctx the parse tree
 	 */
@@ -49,75 +49,25 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitTable_definition(@NotNull sqlParser.Table_definitionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#show_column_statement}.
+	 * Enter a parse tree produced by {@link sqlParser#references}.
 	 * @param ctx the parse tree
 	 */
-	void enterShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
+	void enterReferences(@NotNull sqlParser.ReferencesContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#show_column_statement}.
+	 * Exit a parse tree produced by {@link sqlParser#references}.
 	 * @param ctx the parse tree
 	 */
-	void exitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
+	void exitReferences(@NotNull sqlParser.ReferencesContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#sql_schema_definition_statement}.
+	 * Enter a parse tree produced by {@link sqlParser#use}.
 	 * @param ctx the parse tree
 	 */
-	void enterSql_schema_definition_statement(@NotNull sqlParser.Sql_schema_definition_statementContext ctx);
+	void enterUse(@NotNull sqlParser.UseContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#sql_schema_definition_statement}.
+	 * Exit a parse tree produced by {@link sqlParser#use}.
 	 * @param ctx the parse tree
 	 */
-	void exitSql_schema_definition_statement(@NotNull sqlParser.Sql_schema_definition_statementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#sql_data_statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterSql_data_statement(@NotNull sqlParser.Sql_data_statementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#sql_data_statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitSql_data_statement(@NotNull sqlParser.Sql_data_statementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#show_schema_statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterShow_schema_statement(@NotNull sqlParser.Show_schema_statementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#show_schema_statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitShow_schema_statement(@NotNull sqlParser.Show_schema_statementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#sql_schema_statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterSql_schema_statement(@NotNull sqlParser.Sql_schema_statementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#sql_schema_statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitSql_schema_statement(@NotNull sqlParser.Sql_schema_statementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#literal}.
-	 * @param ctx the parse tree
-	 */
-	void enterLiteral(@NotNull sqlParser.LiteralContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#literal}.
-	 * @param ctx the parse tree
-	 */
-	void exitLiteral(@NotNull sqlParser.LiteralContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#constraintType}.
-	 * @param ctx the parse tree
-	 */
-	void enterConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#constraintType}.
-	 * @param ctx the parse tree
-	 */
-	void exitConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
+	void exitUse(@NotNull sqlParser.UseContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#int_literal}.
 	 * @param ctx the parse tree
@@ -128,6 +78,16 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInt_literal(@NotNull sqlParser.Int_literalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#tables}.
+	 * @param ctx the parse tree
+	 */
+	void enterTables(@NotNull sqlParser.TablesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#tables}.
+	 * @param ctx the parse tree
+	 */
+	void exitTables(@NotNull sqlParser.TablesContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#sql_schema_manipulation_statement}.
 	 * @param ctx the parse tree
@@ -149,16 +109,6 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitAlter_table_statement(@NotNull sqlParser.Alter_table_statementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#list_values}.
-	 * @param ctx the parse tree
-	 */
-	void enterList_values(@NotNull sqlParser.List_valuesContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#list_values}.
-	 * @param ctx the parse tree
-	 */
-	void exitList_values(@NotNull sqlParser.List_valuesContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link sqlParser#alter_database_statement}.
 	 * @param ctx the parse tree
 	 */
@@ -169,15 +119,25 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitAlter_database_statement(@NotNull sqlParser.Alter_database_statementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#float_literal}.
+	 * Enter a parse tree produced by {@link sqlParser#create}.
 	 * @param ctx the parse tree
 	 */
-	void enterFloat_literal(@NotNull sqlParser.Float_literalContext ctx);
+	void enterCreate(@NotNull sqlParser.CreateContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#float_literal}.
+	 * Exit a parse tree produced by {@link sqlParser#create}.
 	 * @param ctx the parse tree
 	 */
-	void exitFloat_literal(@NotNull sqlParser.Float_literalContext ctx);
+	void exitCreate(@NotNull sqlParser.CreateContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#from}.
+	 * @param ctx the parse tree
+	 */
+	void enterFrom(@NotNull sqlParser.FromContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#from}.
+	 * @param ctx the parse tree
+	 */
+	void exitFrom(@NotNull sqlParser.FromContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#sql2003Parser}.
 	 * @param ctx the parse tree
@@ -188,16 +148,6 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#drop_schema_statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterDrop_schema_statement(@NotNull sqlParser.Drop_schema_statementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#drop_schema_statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitDrop_schema_statement(@NotNull sqlParser.Drop_schema_statementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#exp}.
 	 * @param ctx the parse tree
@@ -218,6 +168,386 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDelete_value(@NotNull sqlParser.Delete_valueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#char_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterChar_literal(@NotNull sqlParser.Char_literalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#char_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitChar_literal(@NotNull sqlParser.Char_literalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#alter}.
+	 * @param ctx the parse tree
+	 */
+	void enterAlter(@NotNull sqlParser.AlterContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#alter}.
+	 * @param ctx the parse tree
+	 */
+	void exitAlter(@NotNull sqlParser.AlterContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 */
+	void enterOrder(@NotNull sqlParser.OrderContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 */
+	void exitOrder(@NotNull sqlParser.OrderContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#add}.
+	 * @param ctx the parse tree
+	 */
+	void enterAdd(@NotNull sqlParser.AddContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#add}.
+	 * @param ctx the parse tree
+	 */
+	void exitAdd(@NotNull sqlParser.AddContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#column_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void enterColumn_terminal(@NotNull sqlParser.Column_terminalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#column_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void exitColumn_terminal(@NotNull sqlParser.Column_terminalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#sql_executable_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterSql_executable_statement(@NotNull sqlParser.Sql_executable_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#sql_executable_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitSql_executable_statement(@NotNull sqlParser.Sql_executable_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#int_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void enterInt_terminal(@NotNull sqlParser.Int_terminalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#int_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void exitInt_terminal(@NotNull sqlParser.Int_terminalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#check}.
+	 * @param ctx the parse tree
+	 */
+	void enterCheck(@NotNull sqlParser.CheckContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#check}.
+	 * @param ctx the parse tree
+	 */
+	void exitCheck(@NotNull sqlParser.CheckContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterCondition(@NotNull sqlParser.ConditionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitCondition(@NotNull sqlParser.ConditionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#rename_table_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#rename_table_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrimary(@NotNull sqlParser.PrimaryContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrimary(@NotNull sqlParser.PrimaryContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#desc}.
+	 * @param ctx the parse tree
+	 */
+	void enterDesc(@NotNull sqlParser.DescContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#desc}.
+	 * @param ctx the parse tree
+	 */
+	void exitDesc(@NotNull sqlParser.DescContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#drop}.
+	 * @param ctx the parse tree
+	 */
+	void enterDrop(@NotNull sqlParser.DropContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#drop}.
+	 * @param ctx the parse tree
+	 */
+	void exitDrop(@NotNull sqlParser.DropContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void enterAccion(@NotNull sqlParser.AccionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void exitAccion(@NotNull sqlParser.AccionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#show_column_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#show_column_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#values}.
+	 * @param ctx the parse tree
+	 */
+	void enterValues(@NotNull sqlParser.ValuesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#values}.
+	 * @param ctx the parse tree
+	 */
+	void exitValues(@NotNull sqlParser.ValuesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#show}.
+	 * @param ctx the parse tree
+	 */
+	void enterShow(@NotNull sqlParser.ShowContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#show}.
+	 * @param ctx the parse tree
+	 */
+	void exitShow(@NotNull sqlParser.ShowContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#sql_schema_definition_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterSql_schema_definition_statement(@NotNull sqlParser.Sql_schema_definition_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#sql_schema_definition_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitSql_schema_definition_statement(@NotNull sqlParser.Sql_schema_definition_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#insert}.
+	 * @param ctx the parse tree
+	 */
+	void enterInsert(@NotNull sqlParser.InsertContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#insert}.
+	 * @param ctx the parse tree
+	 */
+	void exitInsert(@NotNull sqlParser.InsertContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#update}.
+	 * @param ctx the parse tree
+	 */
+	void enterUpdate(@NotNull sqlParser.UpdateContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#update}.
+	 * @param ctx the parse tree
+	 */
+	void exitUpdate(@NotNull sqlParser.UpdateContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#sql_data_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterSql_data_statement(@NotNull sqlParser.Sql_data_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#sql_data_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitSql_data_statement(@NotNull sqlParser.Sql_data_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#delete}.
+	 * @param ctx the parse tree
+	 */
+	void enterDelete(@NotNull sqlParser.DeleteContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#delete}.
+	 * @param ctx the parse tree
+	 */
+	void exitDelete(@NotNull sqlParser.DeleteContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#show_schema_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterShow_schema_statement(@NotNull sqlParser.Show_schema_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#show_schema_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitShow_schema_statement(@NotNull sqlParser.Show_schema_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#sql_schema_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterSql_schema_statement(@NotNull sqlParser.Sql_schema_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#sql_schema_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitSql_schema_statement(@NotNull sqlParser.Sql_schema_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#foreign}.
+	 * @param ctx the parse tree
+	 */
+	void enterForeign(@NotNull sqlParser.ForeignContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#foreign}.
+	 * @param ctx the parse tree
+	 */
+	void exitForeign(@NotNull sqlParser.ForeignContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterLiteral(@NotNull sqlParser.LiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitLiteral(@NotNull sqlParser.LiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#database_plural}.
+	 * @param ctx the parse tree
+	 */
+	void enterDatabase_plural(@NotNull sqlParser.Database_pluralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#database_plural}.
+	 * @param ctx the parse tree
+	 */
+	void exitDatabase_plural(@NotNull sqlParser.Database_pluralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#into}.
+	 * @param ctx the parse tree
+	 */
+	void enterInto(@NotNull sqlParser.IntoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#into}.
+	 * @param ctx the parse tree
+	 */
+	void exitInto(@NotNull sqlParser.IntoContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#database}.
+	 * @param ctx the parse tree
+	 */
+	void enterDatabase(@NotNull sqlParser.DatabaseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#database}.
+	 * @param ctx the parse tree
+	 */
+	void exitDatabase(@NotNull sqlParser.DatabaseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#not}.
+	 * @param ctx the parse tree
+	 */
+	void enterNot(@NotNull sqlParser.NotContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#not}.
+	 * @param ctx the parse tree
+	 */
+	void exitNot(@NotNull sqlParser.NotContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#list_values}.
+	 * @param ctx the parse tree
+	 */
+	void enterList_values(@NotNull sqlParser.List_valuesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#list_values}.
+	 * @param ctx the parse tree
+	 */
+	void exitList_values(@NotNull sqlParser.List_valuesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#and}.
+	 * @param ctx the parse tree
+	 */
+	void enterAnd(@NotNull sqlParser.AndContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#and}.
+	 * @param ctx the parse tree
+	 */
+	void exitAnd(@NotNull sqlParser.AndContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#by}.
+	 * @param ctx the parse tree
+	 */
+	void enterBy(@NotNull sqlParser.ByContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#by}.
+	 * @param ctx the parse tree
+	 */
+	void exitBy(@NotNull sqlParser.ByContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#float_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterFloat_literal(@NotNull sqlParser.Float_literalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#float_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitFloat_literal(@NotNull sqlParser.Float_literalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#where}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhere(@NotNull sqlParser.WhereContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#where}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhere(@NotNull sqlParser.WhereContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#drop_schema_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterDrop_schema_statement(@NotNull sqlParser.Drop_schema_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#drop_schema_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitDrop_schema_statement(@NotNull sqlParser.Drop_schema_statementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#select_value}.
 	 * @param ctx the parse tree
@@ -249,25 +579,45 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitDate_literal(@NotNull sqlParser.Date_literalContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#char_literal}.
+	 * Enter a parse tree produced by {@link sqlParser#table}.
 	 * @param ctx the parse tree
 	 */
-	void enterChar_literal(@NotNull sqlParser.Char_literalContext ctx);
+	void enterTable(@NotNull sqlParser.TableContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#char_literal}.
+	 * Exit a parse tree produced by {@link sqlParser#table}.
 	 * @param ctx the parse tree
 	 */
-	void exitChar_literal(@NotNull sqlParser.Char_literalContext ctx);
+	void exitTable(@NotNull sqlParser.TableContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#sql_executable_statement}.
+	 * Enter a parse tree produced by {@link sqlParser#key}.
 	 * @param ctx the parse tree
 	 */
-	void enterSql_executable_statement(@NotNull sqlParser.Sql_executable_statementContext ctx);
+	void enterKey(@NotNull sqlParser.KeyContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#sql_executable_statement}.
+	 * Exit a parse tree produced by {@link sqlParser#key}.
 	 * @param ctx the parse tree
 	 */
-	void exitSql_executable_statement(@NotNull sqlParser.Sql_executable_statementContext ctx);
+	void exitKey(@NotNull sqlParser.KeyContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#set}.
+	 * @param ctx the parse tree
+	 */
+	void enterSet(@NotNull sqlParser.SetContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#set}.
+	 * @param ctx the parse tree
+	 */
+	void exitSet(@NotNull sqlParser.SetContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#or}.
+	 * @param ctx the parse tree
+	 */
+	void enterOr(@NotNull sqlParser.OrContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#or}.
+	 * @param ctx the parse tree
+	 */
+	void exitOr(@NotNull sqlParser.OrContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#drop_table_statement}.
 	 * @param ctx the parse tree
@@ -279,6 +629,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitDrop_table_statement(@NotNull sqlParser.Drop_table_statementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#float_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void enterFloat_terminal(@NotNull sqlParser.Float_terminalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#float_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void exitFloat_terminal(@NotNull sqlParser.Float_terminalContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#column}.
 	 * @param ctx the parse tree
 	 */
@@ -288,6 +648,26 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitColumn(@NotNull sqlParser.ColumnContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#char_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void enterChar_terminal(@NotNull sqlParser.Char_terminalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#char_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void exitChar_terminal(@NotNull sqlParser.Char_terminalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#column_terminal_plural}.
+	 * @param ctx the parse tree
+	 */
+	void enterColumn_terminal_plural(@NotNull sqlParser.Column_terminal_pluralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#column_terminal_plural}.
+	 * @param ctx the parse tree
+	 */
+	void exitColumn_terminal_plural(@NotNull sqlParser.Column_terminal_pluralContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#insert_value}.
 	 * @param ctx the parse tree
@@ -309,25 +689,35 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#tipo_literal}.
+	 * Enter a parse tree produced by {@link sqlParser#asc}.
 	 * @param ctx the parse tree
 	 */
-	void enterTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx);
+	void enterAsc(@NotNull sqlParser.AscContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#tipo_literal}.
+	 * Exit a parse tree produced by {@link sqlParser#asc}.
 	 * @param ctx the parse tree
 	 */
-	void exitTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx);
+	void exitAsc(@NotNull sqlParser.AscContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#condition}.
+	 * Enter a parse tree produced by {@link sqlParser#rename}.
 	 * @param ctx the parse tree
 	 */
-	void enterCondition(@NotNull sqlParser.ConditionContext ctx);
+	void enterRename(@NotNull sqlParser.RenameContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#condition}.
+	 * Exit a parse tree produced by {@link sqlParser#rename}.
 	 * @param ctx the parse tree
 	 */
-	void exitCondition(@NotNull sqlParser.ConditionContext ctx);
+	void exitRename(@NotNull sqlParser.RenameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#date_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void enterDate_terminal(@NotNull sqlParser.Date_terminalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#date_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void exitDate_terminal(@NotNull sqlParser.Date_terminalContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#update_value}.
 	 * @param ctx the parse tree
@@ -338,16 +728,6 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitUpdate_value(@NotNull sqlParser.Update_valueContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#rename_table_statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#rename_table_statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#constraint}.
 	 * @param ctx the parse tree
@@ -379,6 +759,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitRelational(@NotNull sqlParser.RelationalContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#to}.
+	 * @param ctx the parse tree
+	 */
+	void enterTo(@NotNull sqlParser.ToContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#to}.
+	 * @param ctx the parse tree
+	 */
+	void exitTo(@NotNull sqlParser.ToContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#logic}.
 	 * @param ctx the parse tree
 	 */
@@ -388,4 +778,14 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLogic(@NotNull sqlParser.LogicContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#constraint_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraint_terminal(@NotNull sqlParser.Constraint_terminalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#constraint_terminal}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraint_terminal(@NotNull sqlParser.Constraint_terminalContext ctx);
 }
