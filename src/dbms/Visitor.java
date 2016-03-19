@@ -208,6 +208,35 @@ public class Visitor<T> extends sqlBaseVisitor {
         
        return ctx.getChild(0).getChild(0).getText();//To change body of generated methods, choose Tools | Templates.
     }
+    
+    /**
+     * Eliminar una base de datos, todas las tablas y actualizar el archivo maestro
+     * @param ctx
+     * @return 
+     */
+    @Override
+    public Object visitDrop_schema_statement(sqlParser.Drop_schema_statementContext ctx) {
+        
+        String nombreDB = ctx.getChild(2).getText();
+        boolean verificador = manejador.checkDB(nombreDB);
+        if (!verificador){
+            DBMS.debug("La base de datos " + nombreDB + " no existe");
+            return super.visitDrop_schema_statement(ctx);
+        }
+        manejador.eliminarDB(nombreDB);
+        ArchivoMaestroDB mdbActual = (ArchivoMaestroDB)json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
+        ArrayList<TuplaDB> arrayDB = mdbActual.getNombreDB();
+        ArrayList<TuplaDB> modificarArrayDB = arrayDB;
+        for (int i = 0;i<arrayDB.size();i++){
+            if (arrayDB.get(i).getNombreDB().equals(nombreDB)){
+                modificarArrayDB.remove(i);
+            }
+        }
+        json.objectToJSON("DB/", "MasterDB", mdbActual);
+        
+        
+        return super.visitDrop_schema_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
 
     
     
