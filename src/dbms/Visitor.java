@@ -68,8 +68,10 @@ public class Visitor<T> extends sqlBaseVisitor {
         if (manejador.checkFileTabla(bdActual, nombreTabla)){
             DBMS.debug("Nombre tabla " + nombreTabla);
             mdt.agregarTabla(nombreTabla);
-            ArchivoMaestroTabla masterTable = (ArchivoMaestroTabla) json.JSONtoObject("DB/"+bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
-            mdt.agregarExistente(masterTable);
+            if (manejador.checkFile(bdActual, nombreTabla)){
+                ArchivoMaestroTabla masterTable = (ArchivoMaestroTabla) json.JSONtoObject("DB/"+bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
+                mdt.agregarExistente(masterTable);
+            }
             json.objectToJSON("DB/"+bdActual+"/", "MasterTable"+bdActual, mdt);
             
             
