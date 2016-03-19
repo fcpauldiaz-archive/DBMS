@@ -31,12 +31,20 @@ public class Visitor<T> extends sqlBaseVisitor {
         String nombreBaseDatos = ctx.getChild(2).getText();
         DBMS.debug("DB name " + nombreBaseDatos);
         boolean carpeta = manejador.createDirectory(nombreBaseDatos);
+        boolean master = manejador.checkFile("DB/", "MasterDB");
         if (carpeta){
-         mdb.agregarDB(nombreBaseDatos);
+            mdb.agregarDB(nombreBaseDatos);
+        }
+        if (carpeta && master){
+        
          ArchivoMaestroDB masterSaved = (ArchivoMaestroDB) json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
          mdb.agregarExistente(masterSaved);
-         json.objectToJSON("DB/", "MasterDB", mdb);
-         mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
+         
+        
+        }
+        if (carpeta){
+            json.objectToJSON("DB/", "MasterDB", mdb);
+            mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
         }
         
         
@@ -57,7 +65,7 @@ public class Visitor<T> extends sqlBaseVisitor {
        
         ArchivoMaestroDB masterSaved = (ArchivoMaestroDB) json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
        
-        if (manejador.checkFile(bdActual, nombreTabla)){
+        if (manejador.checkFileTabla(bdActual, nombreTabla)){
             DBMS.debug("Nombre tabla " + nombreTabla);
             mdt.agregarTabla(nombreTabla);
             ArchivoMaestroTabla masterTable = (ArchivoMaestroTabla) json.JSONtoObject("DB/"+bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");

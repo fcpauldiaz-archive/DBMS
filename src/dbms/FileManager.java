@@ -44,14 +44,14 @@ public class FileManager {
         }
     }
     /**
-     * Este método sirve para revisar si existe un archivo
+     * Este método sirve para revisar si existe un archivo para la tabla
      * @param path
      * @param fileName
      * @return true si existe, false si no
      */
-    public boolean checkFile(String path,String fileName){
+    public boolean checkFileTabla(String path,String fileName){
         if (path.isEmpty()){
-            DBMS.debug("La base de datos no existep");
+            DBMS.debug("La base de datos no existe");
             return false;
         }
 
@@ -65,6 +65,26 @@ public class FileManager {
         }else{
             DBMS.debug("La tabla " +fileName + " ya existe en la base de datos " + path );
             return false;
+    }
+    }
+     /**
+     * Este método sirve para revisar si existe un archivo para la tabla
+     * @param path
+     * @param fileName
+     * @return true si existe, false si no
+     */
+    public boolean checkFile(String path,String fileName){
+       
+        File file = new File("DB/"+path+"/",fileName+".json");
+      
+        if (!file.exists()) {
+
+                DBMS.debug("El archivo no existe " + fileName );
+
+        return false;
+        }else{
+            DBMS.debug("El archivo ya existe" +fileName  );
+            return true;
     }
     }
     /**
