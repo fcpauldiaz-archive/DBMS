@@ -238,6 +238,26 @@ public class Visitor<T> extends sqlBaseVisitor {
         return super.visitDrop_schema_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Object visitAlter_database_statement(sqlParser.Alter_database_statementContext ctx) {
+        
+        String nombreDBActual = ctx.getChild(2).getText();
+        String nombreNuevoDB = ctx.getChild(5).getText();
+        manejador.renameFile(bdActual, nombreDBActual, nombreNuevoDB);
+        ArchivoMaestroDB mdbActual = (ArchivoMaestroDB)json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
+        ArrayList<TuplaDB> arrayDB = mdbActual.getNombreDB();
+        ArrayList<TuplaDB> modificarArrayDB = arrayDB;
+        for (int i = 0;i<arrayDB.size();i++){
+            if (arrayDB.get(i).getNombreDB().equals(nombreDBActual)){
+                modificarArrayDB.get(i).setNombreDB(nombreNuevoDB);
+            }
+        }
+        json.objectToJSON("DB/", "MasterDB", mdbActual);
+        
+        
+        return super.visitAlter_database_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
     
     
     

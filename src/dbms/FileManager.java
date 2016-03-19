@@ -138,5 +138,15 @@ public class FileManager {
     	}
     }
     
+    public void renameFile(String db,String file1, String file2){
+        File oldfile =new File("DB/"+file1);
+        File newfile =new File("DB/"+file2);
+
+        if(oldfile.renameTo(newfile)){
+               DBMS.debug("Se ha renombrado la base de datos");
+        }else{
+               DBMS.debug("No se ha podido renombrar la base de datos");
+        }
+    }
     
 }
