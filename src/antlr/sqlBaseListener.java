@@ -389,6 +389,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterId_list(@NotNull sqlParser.Id_listContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitId_list(@NotNull sqlParser.Id_listContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -588,6 +600,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNot(@NotNull sqlParser.NotContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterColumn_or_constraint(@NotNull sqlParser.Column_or_constraintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitColumn_or_constraint(@NotNull sqlParser.Column_or_constraintContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -828,6 +852,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterChar_name(@NotNull sqlParser.Char_nameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitChar_name(@NotNull sqlParser.Char_nameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

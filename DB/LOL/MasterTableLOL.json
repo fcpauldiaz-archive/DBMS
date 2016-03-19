@@ -1,0 +1,20 @@
+{
+  "tablas": [
+    {
+      "nombreTabla": "ejemplo8",
+      "cantidadRegistros": 0
+    },
+    {
+      "nombreTabla": "ejmplo7",
+      "cantidadRegistros": 0
+    },
+    {
+      "nombreTabla": "ejmplo6",
+      "cantidadRegistros": 0
+    },
+    {
+      "nombreTabla": "ejmplo5",
+      "cantidadRegistros": 0
+    }
+  ]
+}

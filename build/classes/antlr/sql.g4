@@ -12,14 +12,14 @@ grammar sql;
 BOOLEAN : 'boolean';
 DATETIME: 'datetime';
 
-fragment LETTER : ('a'..'z'|'A'..'Z') ;
+fragment LETTER : ('a'..'z'|'A'..'Z' | '_') ;
 fragment DIGIT :'0'..'9' ;
 fragment ASCII : (' ' ..'~') | '\\' | '\'' | '\"' | '\t' | '\n' ;
 fragment TWO_DIGITS   : DIGIT DIGIT ;
 fragment THREE_DIGITS : DIGIT TWO_DIGITS ;
 fragment FOUR_DIGITS  : DIGIT THREE_DIGITS ;
-fragment YEAR      : FOUR_DIGITS ;                   // year
-fragment MONTH     : DIGIT | TWO_DIGITS ;        // month of year.
+fragment YEAR      : FOUR_DIGITS ;                  
+fragment MONTH     : DIGIT | TWO_DIGITS ;         
 fragment DAY       : DIGIT | TWO_DIGITS ; 
 
 //* \'
@@ -53,7 +53,9 @@ int_terminal: 'INT'|'int';
 
 float_terminal: 'FLOAT'|'float';
 
-char_terminal: 'CHAR'|'char';
+char_name:  'CHAR'|'char';
+
+char_terminal: char_name '(' NUM ')';
 
 date_terminal: 'DATE'|'date';
 
@@ -169,7 +171,9 @@ schema_definition: create database ID ';';
 
 
 
-table_definition: create table ID '(' (column)+ ')' ';';
+table_definition: create table ID '(' (column_or_constraint) ')' ';';
+
+column_or_constraint: (column | constraint)+ ;
 
 drop_schema_statement: drop database ID ';';
 
@@ -183,19 +187,21 @@ alter_database_statement: alter database ID rename to ID ';' ;
 
 use_schema_statement: use database ID ';';
 
-column: (ID tipo_literal | constraint) ',' ;
+column: (ID tipo_literal)  (',')? ;
 
 tipo_literal: int_terminal | float_terminal | char_terminal | date_terminal ;
 
-constraint: constraint_terminal constraintType;
+constraint: constraint_terminal constraintType (',')?;
 
 
 
 constraintType:
-            ID primary key '(' ID (',' ID)*')'
-        |   ID foreign key  '(' ID (',' ID)*')' references ID '(' ID (',' ID)*')'
+            ID primary key '(' id_list')'
+        |   ID foreign key  '(' id_list')' references ID '(' id_list ')'
         |   ID check  '('ID exp ID ')'
         ;
+
+id_list: ID (',' ID)*;
 
 exp: logic | relational;
 
@@ -218,16 +224,11 @@ show_table_statement: show tables ';';
 show_column_statement: show column_terminal_plural from ID ';';
          
 
-
 insert_value: insert into ID '(' ID (',' ID)* ')'  values '(' list_values ')'  ';';
-
 
           
 logic: and | or | not;
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
-
-
-
 
 
 update_value: update ID set column '=' value where condition ';' ;

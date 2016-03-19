@@ -5,9 +5,21 @@
         <group>
             <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/TextLineNumber.java</file>
             <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/ANTGui.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/TuplaDB.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/antlr/sqlParser.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/TuplaColumna.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/JSONParser.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/TuplaTabla.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/Visitor.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/DBMS.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/antlr/sqlLexer.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/Constraint.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/FileManager.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/ArchivoMaestroTabla.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/Tabla.java</file>
+            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/ArchivoMaestroDB.java</file>
             <file>file:/Users/usuario/NetBeansProjects/DBMS/src/antlr/sqlBaseListener.java</file>
             <file>file:/Users/usuario/NetBeansProjects/DBMS/src/antlr/sql.g4</file>
-            <file>file:/Users/usuario/NetBeansProjects/DBMS/src/dbms/DBMS.java</file>
         </group>
     </open-files>
 </project-private>

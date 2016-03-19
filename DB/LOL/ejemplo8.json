@@ -1,0 +1,29 @@
+{
+  "tablaDeclaration": [
+    {
+      "nombre": "valor1",
+      "tipo": "char",
+      "tamaño": 255
+    }
+  ],
+  "constraints": [
+    {
+      "nombre": "PK",
+      "tipo": "primary",
+      "references": [
+        "valor1"
+      ],
+      "referencesForeign": []
+    },
+    {
+      "nombre": "LK",
+      "tipo": "foreign",
+      "references": [
+        "valor1"
+      ],
+      "referencesForeign": [
+        "val1"
+      ]
+    }
+  ]
+}

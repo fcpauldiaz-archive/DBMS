@@ -27,12 +27,12 @@ public class JSONParser<T> {
         
     }
     
-    public void objectToJSON(String fileName, T object){
+    public void objectToJSON(String path,String fileName, T object){
          
        
-         try (Writer writer = new FileWriter(fileName+".json")) {
+         try (Writer writer = new FileWriter(path+fileName+".json")) {
              
-            Gson gson = new GsonBuilder().create();
+           Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(object, writer);
             
         }catch (IOException ex) {
@@ -40,20 +40,25 @@ public class JSONParser<T> {
         }
      
     }
-    public T JSONtoObject(String fileName, String object){
+    public T JSONtoObject(String path,String fileName, String object){
          try {
                 Gson gson = new Gson();
 		BufferedReader br = new BufferedReader(
-			new FileReader(fileName+".json"));
+			new FileReader(path+fileName+".json"));
 
 		//convert the json string back to object
                 T obj = null;
-                if (object.equals("Type"))
-		    obj = (T)gson.fromJson(br, Type.class);
+                if (object.equals("ArchivoMaestroDB"))
+		    obj = (T)gson.fromJson(br, ArchivoMaestroDB.class);
+                if (object.equals("ArchivoMaestroTabla"))
+		    obj = (T)gson.fromJson(br, ArchivoMaestroTabla.class);
+                 if (object.equals("Tabla"))
+		    obj = (T)gson.fromJson(br, Tabla.class);
  
 		System.out.println(obj);
                 return (T)obj;
 	} catch (IOException e) {
+            e.printStackTrace();
 	}
          
         return null;

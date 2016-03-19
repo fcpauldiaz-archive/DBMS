@@ -5,12 +5,15 @@
 
 package dbms;
 
+import static dbms.DBMS.debug;
+
 /**
  *
  * @author Pablo
  */
 public class DBMS {
     
+   public static boolean  debug = true;
     /**
      * @param args the command line arguments
      */
@@ -21,5 +24,12 @@ public class DBMS {
        window.setVisible(true);
        window.setLocationRelativeTo(null);
     }
+
+      public static void debug(String str){
+         if (debug){
+             System.out.println(str);
+         }
+     }
+    
 
 }

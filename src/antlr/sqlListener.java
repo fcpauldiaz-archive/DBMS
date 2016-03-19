@@ -319,6 +319,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitAccion(@NotNull sqlParser.AccionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#id_list}.
+	 * @param ctx the parse tree
+	 */
+	void enterId_list(@NotNull sqlParser.Id_listContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#id_list}.
+	 * @param ctx the parse tree
+	 */
+	void exitId_list(@NotNull sqlParser.Id_listContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#show_column_statement}.
 	 * @param ctx the parse tree
 	 */
@@ -488,6 +498,16 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNot(@NotNull sqlParser.NotContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#column_or_constraint}.
+	 * @param ctx the parse tree
+	 */
+	void enterColumn_or_constraint(@NotNull sqlParser.Column_or_constraintContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#column_or_constraint}.
+	 * @param ctx the parse tree
+	 */
+	void exitColumn_or_constraint(@NotNull sqlParser.Column_or_constraintContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#list_values}.
 	 * @param ctx the parse tree
@@ -688,6 +708,16 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#char_name}.
+	 * @param ctx the parse tree
+	 */
+	void enterChar_name(@NotNull sqlParser.Char_nameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#char_name}.
+	 * @param ctx the parse tree
+	 */
+	void exitChar_name(@NotNull sqlParser.Char_nameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#asc}.
 	 * @param ctx the parse tree

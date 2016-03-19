@@ -198,6 +198,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAccion(@NotNull sqlParser.AccionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#id_list}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitId_list(@NotNull sqlParser.Id_listContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#show_column_statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -299,6 +305,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNot(@NotNull sqlParser.NotContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#column_or_constraint}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitColumn_or_constraint(@NotNull sqlParser.Column_or_constraintContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#list_values}.
 	 * @param ctx the parse tree
@@ -419,6 +431,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#char_name}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitChar_name(@NotNull sqlParser.Char_nameContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#asc}.
 	 * @param ctx the parse tree

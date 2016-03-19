@@ -9,7 +9,6 @@ package dbms;
 //import antlr4.programParser;
 import antlr.sqlLexer;
 import antlr.sqlParser;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,11 +16,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -29,19 +23,12 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.table.DefaultTableModel;
-import org.antlr.v4.Tool;
 import org.antlr.v4.gui.Trees;
-import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 /**
  *
@@ -54,6 +41,7 @@ public class ANTGui extends javax.swing.JFrame {
     public static String[] ruleNames;
     private sqlParser parser;
     private sqlParser.Sql2003ParserContext contexto;
+    public static boolean selected = false;
 //    
     /**
      * Creates new form ANTGui
@@ -70,7 +58,7 @@ public class ANTGui extends javax.swing.JFrame {
         
     }
     
-    public void lines(){
+    private void lines(){
    
     TextLineNumber tln = new TextLineNumber(this.jTextArea2);
     this.jScrollPane2.setRowHeaderView(tln);
@@ -98,6 +86,7 @@ public class ANTGui extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -117,7 +106,7 @@ public class ANTGui extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 708, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(151, Short.MAX_VALUE))
+                .addContainerGap(152, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -222,21 +211,26 @@ public class ANTGui extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(327, 327, 327)
-                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 463, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(35, 35, 35)
+                        .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(21, 21, 21)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 886, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 886, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(59, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 604, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
@@ -247,7 +241,7 @@ public class ANTGui extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void toolbar(){
+    private void toolbar(){
        
         
         //************************ Actions ************************
@@ -281,6 +275,21 @@ public class ANTGui extends javax.swing.JFrame {
              Action showTree = new AbstractAction("Arbol", new ImageIcon("src/resources/tree-git.png")) {
             public void actionPerformed(ActionEvent e) {
                 mostrarArbol();
+            }
+        };
+             
+        Action debugAction = new AbstractAction("Debug", new ImageIcon("src/resources/bug-git.png")) {
+        
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selected = !selected;
+                if (selected){
+                    jLabel1.setText("Debug activado");
+                }
+                else{
+                    jLabel1.setText("Debug desactivado");
+                }
+               
             }
         };
           
@@ -321,8 +330,13 @@ public class ANTGui extends javax.swing.JFrame {
         this.jToolBar1.addSeparator();
         this.jToolBar1.addSeparator();
         this.jToolBar1.addSeparator();
+       
         this.jToolBar1.add(showTree).setToolTipText("Mostrar Arbol");
         this.jToolBar1.add(compileAction).setToolTipText("COMPILAR");
+       
+        
+        
+        this.jToolBar1.add((debugAction));
         
         
         jTable1.getColumnModel().getColumn(0).setMaxWidth(30);
@@ -409,19 +423,9 @@ public class ANTGui extends javax.swing.JFrame {
                 System.out.println("Parseo Exitoso");
 
                JOptionPane.showMessageDialog(this, "¡Parseo Exitoso!");
+                Visitor vistor = new Visitor();
+                vistor.visit(tree);
 
-//                Visitor vistor = new Visitor();
-//                vistor.visit(tree);
-//               
-//                if (Visitor.verificadorMain==false){
-//                    jTextArea3.setText(jTextArea3.getText()+"\n"+"Error: No existe el método MAIN");
-//                }
-//                Visitor.verificadorMain=false;
-//                
-//               
-//                //regresar el ambito actual al default
-//                Scope.ambitoActual = 0;
-                //System.out.println(vist.visitProgram(contexto));
             }
             else{
                  JOptionPane.showMessageDialog(this, "¡Parseo Fallido!");
@@ -604,6 +608,12 @@ public class ANTGui extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+     
+     public void debug(String str, boolean debug){
+         if (debug){
+             System.out.println(str);
+         }
+     }
     /**
      * @param args the command line arguments
      */
@@ -645,6 +655,7 @@ public class ANTGui extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
