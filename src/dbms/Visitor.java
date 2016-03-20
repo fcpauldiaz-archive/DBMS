@@ -270,6 +270,39 @@ public class Visitor<T> extends sqlBaseVisitor {
         return super.visitAlter_database_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Object visitRename_table_statement(sqlParser.Rename_table_statementContext ctx) {
+        String nombreActual = ctx.getChild(2).getText();
+        String nombreNuevo = ctx.getChild(5).getText();
+        
+        //antes reviso que exista la tabla en la base de datos actual
+        boolean verificador = manejador.checkFile(bdActual, nombreActual);
+        if (!verificador){
+            DBMS.debug("El archivo " + nombreActual + " no existe");
+            return super.visitRename_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+        //renombra el archivo
+        manejador.renameFileJSON(bdActual, nombreActual, nombreNuevo);
+        ArchivoMaestroTabla tablita = (ArchivoMaestroTabla)json.JSONtoObject("DB/"+bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
+        ArrayList<TuplaTabla> arrayTablas = tablita.getTablas();
+        for (int i =0;i<arrayTablas.size();i++){
+            TuplaTabla t = arrayTablas.get(i);
+            if (t.getNombreTabla().equals(nombreActual)){
+                t.setNombreTabla(nombreNuevo);
+            }
+        }
+         json.objectToJSON("DB/"+bdActual +"/", "MasterTable"+bdActual, tablita);
+        
+        return super.visitRename_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
+   
+    
+
+    
+    
     
     
     

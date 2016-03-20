@@ -196,7 +196,7 @@ constraint: constraint_terminal constraintType (',')?;
 
 
 constraintType:
-            ID primary key '(' id_list')'
+            ID primary key '(' id_list')'                               
         |   ID foreign key  '(' id_list')' references ID '(' id_list ')'
         |   ID check  '('ID exp NUM ')'
         ;

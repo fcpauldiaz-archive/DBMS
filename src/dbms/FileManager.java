@@ -51,7 +51,7 @@ public class FileManager {
      */
     public boolean checkFileTabla(String path,String fileName){
         if (path.isEmpty()){
-            DBMS.debug("La base de datos no existe");
+         
             return false;
         }
 
@@ -158,6 +158,19 @@ public class FileManager {
                DBMS.debug("Se ha renombrado la base de datos");
         }else{
                DBMS.debug("No se ha podido renombrar la base de datos");
+        }
+        
+        
+    }
+    
+    public void renameFileJSON(String db, String file1, String file2){
+        File oldfile =new File("DB/"+db+"/"+file1+".json");
+        File newfile =new File("DB/"+db+"/"+file2+".json");
+
+        if(oldfile.renameTo(newfile)){
+               DBMS.debug("Se ha renombrado el archivo " + file1 +" a " +file2);
+        }else{
+               DBMS.debug("Error: No se ha renombrado " + file1 +" a " +file2);
         }
     }
     
