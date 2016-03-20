@@ -48,5 +48,11 @@ public class Tabla {
     public void addConstraint(Constraint constraint){
         this.constraints.add(constraint);
     }
+
+    @Override
+    public String toString() {
+        return "Tabla{" + "tablaDeclaration=" + tablaDeclaration + ", constraints=" + constraints + '}';
+    }
+    
     
 }

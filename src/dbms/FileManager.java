@@ -77,15 +77,7 @@ public class FileManager {
        
         File file = new File("DB/"+path+"/",fileName+".json");
       
-        if (!file.exists()) {
-
-                DBMS.debug("El archivo no existe " + fileName );
-
-        return false;
-        }else{
-            DBMS.debug("El archivo ya existe" +fileName  );
-            return true;
-    }
+        return file.exists();
     }
     /**
      * Este método sirve para revisar si existe una base de datos

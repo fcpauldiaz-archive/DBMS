@@ -57,7 +57,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         tabla = new Tabla();
         String nombreTabla = ctx.getChild(2).getText();
         tablaActual = nombreTabla;
-        System.out.println(tablaActual+"TBACTUAL");
+       
         for (int i = 0;i<ctx.getChildCount();i++){
             this.visit(ctx.getChild(i));
         }
@@ -150,7 +150,9 @@ public class Visitor<T> extends sqlBaseVisitor {
                 return null;
             }
             //si llega aquí es porque si existen
-            constraint.setReferencesForeign(listadoIDSREF);
+            TuplaRefForeign tuplaForeign = new TuplaRefForeign(nombreTablaRef);
+            tuplaForeign.setReferencesForeign(listadoIDS);
+            constraint.setReferencesForeign(tuplaForeign);
             
         }
         //ahora busco la tabla y verifico los campos de los constraints

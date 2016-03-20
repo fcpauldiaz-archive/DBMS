@@ -17,18 +17,18 @@ public class Constraint {
     private String nombre;
     private String tipo;
     private ArrayList<String> references;
-    private ArrayList<String> referencesForeign;
+    private TuplaRefForeign referencesForeign;
 
     public Constraint(String nombre, String tipo) {
         this.nombre = nombre;
         this.tipo = tipo;
         this.references = new ArrayList();
-        this.referencesForeign = new ArrayList();
+        
     }
     
     public Constraint(){
         this.references = new ArrayList();
-        this.referencesForeign = new ArrayList();
+        
     }
 
     public String getNombre() {
@@ -55,11 +55,11 @@ public class Constraint {
         this.references = references;
     }
     
-    public void setReferencesForeign(ArrayList<String> references) {
+    public void setReferencesForeign(TuplaRefForeign references) {
         this.referencesForeign = references;
     }
     
-    public ArrayList<String> getReferencesForeign(){
+    public TuplaRefForeign getReferencesForeign(){
         return this.referencesForeign;
     }
 
