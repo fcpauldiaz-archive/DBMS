@@ -59,7 +59,7 @@ public class FileManager {
         path = path.replaceAll("//", path);
         if (!file.exists()) {
 
-                DBMS.debug("La tabla " +fileName + " ha sido creado en la base de datos " + path );
+                //DBMS.debug("La tabla " +fileName + " ha sido creado en la base de datos " + path );
 
         return true;
         }else{

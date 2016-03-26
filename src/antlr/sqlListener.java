@@ -269,6 +269,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitCondition(@NotNull sqlParser.ConditionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#num_or_id}.
+	 * @param ctx the parse tree
+	 */
+	void enterNum_or_id(@NotNull sqlParser.Num_or_idContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#num_or_id}.
+	 * @param ctx the parse tree
+	 */
+	void exitNum_or_id(@NotNull sqlParser.Num_or_idContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#rename_table_statement}.
 	 * @param ctx the parse tree
 	 */
@@ -339,12 +349,14 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#values}.
+	 * Enter a parse tree produced by the {@code values}
+	 * labeled alternative in {@link sqlParser#constraintTypeconstraintTypeconstraintType}.
 	 * @param ctx the parse tree
 	 */
 	void enterValues(@NotNull sqlParser.ValuesContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#values}.
+	 * Exit a parse tree produced by the {@code values}
+	 * labeled alternative in {@link sqlParser#constraintTypeconstraintTypeconstraintType}.
 	 * @param ctx the parse tree
 	 */
 	void exitValues(@NotNull sqlParser.ValuesContext ctx);
@@ -439,6 +451,18 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitForeign(@NotNull sqlParser.ForeignContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code constraintForeignKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constraintForeignKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#literal}.
 	 * @param ctx the parse tree
 	 */
@@ -469,16 +493,6 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitInto(@NotNull sqlParser.IntoContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#constraintType}.
-	 * @param ctx the parse tree
-	 */
-	void enterConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#constraintType}.
-	 * @param ctx the parse tree
-	 */
-	void exitConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link sqlParser#database}.
 	 * @param ctx the parse tree
 	 */
@@ -508,6 +522,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitColumn_or_constraint(@NotNull sqlParser.Column_or_constraintContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code constraintCheck}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintCheck(@NotNull sqlParser.ConstraintCheckContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constraintCheck}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintCheck(@NotNull sqlParser.ConstraintCheckContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#list_values}.
 	 * @param ctx the parse tree
@@ -668,6 +694,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitColumn(@NotNull sqlParser.ColumnContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code constraintPrimaryKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintPrimaryKey(@NotNull sqlParser.ConstraintPrimaryKeyContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constraintPrimaryKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintPrimaryKey(@NotNull sqlParser.ConstraintPrimaryKeyContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#char_terminal}.
 	 * @param ctx the parse tree

@@ -191,15 +191,17 @@ column: (ID tipo_literal)  (',')? ;
 
 tipo_literal: int_terminal | float_terminal | char_terminal | date_terminal ;
 
-constraint: constraint_terminal constraintType (',')?;
+constraint: constraint_terminal constraintType ;
 
 
 
 constraintType:
-            ID primary key '(' id_list')'                               
-        |   ID foreign key  '(' id_list')' references ID '(' id_list ')'
-        |   ID check  '('ID exp NUM ')'
+            ID primary key '(' id_list')' (',')?                                #constraintPrimaryKey                    
+        |   ID foreign key  '(' id_list')' references ID '(' id_list ')' (',')? #constraintForeignKey
+        |   ID check  '('ID exp (num_or_id) ')' (',')?                          #constraintCheck
         ;
+
+num_or_id: NUM | ID;
 
 id_list: ID (',' ID)*;
 

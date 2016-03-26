@@ -329,6 +329,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterNum_or_id(@NotNull sqlParser.Num_or_idContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNum_or_id(@NotNull sqlParser.Num_or_idContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -533,6 +545,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterLiteral(@NotNull sqlParser.LiteralContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -569,18 +593,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterDatabase(@NotNull sqlParser.DatabaseContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -612,6 +624,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitColumn_or_constraint(@NotNull sqlParser.Column_or_constraintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConstraintCheck(@NotNull sqlParser.ConstraintCheckContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraintCheck(@NotNull sqlParser.ConstraintCheckContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -804,6 +828,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitColumn(@NotNull sqlParser.ColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConstraintPrimaryKey(@NotNull sqlParser.ConstraintPrimaryKeyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraintPrimaryKey(@NotNull sqlParser.ConstraintPrimaryKeyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

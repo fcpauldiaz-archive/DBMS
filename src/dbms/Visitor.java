@@ -14,6 +14,7 @@ import java.util.ArrayList;
 /**
  *
  * @author Pablo
+ * @param <T>
  */
 public class Visitor<T> extends sqlBaseVisitor {
 
@@ -25,6 +26,11 @@ public class Visitor<T> extends sqlBaseVisitor {
     public String bdActual ="";
     public String tablaActual="";
     
+    /**
+     * Método que crea la base de datos y actualiza el archivo maestro de bases de datos.
+     * @param ctx
+     * @return 
+     */
     @Override
     public Object visitSchema_definition(sqlParser.Schema_definitionContext ctx) {
         
@@ -43,14 +49,24 @@ public class Visitor<T> extends sqlBaseVisitor {
         
         }
         if (carpeta){
+            DBMS.debug("Se ha creado la base de datos", ctx.getStart());
             json.objectToJSON("DB/", "MasterDB", mdb);
             mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
+        }
+        else{
+            DBMS.throwError("Error: la base de datos ya existe", ctx.getStart());
         }
         
         
         return super.visitSchema_definition(ctx); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
+    /**
+     * Método que crea la tabla
+     * Este método tiene que visitar los hijos para terminar de crear la tabla.
+     * @param ctx
+     * @return 
+     */
     @Override
     public Object visitTable_definition(sqlParser.Table_definitionContext ctx) {
         
@@ -58,7 +74,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         String nombreTabla = ctx.getChild(2).getText();
         tablaActual = nombreTabla;
        
-        for (int i = 0;i<ctx.getChildCount();i++){
+            for (int i = 0;i<ctx.getChildCount();i++){
             this.visit(ctx.getChild(i));
         }
         
@@ -84,6 +100,12 @@ public class Visitor<T> extends sqlBaseVisitor {
                 json.objectToJSON("DB/"+bdActual+"/", nombreTabla, tabla);
             
             mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
+        }
+        else{
+            if (bdActual.isEmpty())
+                DBMS.throwError("Error: No se ha seleccionado la base de datos", ctx.getStart());
+            else
+                DBMS.throwError("Error: La tabla ya existe", ctx.getStart());
         }
        
         mdt = new ArchivoMaestroTabla(); //sirve para perder la referencia
@@ -121,9 +143,7 @@ public class Visitor<T> extends sqlBaseVisitor {
     }
 
     @Override
-    public Object visitConstraintType(sqlParser.ConstraintTypeContext ctx) {
-       
-        
+    public Object visitConstraintPrimaryKey(sqlParser.ConstraintPrimaryKeyContext ctx) {
         String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
         String nombreConstraint = ctx.getChild(0).getText();
         String tipoConstraint = ctx.getChild(1).getText();
@@ -131,8 +151,84 @@ public class Visitor<T> extends sqlBaseVisitor {
         Constraint constraint = new Constraint();
         constraint.setTipo(tipoConstraint);
         constraint.setNombre(nombreConstraint);
-        if (ctx.getChildCount()>6){
-            String nombreTablaRef = ctx.getChild(7).getText();
+         //ahora busco la tabla y verifico los campos de los constraints
+        Tabla tabla_c = tabla;
+                
+        ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
+        for (int i =0;i<tabla.getConstraints().size();i++){
+             if (tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
+                 DBMS.debug("Error: el nombre del constraint " + nombreConstraint + " ya ha sido usado");
+                 tabla = null;
+                 return null;
+                }
+        }
+        boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
+        if (verificador){
+            constraint.setReferences(listadoIDS);
+            tabla.addConstraint(constraint);
+        }
+        else{
+             DBMS.debug("campo "+listadoIDS+" no existe en la tabla " + nombreTabla );
+             tabla = null; //ya no se guarda la tabla.
+        }
+        
+        return super.visitConstraintPrimaryKey(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitConstraintCheck(sqlParser.ConstraintCheckContext ctx) {
+        
+            String nombreConstraint = ctx.getChild(0).getText();
+            String tipoConstraint = ctx.getChild(1).getText();
+           
+            Constraint constraint = new Constraint();
+            constraint.setTipo(tipoConstraint);
+            constraint.setNombre(nombreConstraint);
+        
+            System.out.println("entra");
+            //tengo que revisar que exista este campo en la tabla actual
+            String op1 = ctx.getChild(3).getText();
+            //este solo sirve para guardar
+            String relOp = ctx.getChild(4).getText();
+            
+            //este campo puede ser número o un ID, como lo identifico?.
+            //bueno, no me sirve saber esto hasta que haga la operación.
+            String op2 = ctx.getChild(5).getText();
+            ArrayList<TuplaColumna> columnas = tabla.getColumnas();
+            boolean verCheck = false;
+            for (int i = 0;i<columnas.size();i++){
+                if (columnas.get(i).getNombre().equals(op1)){
+                    verCheck= true;
+                }
+            }
+            if (!verCheck){
+                tabla = null;
+                return null;
+            }
+            TuplaCheck check = new TuplaCheck();
+            check.setOp1(op1);
+            check.setOp2(op2);
+            
+            check.setOperador(relOp);
+            constraint.setTuplaCheck(check);
+            tabla.addConstraint(constraint);
+            
+        
+        
+        return super.visitConstraintCheck(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitConstraintForeignKey(sqlParser.ConstraintForeignKeyContext ctx) {
+        String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
+        String nombreConstraint = ctx.getChild(0).getText();
+        String tipoConstraint = ctx.getChild(1).getText();
+        ArrayList<String> listadoIDS = (ArrayList<String>)visit(ctx.getChild(4));
+        Constraint constraint = new Constraint();
+        constraint.setTipo(tipoConstraint);
+        constraint.setNombre(nombreConstraint);
+        
+         String nombreTablaRef = ctx.getChild(7).getText();
             ArrayList<String> listadoIDSREF = (ArrayList<String>)visit(ctx.getChild(9));
             
             //ahora tengo que revisar que existe la tabla que se referencia
@@ -143,6 +239,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             //TODO: ¿Qué pasa si no existe la tabla? falta validar esto.
             //paso 2. verificar que los campos de referencia existan en la tabla de referencia
             ArrayList<TuplaColumna> columnasRef = tablaRef.getColumnas();
+         
             boolean verificadorRef = this.revisarListadoIDs(columnasRef, listadoIDSREF);
             //si no existen los campos en la referencia
             if (!verificadorRef){//no pasa la validación
@@ -154,25 +251,25 @@ public class Visitor<T> extends sqlBaseVisitor {
             tuplaForeign.setReferencesForeign(listadoIDS);
             constraint.setReferencesForeign(tuplaForeign);
             
-        }
-        //ahora busco la tabla y verifico los campos de los constraints
-        Tabla tabla_c = tabla;
-                
-        ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
-        boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
-        if (verificador){
-            constraint.setReferences(listadoIDS);
-            tabla.addConstraint(constraint);
-        }
-        else{
-             DBMS.debug("Algún campo "+listadoIDS+" no existe en la tabla " + nombreTabla );
-             tabla = null; //ya no se guarda la tabla.
-        }
+             //ahora busco la tabla y verifico los campos de los constraints
+            Tabla tabla_c = tabla;
+
+            ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
+            boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
+            if (verificador){
+                constraint.setReferences(listadoIDS);
+                tabla.addConstraint(constraint);
+            }
+            else{
+                 DBMS.debug("campo "+listadoIDS+" no existe en la tabla " + nombreTabla );
+                 tabla = null; //ya no se guarda la tabla.
+            }
         
         
-        
-        return super.visitConstraintType(ctx); //To change body of generated methods, choose Tools | Templates.
+        return super.visitConstraintForeignKey(ctx); //To change body of generated methods, choose Tools | Templates.
     }
+
+   
 
     public boolean revisarListadoIDs(ArrayList<TuplaColumna> camposActuales, ArrayList<String> listadoIDS){
         boolean verificador = true;
@@ -274,7 +371,7 @@ public class Visitor<T> extends sqlBaseVisitor {
     public Object visitRename_table_statement(sqlParser.Rename_table_statementContext ctx) {
         String nombreActual = ctx.getChild(2).getText();
         String nombreNuevo = ctx.getChild(5).getText();
-        
+       
         //antes reviso que exista la tabla en la base de datos actual
         boolean verificador = manejador.checkFile(bdActual, nombreActual);
         if (!verificador){

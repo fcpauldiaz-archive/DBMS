@@ -168,6 +168,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCondition(@NotNull sqlParser.ConditionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#num_or_id}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNum_or_id(@NotNull sqlParser.Num_or_idContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#rename_table_statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -210,7 +216,8 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link sqlParser#values}.
+	 * Visit a parse tree produced by the {@code values}
+	 * labeled alternative in {@link sqlParser#constraintTypeconstraintTypeconstraintType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
@@ -270,6 +277,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitForeign(@NotNull sqlParser.ForeignContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code constraintForeignKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#literal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -288,12 +302,6 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInto(@NotNull sqlParser.IntoContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link sqlParser#constraintType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link sqlParser#database}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -311,6 +319,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitColumn_or_constraint(@NotNull sqlParser.Column_or_constraintContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code constraintCheck}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraintCheck(@NotNull sqlParser.ConstraintCheckContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#list_values}.
 	 * @param ctx the parse tree
@@ -407,6 +422,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitColumn(@NotNull sqlParser.ColumnContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code constraintPrimaryKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraintPrimaryKey(@NotNull sqlParser.ConstraintPrimaryKeyContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#char_terminal}.
 	 * @param ctx the parse tree

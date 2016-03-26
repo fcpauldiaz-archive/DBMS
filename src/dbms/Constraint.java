@@ -18,6 +18,7 @@ public class Constraint {
     private String tipo;
     private ArrayList<String> references;
     private TuplaRefForeign referencesForeign;
+    private TuplaCheck  tuplaCheck;
 
     public Constraint(String nombre, String tipo) {
         this.nombre = nombre;
@@ -62,6 +63,16 @@ public class Constraint {
     public TuplaRefForeign getReferencesForeign(){
         return this.referencesForeign;
     }
+
+    public TuplaCheck getTuplaCheck() {
+        return tuplaCheck;
+    }
+
+    public void setTuplaCheck(TuplaCheck tuplaCheck) {
+        this.tuplaCheck = tuplaCheck;
+    }
+    
+    
 
     @Override
     public String toString() {
