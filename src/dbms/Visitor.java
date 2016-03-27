@@ -9,6 +9,7 @@ package dbms;
 import antlr.sqlBaseVisitor;
 import antlr.sqlParser;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -96,9 +97,13 @@ public class Visitor<T> extends sqlBaseVisitor {
             mdb.agregarExistente(masterSaved);
             
             json.objectToJSON("DB/", "MasterDB", mdb);
-            if (tabla != null)
+            if (tabla != null){
+                DBMS.debug("Se ha guardado la tabla " + nombreTabla, ctx.getStart());
                 json.objectToJSON("DB/"+bdActual+"/", nombreTabla, tabla);
-            
+            }
+            else{
+                DBMS.throwError("Error: Ha ocurrido un error al crear la tabla", ctx.getStart());
+            }    
             mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
         }
         else{
@@ -157,7 +162,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
         for (int i =0;i<tabla.getConstraints().size();i++){
              if (tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
-                 DBMS.debug("Error: el nombre del constraint " + nombreConstraint + " ya ha sido usado");
+                 DBMS.throwError("Error: el nombre del constraint " + nombreConstraint + " ya ha sido usado",ctx.getStart());
                  tabla = null;
                  return null;
                 }
@@ -166,9 +171,10 @@ public class Visitor<T> extends sqlBaseVisitor {
         if (verificador){
             constraint.setReferences(listadoIDS);
             tabla.addConstraint(constraint);
+            DBMS.debug("Se ha agregado el constraint" + nombreConstraint + "a la tabla " + nombreTabla, ctx.getStart());
         }
         else{
-             DBMS.debug("campo "+listadoIDS+" no existe en la tabla " + nombreTabla );
+             DBMS.throwError("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla, ctx.getStart() );
              tabla = null; //ya no se guarda la tabla.
         }
         
@@ -185,7 +191,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             constraint.setTipo(tipoConstraint);
             constraint.setNombre(nombreConstraint);
         
-            System.out.println("entra");
+            
             //tengo que revisar que exista este campo en la tabla actual
             String op1 = ctx.getChild(3).getText();
             //este solo sirve para guardar
@@ -203,6 +209,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             }
             if (!verCheck){
                 tabla = null;
+                DBMS.throwError("El nombre del constraint "+nombreConstraint + " ya existe " , ctx.getStart());
                 return null;
             }
             TuplaCheck check = new TuplaCheck();
@@ -212,7 +219,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             check.setOperador(relOp);
             constraint.setTuplaCheck(check);
             tabla.addConstraint(constraint);
-            
+            DBMS.debug("Se ha agregado el constraint " + nombreConstraint, ctx.getStart());
         
         
         return super.visitConstraintCheck(ctx); //To change body of generated methods, choose Tools | Templates.
@@ -243,6 +250,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             boolean verificadorRef = this.revisarListadoIDs(columnasRef, listadoIDSREF);
             //si no existen los campos en la referencia
             if (!verificadorRef){//no pasa la validación
+                DBMS.throwError("No existe algún campo de " +listadoIDSREF, ctx.getStart());
                 tabla = null;
                 return null;
             }
@@ -259,9 +267,10 @@ public class Visitor<T> extends sqlBaseVisitor {
             if (verificador){
                 constraint.setReferences(listadoIDS);
                 tabla.addConstraint(constraint);
+                DBMS.debug("Se ha agregado el constraint " + nombreConstraint,ctx.getStart());
             }
             else{
-                 DBMS.debug("campo "+listadoIDS+" no existe en la tabla " + nombreTabla );
+                 DBMS.throwError("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla,ctx.getStart() );
                  tabla = null; //ya no se guarda la tabla.
             }
         
@@ -325,11 +334,15 @@ public class Visitor<T> extends sqlBaseVisitor {
      */
     @Override
     public Object visitDrop_schema_statement(sqlParser.Drop_schema_statementContext ctx) {
-        
         String nombreDB = ctx.getChild(2).getText();
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Seguro que desea eliminar la base de datos "+nombreDB+" ?");
+        if(dialogResult == JOptionPane.NO_OPTION || dialogResult == JOptionPane.CANCEL_OPTION){
+            return super.visitDrop_schema_statement(ctx);
+        }
+        
         boolean verificador = manejador.checkDB(nombreDB);
         if (!verificador){
-            DBMS.debug("La base de datos " + nombreDB + " no existe");
+            DBMS.throwError("La base de datos " + nombreDB + " no existe",ctx.getStart());
             return super.visitDrop_schema_statement(ctx);
         }
         manejador.eliminarDB(nombreDB);
@@ -342,7 +355,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             }
         }
         json.objectToJSON("DB/", "MasterDB", mdbActual);
-        
+        DBMS.throwError("Se ha eliminado la base de datos " + nombreDB, ctx.getStart());
         
         return super.visitDrop_schema_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
@@ -352,6 +365,10 @@ public class Visitor<T> extends sqlBaseVisitor {
         
         String nombreDBActual = ctx.getChild(2).getText();
         String nombreNuevoDB = ctx.getChild(5).getText();
+        if (!manejador.checkDB(nombreDBActual)){
+            DBMS.throwError("Error: la base de datos " + nombreDBActual + " no existe" , ctx.getStart());
+            return null;
+        }
         manejador.renameFile(bdActual, nombreDBActual, nombreNuevoDB);
         ArchivoMaestroDB mdbActual = (ArchivoMaestroDB)json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
         ArrayList<TuplaDB> arrayDB = mdbActual.getNombreDB();
@@ -362,7 +379,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             }
         }
         json.objectToJSON("DB/", "MasterDB", mdbActual);
-        
+        DBMS.debug("Se ha cambiado el nombre de la base de datos "+ nombreDBActual + " a " + nombreNuevoDB, ctx.getStart());
         
         return super.visitAlter_database_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
@@ -375,7 +392,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         //antes reviso que exista la tabla en la base de datos actual
         boolean verificador = manejador.checkFile(bdActual, nombreActual);
         if (!verificador){
-            DBMS.debug("El archivo " + nombreActual + " no existe");
+            DBMS.throwError("Error: la tabla" + nombreActual + " no existe", ctx.getStart());
             return super.visitRename_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
         }
         
@@ -390,7 +407,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             }
         }
          json.objectToJSON("DB/"+bdActual +"/", "MasterTable"+bdActual, tablita);
-        
+        DBMS.debug("Se ha renombrado la tabla "+ nombreActual +" a "+ nombreNuevo, ctx.getStart());
         return super.visitRename_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
