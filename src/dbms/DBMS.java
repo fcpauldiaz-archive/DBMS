@@ -35,7 +35,8 @@ public class DBMS {
      public static void debug(String str){
          debug = selected;
          if (debug){
-             System.out.println(str);
+            agregarLog(str);
+            System.out.println(str);
          }
      }
      public static void debug(String str, Token ctx){
@@ -86,12 +87,18 @@ public class DBMS {
         StyleConstants.setForeground(style, Color.red);
         
         
-        try {
-            doc.insertString(doc.getLength(), " " + mensaje+"\n",style);
-
+      if (mensaje.contains("Error")){
+            try {
+                doc.insertString(doc.getLength(), " " + mensaje+"\n",style);
+                
+            }
+            catch (BadLocationException e){}
         }
-        catch (BadLocationException e){}
-        
+        else{
+            StyleConstants.setForeground(style, Color.blue);
+            try { doc.insertString(doc.getLength(),  " " + mensaje+"\n",style); }
+            catch (BadLocationException e){}
+        }
     
         
         

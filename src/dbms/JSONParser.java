@@ -52,7 +52,7 @@ public class JSONParser<T> {
 		    obj = (T)gson.fromJson(br, ArchivoMaestroDB.class);
                 if (object.equals("ArchivoMaestroTabla"))
 		    obj = (T)gson.fromJson(br, ArchivoMaestroTabla.class);
-                 if (object.equals("Tabla"))
+                if (object.equals("Tabla"))
 		    obj = (T)gson.fromJson(br, Tabla.class);
  
 		System.out.println(obj);

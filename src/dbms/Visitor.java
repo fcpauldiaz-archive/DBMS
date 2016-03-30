@@ -40,18 +40,20 @@ public class Visitor<T> extends sqlBaseVisitor {
         boolean carpeta = manejador.createDirectory(nombreBaseDatos);
         boolean master = manejador.checkFile("", "MasterDB");
         if (carpeta){
+            DBMS.debug("Agregando "+ nombreBaseDatos + " al archivo maestro", ctx.getStart());
             mdb.agregarDB(nombreBaseDatos);
         }
         if (carpeta && master){
-        
-         ArchivoMaestroDB masterSaved = (ArchivoMaestroDB) json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
-         mdb.agregarExistente(masterSaved);
+            DBMS.debug("Actualizando archivo maestro de bases de datos", ctx.getStart());
+            ArchivoMaestroDB masterSaved = (ArchivoMaestroDB) json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
+            mdb.agregarExistente(masterSaved);
          
         
         }
         if (carpeta){
-            DBMS.debug("Se ha creado la base de datos", ctx.getStart());
-            json.objectToJSON("DB/", "MasterDB", mdb);
+            DBMS.throwMessage("Se ha creado la base de datos", ctx.getStart());
+            
+            json.objectToJSON("DB/", "MasterDB", mdb);//convierte el objeto a JSON
             mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
         }
         else{
@@ -86,7 +88,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             DBMS.debug("Nombre tabla " + nombreTabla);
             mdt.agregarTabla(nombreTabla);
             if (tabla != null){
-                DBMS.debug("Se ha guardado la tabla " + nombreTabla, ctx.getStart());
+                DBMS.throwMessage("Se ha guardado la tabla " + nombreTabla, ctx.getStart());
                 json.objectToJSON("DB/"+bdActual+"/", nombreTabla, tabla);
             }
             else{
@@ -410,6 +412,24 @@ public class Visitor<T> extends sqlBaseVisitor {
          json.objectToJSON("DB/"+bdActual +"/", "MasterTable"+bdActual, tablita);
         DBMS.debug("Se ha renombrado la tabla "+ nombreActual +" a "+ nombreNuevo, ctx.getStart());
         return super.visitRename_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitShow_column_statement(sqlParser.Show_column_statementContext ctx) {
+      
+            String nombreTabla =  ctx.getChild(3).getText();
+            
+            //ir a buscar la tabla str 
+            
+            boolean check = manejador.checkFile(bdActual, nombreTabla);
+            System.out.println(check);
+            if (check ){
+            Tabla tab = (Tabla)json.JSONtoObject("DB/"+bdActual+"/",nombreTabla , "Tabla");
+            DBMS.debug(tab.toString(), ctx.getStart());
+            }
+           
+        
+        return super.visitShow_column_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
     
