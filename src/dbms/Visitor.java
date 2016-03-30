@@ -38,7 +38,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         String nombreBaseDatos = ctx.getChild(2).getText();
         DBMS.debug("DB name " + nombreBaseDatos);
         boolean carpeta = manejador.createDirectory(nombreBaseDatos);
-        boolean master = manejador.checkFile("DB/", "MasterDB");
+        boolean master = manejador.checkFile("", "MasterDB");
         if (carpeta){
             mdb.agregarDB(nombreBaseDatos);
         }
@@ -85,7 +85,14 @@ public class Visitor<T> extends sqlBaseVisitor {
         if (manejador.checkFileTabla(bdActual, nombreTabla)){
             DBMS.debug("Nombre tabla " + nombreTabla);
             mdt.agregarTabla(nombreTabla);
-            if (manejador.checkFile(bdActual, nombreTabla)){
+            if (tabla != null){
+                DBMS.debug("Se ha guardado la tabla " + nombreTabla, ctx.getStart());
+                json.objectToJSON("DB/"+bdActual+"/", nombreTabla, tabla);
+            }
+            else{
+                DBMS.throwError("Error: Ha ocurrido un error al crear la tabla", ctx.getStart());
+            }    
+            if (manejador.checkFile(bdActual, "MasterTable"+bdActual)){
                 ArchivoMaestroTabla masterTable = (ArchivoMaestroTabla) json.JSONtoObject("DB/"+bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
                 mdt.agregarExistente(masterTable);
             }
@@ -97,13 +104,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             mdb.agregarExistente(masterSaved);
             
             json.objectToJSON("DB/", "MasterDB", mdb);
-            if (tabla != null){
-                DBMS.debug("Se ha guardado la tabla " + nombreTabla, ctx.getStart());
-                json.objectToJSON("DB/"+bdActual+"/", nombreTabla, tabla);
-            }
-            else{
-                DBMS.throwError("Error: Ha ocurrido un error al crear la tabla", ctx.getStart());
-            }    
+            
             mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
         }
         else{
