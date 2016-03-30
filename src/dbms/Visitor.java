@@ -55,7 +55,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
         }
         else{
-            DBMS.throwError("Error: la base de datos ya existe", ctx.getStart());
+            DBMS.throwMessage("Error: la base de datos ya existe", ctx.getStart());
         }
         
         
@@ -90,7 +90,7 @@ public class Visitor<T> extends sqlBaseVisitor {
                 json.objectToJSON("DB/"+bdActual+"/", nombreTabla, tabla);
             }
             else{
-                DBMS.throwError("Error: Ha ocurrido un error al crear la tabla", ctx.getStart());
+                DBMS.throwMessage("Error: Ha ocurrido un error al crear la tabla", ctx.getStart());
             }    
             if (manejador.checkFile(bdActual, "MasterTable"+bdActual)){
                 ArchivoMaestroTabla masterTable = (ArchivoMaestroTabla) json.JSONtoObject("DB/"+bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
@@ -109,9 +109,9 @@ public class Visitor<T> extends sqlBaseVisitor {
         }
         else{
             if (bdActual.isEmpty())
-                DBMS.throwError("Error: No se ha seleccionado la base de datos", ctx.getStart());
+                DBMS.throwMessage("Error: No se ha seleccionado la base de datos", ctx.getStart());
             else
-                DBMS.throwError("Error: La tabla ya existe", ctx.getStart());
+                DBMS.throwMessage("Error: La tabla ya existe", ctx.getStart());
         }
        
         mdt = new ArchivoMaestroTabla(); //sirve para perder la referencia
@@ -163,7 +163,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
         for (int i =0;i<tabla.getConstraints().size();i++){
              if (tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
-                 DBMS.throwError("Error: el nombre del constraint " + nombreConstraint + " ya ha sido usado",ctx.getStart());
+                 DBMS.throwMessage("Error: el nombre del constraint " + nombreConstraint + " ya ha sido usado",ctx.getStart());
                  tabla = null;
                  return null;
                 }
@@ -175,7 +175,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             DBMS.debug("Se ha agregado el constraint" + nombreConstraint + "a la tabla " + nombreTabla, ctx.getStart());
         }
         else{
-             DBMS.throwError("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla, ctx.getStart() );
+             DBMS.throwMessage("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla, ctx.getStart() );
              tabla = null; //ya no se guarda la tabla.
         }
         
@@ -210,7 +210,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             }
             if (!verCheck){
                 tabla = null;
-                DBMS.throwError("El nombre del constraint "+nombreConstraint + " ya existe " , ctx.getStart());
+                DBMS.throwMessage("El nombre del constraint "+nombreConstraint + " ya existe " , ctx.getStart());
                 return null;
             }
             TuplaCheck check = new TuplaCheck();
@@ -251,7 +251,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             boolean verificadorRef = this.revisarListadoIDs(columnasRef, listadoIDSREF);
             //si no existen los campos en la referencia
             if (!verificadorRef){//no pasa la validación
-                DBMS.throwError("No existe algún campo de " +listadoIDSREF, ctx.getStart());
+                DBMS.throwMessage("No existe algún campo de " +listadoIDSREF, ctx.getStart());
                 tabla = null;
                 return null;
             }
@@ -271,7 +271,7 @@ public class Visitor<T> extends sqlBaseVisitor {
                 DBMS.debug("Se ha agregado el constraint " + nombreConstraint,ctx.getStart());
             }
             else{
-                 DBMS.throwError("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla,ctx.getStart() );
+                 DBMS.throwMessage("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla,ctx.getStart() );
                  tabla = null; //ya no se guarda la tabla.
             }
         
@@ -343,7 +343,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         
         boolean verificador = manejador.checkDB(nombreDB);
         if (!verificador){
-            DBMS.throwError("La base de datos " + nombreDB + " no existe",ctx.getStart());
+            DBMS.throwMessage("La base de datos " + nombreDB + " no existe",ctx.getStart());
             return super.visitDrop_schema_statement(ctx);
         }
         manejador.eliminarDB(nombreDB);
@@ -356,7 +356,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             }
         }
         json.objectToJSON("DB/", "MasterDB", mdbActual);
-        DBMS.throwError("Se ha eliminado la base de datos " + nombreDB, ctx.getStart());
+        DBMS.throwMessage("Se ha eliminado la base de datos " + nombreDB, ctx.getStart());
         
         return super.visitDrop_schema_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
@@ -367,7 +367,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         String nombreDBActual = ctx.getChild(2).getText();
         String nombreNuevoDB = ctx.getChild(5).getText();
         if (!manejador.checkDB(nombreDBActual)){
-            DBMS.throwError("Error: la base de datos " + nombreDBActual + " no existe" , ctx.getStart());
+            DBMS.throwMessage("Error: la base de datos " + nombreDBActual + " no existe" , ctx.getStart());
             return null;
         }
         manejador.renameFile(bdActual, nombreDBActual, nombreNuevoDB);
@@ -393,7 +393,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         //antes reviso que exista la tabla en la base de datos actual
         boolean verificador = manejador.checkFile(bdActual, nombreActual);
         if (!verificador){
-            DBMS.throwError("Error: la tabla" + nombreActual + " no existe", ctx.getStart());
+            DBMS.throwMessage("Error: la tabla" + nombreActual + " no existe", ctx.getStart());
             return super.visitRename_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
         }
         

@@ -45,7 +45,12 @@ public class DBMS {
              System.out.println(str);
          }
      }
-     public static void throwError(String str, Token ctx){
+     /**
+      * Agregar la palabra "Error:" al principio para mostrar el mensaje en rojo
+      * @param str mensaje
+      * @param ctx ctx.getStart()
+      */
+     public static void throwMessage(String str, Token ctx){
          agregarLog(str,ctx);
      }
        public static void agregarLog(String mensaje, Token ctx){

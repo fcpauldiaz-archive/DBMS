@@ -119,7 +119,7 @@ public class FileManager {
     		if(file.list().length==0){
     			
     		   file.delete();
-    		   System.out.println("Directory is deleted : " 
+    		   DBMS.debug("Base de datos eliminada : " 
                                                  + file.getAbsolutePath());
     			
     		}else{
@@ -132,21 +132,21 @@ public class FileManager {
         	      File fileDelete = new File(file, temp);
         		 
         	      //recursive delete
-        	     deleteFile(fileDelete);
+        	      deleteFile(fileDelete);
         	   }
         		
         	   //check the directory again, if empty then delete it
         	   if(file.list().length==0){
-           	     file.delete();
-        	     System.out.println("Directory is deleted : " 
-                                                  + file.getAbsolutePath());
-        	   }
+           	    file.delete();
+                    DBMS.debug("Base de datos eliminada : "
+                                + file.getAbsolutePath());
+                   }
     		}
     		
     	}else{
     		//if file, then delete it
     		file.delete();
-    		System.out.println("File is deleted : " + file.getAbsolutePath());
+    		DBMS.debug("Archivo eliminado : " + file.getAbsolutePath());
     	}
     }
     
