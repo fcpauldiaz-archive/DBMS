@@ -8,8 +8,10 @@ package dbms;
 
 import antlr.sqlBaseVisitor;
 import antlr.sqlParser;
+import static dbms.ANTGui.jTable1;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 
 /**
@@ -425,11 +427,25 @@ public class Visitor<T> extends sqlBaseVisitor {
             System.out.println(check);
             if (check ){
                 Tabla tab = (Tabla)json.JSONtoObject("DB/"+bdActual+"/",nombreTabla , "Tabla");
-                DBMS.debug(tab.toString(), ctx.getStart());
+                DBMS.debug(tab.getConstraints().toString(), ctx.getStart());
+                DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+                model.setRowCount(0);
+                model.setColumnIdentifiers(new Object[]{"Nombre","Tipo","Constraints","Referencias"});
+                String temp = "",ref = "";
+                for(int i = 0;i<tab.getColumnas().size();i++){
+                    temp = "";ref = "";
+                    for(int j = 0;j<tab.getConstraints().size();j++)
+                        if(tab.getConstraints().get(j).getReferences().contains(tab.getColumnas().get(i).getNombre().toString())){
+                            temp = tab.getConstraints().get(j).getTipo();
+                            if(tab.getConstraints().get(j).getTipo().equals("foreign"))
+                                ref = "Tabla: "+tab.getConstraints().get(j).getReferencesForeign().getNombreTablaRef()+" Columna: "+tab.getConstraints().get(j).getReferencesForeign().getReferencesForeign().toString();
+                        }
+                    model.addRow(new Object[]{tab.getColumnas().get(i).getNombre().toString(), tab.getColumnas().get(i).getTipo().toString(),temp,ref});
+                        
+                }
             }
-           
-        
         return super.visitShow_column_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+    
     }
 
     

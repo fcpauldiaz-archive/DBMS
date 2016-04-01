@@ -71,14 +71,14 @@ public class Constraint {
     public void setTuplaCheck(TuplaCheck tuplaCheck) {
         this.tuplaCheck = tuplaCheck;
     }
-    
-    
 
     @Override
     public String toString() {
-        return "Constraint{" + "nombre=" + nombre + ", tipo=" + tipo + ", references=" + references + '}';
+        return "Constraint{" + "nombre=" + nombre + ", tipo=" + tipo + ", references=" + references + ", referencesForeign=" + referencesForeign + ", tuplaCheck=" + tuplaCheck + '}';
     }
     
+    
+
     
     
             
