@@ -26,7 +26,7 @@ fragment DAY       : DIGIT | TWO_DIGITS ;
 ID : LETTER ( LETTER | DIGIT )* ;
 NUM : DIGIT (DIGIT)*;
 FLOAT:  DIGIT (DIGIT)* ('.' (DIGIT)*);
-CHAR : '\'' ASCII '\'';
+CHAR :'\'' (ASCII)* '\'';
 DATE: '\'' YEAR '-' MONTH '-' DAY '\'';
 
 create: 'CREATE'|'create';
