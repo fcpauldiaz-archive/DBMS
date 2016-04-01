@@ -424,8 +424,8 @@ public class Visitor<T> extends sqlBaseVisitor {
             boolean check = manejador.checkFile(bdActual, nombreTabla);
             System.out.println(check);
             if (check ){
-            Tabla tab = (Tabla)json.JSONtoObject("DB/"+bdActual+"/",nombreTabla , "Tabla");
-            DBMS.debug(tab.toString(), ctx.getStart());
+                Tabla tab = (Tabla)json.JSONtoObject("DB/"+bdActual+"/",nombreTabla , "Tabla");
+                DBMS.debug(tab.toString(), ctx.getStart());
             }
            
         
