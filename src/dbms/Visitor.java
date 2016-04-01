@@ -47,7 +47,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         }
         if (carpeta && master){
             DBMS.debug("Actualizando archivo maestro de bases de datos", ctx.getStart());
-            ArchivoMaestroDB masterSaved = (ArchivoMaestroDB) json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
+            ArchivoMaestroDB masterSaved = (ArchivoMaestroDB) json.JSONtoObject("", "MasterDB", "ArchivoMaestroDB");
             mdb.agregarExistente(masterSaved);
          
         
@@ -55,7 +55,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         if (carpeta){
             DBMS.throwMessage("Se ha creado la base de datos", ctx.getStart());
             
-            json.objectToJSON("DB/", "MasterDB", mdb);//convierte el objeto a JSON
+            json.objectToJSON("", "MasterDB", mdb);//convierte el objeto a JSON
             mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
         }
         else{
@@ -79,35 +79,36 @@ public class Visitor<T> extends sqlBaseVisitor {
         String nombreTabla = ctx.getChild(2).getText();
         tablaActual = nombreTabla;
        
-            for (int i = 0;i<ctx.getChildCount();i++){
+        for (int i = 0;i<ctx.getChildCount();i++){
             this.visit(ctx.getChild(i));
         }
         
        
-        ArchivoMaestroDB masterSaved = (ArchivoMaestroDB) json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
+        ArchivoMaestroDB masterSaved = (ArchivoMaestroDB) json.JSONtoObject("", "MasterDB", "ArchivoMaestroDB");
        
         if (manejador.checkFileTabla(bdActual, nombreTabla)){
-            DBMS.debug("Nombre tabla " + nombreTabla);
+            DBMS.debug("Nombre tabla " + nombreTabla + " existe", ctx.getStart());
             mdt.agregarTabla(nombreTabla);
             if (tabla != null){
                 DBMS.throwMessage("Se ha guardado la tabla " + nombreTabla, ctx.getStart());
-                json.objectToJSON("DB/"+bdActual+"/", nombreTabla, tabla);
+                json.objectToJSON(bdActual, nombreTabla, tabla);
             }
             else{
                 DBMS.throwMessage("Error: Ha ocurrido un error al crear la tabla", ctx.getStart());
             }    
             if (manejador.checkFile(bdActual, "MasterTable"+bdActual)){
-                ArchivoMaestroTabla masterTable = (ArchivoMaestroTabla) json.JSONtoObject("DB/"+bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
+                DBMS.debug("Actualizando archivo maestro de tablas", ctx.getStart());
+                ArchivoMaestroTabla masterTable = (ArchivoMaestroTabla) json.JSONtoObject(bdActual, "MasterTable"+bdActual, "ArchivoMaestroTabla");
                 mdt.agregarExistente(masterTable);
             }
-            json.objectToJSON("DB/"+bdActual+"/", "MasterTable"+bdActual, mdt);
+            json.objectToJSON(bdActual, "MasterTable"+bdActual, mdt);
             
             
             
             masterSaved.aumentarTablaCount(bdActual);
             mdb.agregarExistente(masterSaved);
             
-            json.objectToJSON("DB/", "MasterDB", mdb);
+            json.objectToJSON("", "MasterDB", mdb);
             
             mdb = new ArchivoMaestroDB(); //sirve para perder la referencia
         }
@@ -247,7 +248,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             //y revisar que el listado IDS REF existe en esa tabla.
             
             //paso 1. ir a buscar tabla de referencia
-            Tabla tablaRef = (Tabla)json.JSONtoObject("DB/"+bdActual+"/", nombreTablaRef, "Tabla");
+            Tabla tablaRef = (Tabla)json.JSONtoObject(bdActual, nombreTablaRef, "Tabla");
             //TODO: ¿Qué pasa si no existe la tabla? falta validar esto.
             //paso 2. verificar que los campos de referencia existan en la tabla de referencia
             ArrayList<TuplaColumna> columnasRef = tablaRef.getColumnas();
@@ -359,7 +360,7 @@ public class Visitor<T> extends sqlBaseVisitor {
                 modificarArrayDB.remove(i);
             }
         }
-        json.objectToJSON("DB/", "MasterDB", mdbActual);
+        json.objectToJSON("", "MasterDB", mdbActual);
         DBMS.throwMessage("Se ha eliminado la base de datos " + nombreDB, ctx.getStart());
         
         return super.visitDrop_schema_statement(ctx); //To change body of generated methods, choose Tools | Templates.
@@ -375,7 +376,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             return null;
         }
         manejador.renameFile(bdActual, nombreDBActual, nombreNuevoDB);
-        ArchivoMaestroDB mdbActual = (ArchivoMaestroDB)json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
+        ArchivoMaestroDB mdbActual = (ArchivoMaestroDB)json.JSONtoObject("", "MasterDB", "ArchivoMaestroDB");
         ArrayList<TuplaDB> arrayDB = mdbActual.getNombreDB();
         ArrayList<TuplaDB> modificarArrayDB = arrayDB;
         for (int i = 0;i<arrayDB.size();i++){
@@ -383,7 +384,7 @@ public class Visitor<T> extends sqlBaseVisitor {
                 modificarArrayDB.get(i).setNombreDB(nombreNuevoDB);
             }
         }
-        json.objectToJSON("DB/", "MasterDB", mdbActual);
+        json.objectToJSON("", "MasterDB", mdbActual);
         DBMS.debug("Se ha cambiado el nombre de la base de datos "+ nombreDBActual + " a " + nombreNuevoDB, ctx.getStart());
         
         return super.visitAlter_database_statement(ctx); //To change body of generated methods, choose Tools | Templates.
@@ -395,24 +396,25 @@ public class Visitor<T> extends sqlBaseVisitor {
         String nombreNuevo = ctx.getChild(5).getText();
        
         //antes reviso que exista la tabla en la base de datos actual
+        DBMS.debug("Verificando si la tabla " + nombreActual + " existe");
         boolean verificador = manejador.checkFile(bdActual, nombreActual);
         if (!verificador){
             DBMS.throwMessage("Error: la tabla" + nombreActual + " no existe", ctx.getStart());
             return super.visitRename_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
         }
-        
+        DBMS.debug("La tabla " + nombreActual + "si existe", ctx.getStart());
         //renombra el archivo
         manejador.renameFileJSON(bdActual, nombreActual, nombreNuevo);
-        ArchivoMaestroTabla tablita = (ArchivoMaestroTabla)json.JSONtoObject("DB/"+bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
+        ArchivoMaestroTabla tablita = (ArchivoMaestroTabla)json.JSONtoObject(bdActual, "MasterTable"+bdActual, "ArchivoMaestroTabla");
         ArrayList<TuplaTabla> arrayTablas = tablita.getTablas();
-        for (int i =0;i<arrayTablas.size();i++){
-            TuplaTabla t = arrayTablas.get(i);
+        for (TuplaTabla t : arrayTablas) {
             if (t.getNombreTabla().equals(nombreActual)){
                 t.setNombreTabla(nombreNuevo);
+                break; //optimización para no seguir buscando
             }
         }
-         json.objectToJSON("DB/"+bdActual +"/", "MasterTable"+bdActual, tablita);
-        DBMS.debug("Se ha renombrado la tabla "+ nombreActual +" a "+ nombreNuevo, ctx.getStart());
+        json.objectToJSON(bdActual, "MasterTable"+bdActual, tablita);
+        DBMS.throwMessage("Se ha renombrado la tabla "+ nombreActual +" a "+ nombreNuevo, ctx.getStart());
         return super.visitRename_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -426,7 +428,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             boolean check = manejador.checkFile(bdActual, nombreTabla);
             System.out.println(check);
             if (check ){
-                Tabla tab = (Tabla)json.JSONtoObject("DB/"+bdActual+"/",nombreTabla , "Tabla");
+                Tabla tab = (Tabla)json.JSONtoObject(bdActual,nombreTabla , "Tabla");
                 DBMS.debug(tab.getConstraints().toString(), ctx.getStart());
                 DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
                 model.setRowCount(0);

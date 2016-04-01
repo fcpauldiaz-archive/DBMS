@@ -27,10 +27,10 @@ public class JSONParser<T> {
         
     }
     
-    public void objectToJSON(String path,String fileName, T object){
+    public void objectToJSON(String dbActual,String fileName, T object){
          
        
-         try (Writer writer = new FileWriter(path+fileName+".json")) {
+         try (Writer writer = new FileWriter("DB/"+dbActual+"/"+fileName+".json")) {
              
            Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
             gson.toJson(object, writer);
@@ -40,11 +40,11 @@ public class JSONParser<T> {
         }
      
     }
-    public T JSONtoObject(String path,String fileName, String object){
+    public T JSONtoObject(String dbActual,String fileName, String object){
          try {
                 Gson gson = new Gson();
 		BufferedReader br = new BufferedReader(
-			new FileReader(path+fileName+".json"));
+			new FileReader("DB/"+dbActual+"/"+fileName+".json"));
 
 		//convert the json string back to object
                 T obj = null;
