@@ -226,7 +226,7 @@ show_table_statement: show tables ';';
 show_column_statement: show column_terminal_plural from ID ';';
          
 
-insert_value: insert into ID '(' ID (',' ID)* ')'  values '(' list_values ')'  ';';
+insert_value: insert into ID ('(' ID (',' ID)* ')')?  values '(' list_values ')'  ';';
 
           
 logic: and | or | not;
