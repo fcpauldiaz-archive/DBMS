@@ -424,7 +424,9 @@ public class ANTGui extends javax.swing.JFrame {
 
                JOptionPane.showMessageDialog(this, "¡Parseo Exitoso!");
                 Visitor vistor = new Visitor();
+                VisitorAdolfo vistorAdolfo = new VisitorAdolfo();
                 vistor.visit(tree);
+                vistorAdolfo.visit(tree);
 
             }
             else{
