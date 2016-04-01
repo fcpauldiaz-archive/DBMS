@@ -670,7 +670,7 @@ public class ANTGui extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTable jTable1;
+    public static javax.swing.JTable jTable1;
     private javax.swing.JTextArea jTextArea2;
     public static javax.swing.JTextPane jTextArea3;
     private javax.swing.JToolBar jToolBar1;
