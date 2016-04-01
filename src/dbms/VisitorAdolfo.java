@@ -32,7 +32,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         
         Tabla tabla = (Tabla)json.JSONtoObject("DB/" + bdActual + "/", nombreTabla, "Tabla");
         
-        //tabla.get
+        int cantColumnas = tabla.getColumnas().size();
         
         return (T)visitChildren(ctx);
     }
