@@ -443,7 +443,8 @@ public class Visitor<T> extends sqlBaseVisitor {
                     model.addRow(new Object[]{tab.getColumnas().get(i).getNombre().toString(), tab.getColumnas().get(i).getTipo().toString(),temp,ref});
                         
                 }
-            }
+            }else
+                DBMS.throwMessage( "La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
         return super.visitShow_column_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     
     }
