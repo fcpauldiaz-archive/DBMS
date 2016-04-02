@@ -7,6 +7,7 @@ package dbms;
 
 import antlr.sqlBaseVisitor;
 import antlr.sqlParser;
+import java.util.ArrayList;
 import org.antlr.v4.runtime.misc.NotNull;
 
 /**
@@ -20,7 +21,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     public String bdActual ="";
     
     @Override
-    public T visitInsert(@NotNull sqlParser.InsertContext ctx) {
+    public T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx) {
         String nombreTabla = ctx.getChild(2).getText();
         boolean existenciaTabla = manejador.checkFile(bdActual, nombreTabla);
         
@@ -30,11 +31,52 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
             return null;
         }
         
-        Tabla tabla = (Tabla)json.JSONtoObject("DB/" + bdActual + "/", nombreTabla, "Tabla");
+        Tabla tabla = (Tabla)json.JSONtoObject(bdActual + "/", nombreTabla, "Tabla");
         
-        int cantColumnas = tabla.getColumnas().size();
+        // Todos los elementos que se iran en el insert
+        ArrayList<String> insertValues = (ArrayList<String>) visit(ctx.getChild(5));
+        
+        // La cantidad de columnas de la tabla
+        int cantColumnasTabla = tabla.getColumnas().size();
+        
+        // Si la cantidad de valores del insert es mayor que la que necesitamos está mal
+        if (insertValues.size() > cantColumnasTabla) {
+            DBMS.throwMessage("Insert Error: Cantidad de valores mayor de los necesarios", ctx.getStart());
+            
+            return null;
+        }
+        
+        // La cantidad de valores son exactamente los que necesita el INSERT de la tabla
+        if (insertValues.size() == cantColumnasTabla) {
+            // Vamos a comprar entonces que los tipos de los datos sean los de la tabla
+            ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
+            
+            for (int i = 0; i  < columnasTabla.size(); i++) {
+                String tipoColumna = columnasTabla.get(i).getTipo();
+                
+                if (!insertValues.get(i).contains(tipoColumna)) {
+                    DBMS.throwMessage("Insert Error: Tipo de dato del valor: " + insertValues.get(i) + " Es incorrecto", ctx.getStart());
+                    
+                    return null;
+                }
+            }
+        }
         
         return (T)visitChildren(ctx);
+    }
+    
+    @Override
+    public ArrayList<String> visitList_values(@NotNull sqlParser.List_valuesContext ctx) {
+        ArrayList<String> valores = new ArrayList();
+        
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            if (visit(ctx.getChild(i)) == null) {
+                continue;
+            }
+            valores.add((String) visit(ctx.getChild(i)));
+        }
+        
+        return valores;
     }
     
     @Override
@@ -49,21 +91,21 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     //"€"
     @Override
     public Object visitInt_literal(@NotNull sqlParser.Int_literalContext ctx) {
-        return "int_literal" + "€" + ctx.getText();
+        return "INT_literal" + "€" + ctx.getText();
     }
     
     @Override
     public Object visitDate_literal(@NotNull sqlParser.Date_literalContext ctx) {
-        return "date_literal" + "€" + ctx.getText();
+        return "DATE_literal" + "€" + ctx.getText();
     }
     
     @Override
     public Object visitFloat_literal(@NotNull sqlParser.Float_literalContext ctx) {
-        return "float_literal" + "€" + ctx.getText();
+        return "FLOAT_literal" + "€" + ctx.getText();
     }
     
     @Override
     public Object visitChar_literal(@NotNull sqlParser.Char_literalContext ctx) {
-        return "char_literal" + "€" + ctx.getText();
+        return "CHAR_literal" + "€" + ctx.getText();
     }
 }
