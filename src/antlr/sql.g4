@@ -14,7 +14,7 @@ DATETIME: 'datetime';
 
 fragment LETTER : ('a'..'z'|'A'..'Z' | '_') ;
 fragment DIGIT :'0'..'9' ;
-fragment ASCII : (' ' ..'+')| ('-' .. '~') | '\\' | '\'' | '\"' | '\t' | '\n' ;
+fragment ASCII : (' ' .. '+' ) | ('-' .. '~') | '\\' | '\'' | '\"' | '\t' | '\n' ;
 fragment TWO_DIGITS   : DIGIT DIGIT ;
 fragment THREE_DIGITS : DIGIT TWO_DIGITS ;
 fragment FOUR_DIGITS  : DIGIT THREE_DIGITS ;
