@@ -21,7 +21,13 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     public String bdActual ="";
     
     @Override
-    public T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx) {
+    public T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx) { 
+        // Existen dos tipos de insert
+        // 1. En donde se ingresan los nombres de las columnas y luego los valores
+        // 2. En donde no se ingresan los nombres de las columnas y sólo valores
+        // Esa diferencia de insert estará dado por una bandera simpleInsert en donde
+        // true es cuando no tiene columnas definidas y el caso contrario pues se deduce
+        
         String nombreTabla = ctx.getChild(2).getText();
         boolean existenciaTabla = manejador.checkFile(bdActual, nombreTabla);
         
@@ -34,10 +40,33 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         Tabla tabla = (Tabla)json.JSONtoObject(bdActual + "/", nombreTabla, "Tabla");
         
         // Todos los elementos que se iran en el insert
-        ArrayList<String> insertValues = (ArrayList<String>) visit(ctx.getChild(5));
+        ArrayList<String> insertValues = null;
+        ArrayList<String> insertColumnNames = null;
+        // Por default vamos a suponer que es un insertSimple
+        boolean isSimpleInsert = true;
+        
+        if (ctx.getChildCount() == 8) {
+            insertValues = (ArrayList<String>) visit(ctx.getChild(5));
+        }
+        
+        if (ctx.getChildCount() == 9) {
+            insertValues = (ArrayList<String>) visit(ctx.getChild(6));
+            insertColumnNames = (ArrayList<String>) visit(ctx.getChild(3));
+            
+            isSimpleInsert = false;
+        }
         
         // La cantidad de columnas de la tabla
         int cantColumnasTabla = tabla.getColumnas().size();
+        
+        // En el caso en donde se haya definido las columnas a insertar
+        if (!isSimpleInsert) {
+            if (insertValues.size() != insertColumnNames.size()) {
+                DBMS.throwMessage("Insert Error: Cantidad de columnas y valores no coinciden", ctx.getStart());
+
+                return null;
+            }
+        }
         
         // Si la cantidad de valores del insert es mayor que la que necesitamos está mal
         if (insertValues.size() > cantColumnasTabla) {
@@ -47,20 +76,67 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         }
         
         // La cantidad de valores son exactamente los que necesita el INSERT de la tabla
-        if (insertValues.size() == cantColumnasTabla) {
+        if (isSimpleInsert && (insertValues.size() == cantColumnasTabla)) {
             // Vamos a comprar entonces que los tipos de los datos sean los de la tabla
+            
+            int contInvalidInsertValue = 0;
             ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
             
             for (int i = 0; i  < columnasTabla.size(); i++) {
                 String tipoColumna = columnasTabla.get(i).getTipo();
-                
                 if (!insertValues.get(i).contains(tipoColumna)) {
-                    DBMS.throwMessage("Insert Error: Tipo de dato del valor: " + insertValues.get(i) + " Es incorrecto", ctx.getStart());
+                    int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
+                    String valor = insertValues.get(i).substring(indexOfSubs);
+                    DBMS.throwMessage(
+                            "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
+                            ctx.getStart()
+                    );
+                    
+                    contInvalidInsertValue++;
+                }
+            }
+            
+            if (contInvalidInsertValue > 0) {
+                return null;
+            }
+        }
+        
+        // En el caso en el que se hayan definido las columnas, debemos validar que las columnas existan
+        if (!isSimpleInsert) {
+            int cantValidColumnNames = 0;
+            
+            ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
+            for (int i = 0; i < columnasTabla.size(); i++) {
+                for (int j = 0; j < insertColumnNames.size(); j++) {
+                    if (columnasTabla.get(i).getNombre().equals(insertColumnNames.get(j))) {
+                        cantValidColumnNames++;
+                    }
+                }
+            }
+        
+            if (cantValidColumnNames != insertColumnNames.size()) {
+                    DBMS.throwMessage("Insert Error: Es posible que una de las columnas a hidratar no exista", ctx.getStart());
                     
                     return null;
+            }
+            
+            int contInvalidInsertValue = 0;
+            
+            for (int i = 0; i  < columnasTabla.size(); i++) {
+                String tipoColumna = columnasTabla.get(i).getTipo();
+                if (!insertValues.get(i).contains(tipoColumna)) {
+                    int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
+                    String valor = insertValues.get(i).substring(indexOfSubs);
+                    DBMS.throwMessage(
+                            "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
+                            ctx.getStart()
+                    );
+                    
+                    contInvalidInsertValue++;
                 }
             }
         }
+        
         
         return (T)visitChildren(ctx);
     }
@@ -89,6 +165,22 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         return super.visitUse_schema_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
     //"€"
+    
+    @Override
+    public Object visitInsert_column_names(@NotNull sqlParser.Insert_column_namesContext ctx) {
+        ArrayList<String> columnNames = new ArrayList();
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            if (ctx.getChild(i).getText().contains("(") ||
+                ctx.getChild(i).getText().contains(")") ||
+                ctx.getChild(i).getText().contains(",")
+            ) {
+                continue;
+            }
+            columnNames.add(ctx.getChild(i).getText());
+        }
+        return columnNames;
+    }
+    
     @Override
     public Object visitInt_literal(@NotNull sqlParser.Int_literalContext ctx) {
         return "INT_literal" + "€" + ctx.getText();
