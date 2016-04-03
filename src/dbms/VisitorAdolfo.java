@@ -122,11 +122,12 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
             
             int contInvalidInsertValue = 0;
             
-            for (int i = 0; i  < columnasTabla.size(); i++) {
-                String tipoColumna = columnasTabla.get(i).getTipo();
+            for (int i = 0; i < insertColumnNames.size(); i++) {
+                String tipoColumna = getColumnTypeFromColumnName(insertColumnNames.get(i), tabla);
                 if (!insertValues.get(i).contains(tipoColumna)) {
                     int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
                     String valor = insertValues.get(i).substring(indexOfSubs);
+                    
                     DBMS.throwMessage(
                             "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
                             ctx.getStart()
@@ -135,10 +136,24 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     contInvalidInsertValue++;
                 }
             }
+            
+            if (contInvalidInsertValue > 0) {
+                return null;
+            }
         }
         
         
         return (T)visitChildren(ctx);
+    }
+    
+    public String getColumnTypeFromColumnName(String nombreColumna, Tabla tabla) {
+        for (TuplaColumna tc: tabla.getColumnas()) {
+            if (tc.getNombre().equals(nombreColumna)) {
+                return tc.getTipo();
+            }
+        }
+        
+        return null;
     }
     
     @Override
