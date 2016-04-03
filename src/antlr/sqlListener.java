@@ -645,6 +645,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitKey(@NotNull sqlParser.KeyContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#insert_column_names}.
+	 * @param ctx the parse tree
+	 */
+	void enterInsert_column_names(@NotNull sqlParser.Insert_column_namesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#insert_column_names}.
+	 * @param ctx the parse tree
+	 */
+	void exitInsert_column_names(@NotNull sqlParser.Insert_column_namesContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#set}.
 	 * @param ctx the parse tree
 	 */

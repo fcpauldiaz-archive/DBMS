@@ -393,6 +393,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitKey(@NotNull sqlParser.KeyContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#insert_column_names}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInsert_column_names(@NotNull sqlParser.Insert_column_namesContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#set}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

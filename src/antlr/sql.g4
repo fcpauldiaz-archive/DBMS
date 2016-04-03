@@ -26,8 +26,8 @@ fragment DAY       : DIGIT | TWO_DIGITS ;
 ID : LETTER ( LETTER | DIGIT )* ;
 NUM : DIGIT (DIGIT)*;
 FLOAT:  DIGIT (DIGIT)* ('.' (DIGIT)*);
-CHAR :'\'' (ASCII)* '\'';
 DATE: '\'' YEAR '-' MONTH '-' DAY '\'';
+CHAR :'\'' (ASCII)* '\'';
 
 create: 'CREATE'|'create';
 
@@ -228,7 +228,7 @@ show_column_statement: show column_terminal_plural from ID ';';
 
 insert_value: insert into ID (insert_column_names)?  values '(' list_values ')'  ';';
 
-insert_colum_names = '(' ID (',' ID)* ')';
+insert_column_names: '(' ID (',' ID)* ')';
           
 logic: and | or | not;
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;

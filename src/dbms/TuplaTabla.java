@@ -13,7 +13,7 @@ package dbms;
  */
 public class TuplaTabla {
     private String nombreTabla;
-    private int cantidadRegistros =0;
+    private int cantidadRegistros = 0;
 
     public TuplaTabla(String nombreTabla) {
         this.nombreTabla = nombreTabla;

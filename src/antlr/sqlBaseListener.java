@@ -773,6 +773,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterInsert_column_names(@NotNull sqlParser.Insert_column_namesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInsert_column_names(@NotNull sqlParser.Insert_column_namesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterSet(@NotNull sqlParser.SetContext ctx) { }
 	/**
 	 * {@inheritDoc}
