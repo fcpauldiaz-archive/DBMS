@@ -42,6 +42,7 @@ public class ANTGui extends javax.swing.JFrame {
     private sqlParser parser;
     private sqlParser.Sql2003ParserContext contexto;
     public static boolean selected = false;
+    public static String bdActual = "";
 //    
     /**
      * Creates new form ANTGui
@@ -85,7 +86,6 @@ public class ANTGui extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -143,7 +143,7 @@ public class ANTGui extends javax.swing.JFrame {
 
             },
             new String [] {
-                "id", "Nombre Var", "Tipo", "Ambito", "Associated"
+
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -164,20 +164,7 @@ public class ANTGui extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
         );
 
-        jTabbedPane2.addTab("Tabla de Símbolos", jPanel5);
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1051, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 189, Short.MAX_VALUE)
-        );
-
-        jTabbedPane2.addTab("Gramática", jPanel4);
+        jTabbedPane2.addTab("Data Output", jPanel5);
 
         jMenu1.setText("Archivo");
 
@@ -257,6 +244,11 @@ public class ANTGui extends javax.swing.JFrame {
                abrirArchivo();
             }
         };
+         Action deleteAction = new AbstractAction("Delete",new ImageIcon("src/resources/delete-git.png")) {
+            public void actionPerformed(ActionEvent e) {
+               limpiarEditor();
+            }
+        };
         
         
         Action saveAction = new AbstractAction("Guardar",new ImageIcon("src/resources/update-git.png")) {
@@ -316,6 +308,7 @@ public class ANTGui extends javax.swing.JFrame {
         btnNew.setToolTipText("Nuevo archivo");
         
         this.jToolBar1.add(openFileAction).setToolTipText("Abrir archivo");
+        this.jToolBar1.add(deleteAction).setToolTipText("Limpiar editor");
         this.jToolBar1.add(saveAction).setToolTipText("Guardar");
         this.jToolBar1.addSeparator();
         this.jToolBar1.addSeparator();
@@ -339,17 +332,16 @@ public class ANTGui extends javax.swing.JFrame {
         this.jToolBar1.add((debugAction));
         
         
-        jTable1.getColumnModel().getColumn(0).setMaxWidth(30);
-        jTable1.getColumnModel().getColumn(1).setPreferredWidth(150);
-        jTable1.getColumnModel().getColumn(1).setMaxWidth(150);
-        jTable1.getColumnModel().getColumn(2).setMaxWidth(100);
-        jTable1.getColumnModel().getColumn(2).setPreferredWidth(100);
-        jTable1.getColumnModel().getColumn(3).setMaxWidth(45);
+       
         
     }
     
     public void nuevoArchivo(){
         
+    }
+    
+    public void limpiarEditor(){
+        this.jTextArea2.setText("");
     }
     
     public void guardarArchivo(){
@@ -667,7 +659,6 @@ public class ANTGui extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     public static javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

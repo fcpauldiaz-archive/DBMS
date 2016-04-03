@@ -7,8 +7,8 @@ package dbms;
 
 import antlr.sqlBaseVisitor;
 import antlr.sqlParser;
+import static dbms.ANTGui.bdActual;
 import static dbms.ANTGui.jTable1;
-import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -18,7 +18,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class VisitorChuso <T> extends sqlBaseVisitor {
     private JSONParser json = new JSONParser();
-    private String bdActual = "";
     private FileManager manejador = new FileManager();
     @Override
     public Object visitUse_schema_statement(sqlParser.Use_schema_statementContext ctx) {
