@@ -8,6 +8,7 @@ package dbms;
 
 import antlr.sqlBaseVisitor;
 import antlr.sqlParser;
+import static dbms.ANTGui.bdActual;
 import static dbms.ANTGui.jTable1;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -26,7 +27,6 @@ public class Visitor<T> extends sqlBaseVisitor {
     private ArchivoMaestroTabla mdt = new ArchivoMaestroTabla();
     private JSONParser json = new JSONParser();
     private Tabla tabla;
-    public String bdActual ="";
     public String tablaActual="";
     
     /**

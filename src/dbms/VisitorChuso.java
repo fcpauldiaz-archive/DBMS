@@ -7,8 +7,8 @@ package dbms;
 
 import antlr.sqlBaseVisitor;
 import antlr.sqlParser;
+import static dbms.ANTGui.bdActual;
 import static dbms.ANTGui.jTable1;
-import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -18,7 +18,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class VisitorChuso <T> extends sqlBaseVisitor {
     private JSONParser json = new JSONParser();
-    private String bdActual = "";
     private FileManager manejador = new FileManager();
     @Override
     public Object visitUse_schema_statement(sqlParser.Use_schema_statementContext ctx) {
@@ -58,21 +57,32 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 String nombreTablaActual = ar.getTablas().get(i).getNombreTabla();
                 if(!nombreTabla.equals(nombreTablaActual)){
                     tab = (Tabla)json.JSONtoObject(bdActual,nombreTablaActual , "Tabla");
-                    for(int j = 0 ;j<tab.getConstraints().size();j++)
-                        if(tab.getConstraints().get(j).getTipo().equals("foreign"))
-                            if(tab.getConstraints().get(j).getReferencesForeign().getNombreTablaRef().equals(nombreTabla))
+                    for(int j = 0 ;j<tab.getConstraints().size();j++){
+                        if(tab.getConstraints().get(j).getTipo().equals("foreign")){
+                            if(tab.getConstraints().get(j).getReferencesForeign().getNombreTablaRef().equals(nombreTabla)){
                                 existe = true;
+                            }
+                        }
+                    }
                 }
             }
             if(existe){
                 DBMS.throwMessage( "La tabla: "+nombreTabla+" tiene referencias en otra(s) tablas sobre llaves foraneas, no se puede eliminar", ctx.getStart());
                 return super.visitDrop_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
             }
-            File directory = new File("DB/"+bdActual+"/"+nombreTabla);
-            manejador.eliminarDB(bdActual+"/"+nombreTabla);
-            for(int i = 0;i<ar.getTablas().size();i++)
+          
+            boolean eliminacion = manejador.deleteTable(bdActual, nombreTabla);
+            if (eliminacion ){
+                DBMS.throwMessage("Se ha eliminado la tabla " + nombreTabla, ctx.getStart());
+            }
+            else{
+                DBMS.throwMessage("Error: ha ocurrido un problema al eliminar la tabla " + nombreTabla, ctx.getStart());
+            }
+        
+            for(int i = 0;i<ar.getTablas().size();i++){
                 if(ar.getTablas().get(i).getNombreTabla().equals(nombreTabla))
                     ar.getTablas().remove(i);
+            }
             json.objectToJSON(bdActual, "MasterTable"+bdActual, ar);
         }else
             DBMS.throwMessage( "La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());

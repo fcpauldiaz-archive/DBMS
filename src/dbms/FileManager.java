@@ -110,6 +110,11 @@ public class FileManager {
         }
         catch(Exception e){}
     }
+    
+    public boolean deleteTable(String dbActual, String nombreTabla) {
+        File file = new File("DB/"+dbActual+"/"+nombreTabla+".json");
+        return file.delete();
+    }
         
     public void deleteFile(File file) throws IOException{
  
