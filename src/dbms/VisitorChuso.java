@@ -36,7 +36,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
 
     @Override
     public Object visitShow_schema_statement(sqlParser.Show_schema_statementContext ctx) {
-        ArchivoMaestroDB ar = (ArchivoMaestroDB)json.JSONtoObject("DB/","MasterDB" , "ArchivoMaestroDB");
+        ArchivoMaestroDB ar = (ArchivoMaestroDB)json.JSONtoObject("","MasterDB" , "ArchivoMaestroDB");
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
         model.setColumnIdentifiers(new Object[]{"Nombre de la BDD","Cantidad de tablas"});
@@ -55,13 +55,13 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         //ir a buscar la tabla str 
         boolean check = manejador.checkFile(bdActual, nombreTabla);
         if (check ){
-            ArchivoMaestroTabla ar = (ArchivoMaestroTabla)json.JSONtoObject("DB/"+bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
-            Tabla tab = (Tabla)json.JSONtoObject("DB/"+bdActual+"/",nombreTabla , "Tabla");
+            ArchivoMaestroTabla ar = (ArchivoMaestroTabla)json.JSONtoObject(bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
+            Tabla tab = (Tabla)json.JSONtoObject(bdActual,nombreTabla , "Tabla");
             boolean existe = false;
             for(int i = 0; i<ar.getTablas().size();i++){
                 String nombreTablaActual = ar.getTablas().get(i).getNombreTabla();
                 if(!nombreTabla.equals(nombreTablaActual)){
-                    tab = (Tabla)json.JSONtoObject("DB/"+bdActual+"/",nombreTablaActual , "Tabla");
+                    tab = (Tabla)json.JSONtoObject(bdActual,nombreTablaActual , "Tabla");
                     for(int j = 0 ;j<tab.getConstraints().size();j++)
                         if(tab.getConstraints().get(j).getTipo().equals("foreign"))
                             if(tab.getConstraints().get(j).getReferencesForeign().getNombreTablaRef().equals(nombreTabla))
@@ -77,7 +77,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             for(int i = 0;i<ar.getTablas().size();i++)
                 if(ar.getTablas().get(i).getNombreTabla().equals(nombreTabla))
                     ar.getTablas().remove(i);
-            json.objectToJSON("DB/"+bdActual+"/", "MasterTable"+bdActual, ar);
+            json.objectToJSON(bdActual, "MasterTable"+bdActual, ar);
         }else
             DBMS.throwMessage( "La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
         return super.visitDrop_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
