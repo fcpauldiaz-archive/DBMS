@@ -352,7 +352,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             return super.visitDrop_schema_statement(ctx);
         }
         manejador.eliminarDB(nombreDB);
-        ArchivoMaestroDB mdbActual = (ArchivoMaestroDB)json.JSONtoObject("DB/", "MasterDB", "ArchivoMaestroDB");
+        ArchivoMaestroDB mdbActual = (ArchivoMaestroDB)json.JSONtoObject("", "MasterDB", "ArchivoMaestroDB");
         ArrayList<TuplaDB> arrayDB = mdbActual.getNombreDB();
         ArrayList<TuplaDB> modificarArrayDB = arrayDB;
         for (int i = 0;i<arrayDB.size();i++){
