@@ -20,6 +20,13 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     private JSONParser json = new JSONParser();
     private FileManager manejador = new FileManager();
     
+    /**
+     * TODO: 
+     * - Verificación de Primary Key
+     * - Verificación de constraints
+     */
+    
+    
     @Override
     public T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx) { 
         // Existen dos tipos de insert
@@ -91,14 +98,18 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         }
         
         // La cantidad de valores son exactamente los que necesita el INSERT de la tabla
-        if (isSimpleInsert && (insertValues.size() == cantColumnasTabla)) {
-            // Vamos a comprar entonces que los tipos de los datos sean los de la tabla
+        //if (isSimpleInsert && (insertValues.size() == cantColumnasTabla)) {
+        if (isSimpleInsert) {
+        // Vamos a comprar entonces que los tipos de los datos sean los de la tabla
             
             int contInvalidInsertValue = 0;
             ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
             
             for (int i = 0; i  < columnasTabla.size(); i++) {
                 String tipoColumna = columnasTabla.get(i).getTipo();
+                if (!(i < insertValues.size())) {
+                    continue;
+                }
                 if (!insertValues.get(i).contains(tipoColumna)) {
                     int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
                     String valor = insertValues.get(i).substring(indexOfSubs);
@@ -200,26 +211,64 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         ArrayList insertData = new ArrayList();
         
         if (isSimpleInsert) {
+            // Caso en el que los datos del insert estén completos
             if (insertValues.size() == cantColumnasTabla) {
                 ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
                 for (int i = 0; i < columnasTabla.size(); i++) {
                     String tipoColumna = columnasTabla.get(i).getTipo();
+                    // Obtenemos el valor
+                    int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
+                    String valor = insertValues.get(i).substring(indexOfSubs);
+                    
                     if (!insertValues.get(i).contains(tipoColumna)) {
+                        
                         if (tipoColumna.equals("INT")) {
-                            int castedInsertVal = (Integer)casteoDatos(insertValues.get(i), false);
+                            int castedInsertVal = (Integer)casteoDatos(valor, false);
                             // Agregar valor
                             insertData.add(castedInsertVal);
                         }
                         
                         if (tipoColumna.endsWith("FLOAT")) {
-                            double castedInsertVal = (Double)casteoDatos(insertValues.get(i), true);
+                            double castedInsertVal = (Double)casteoDatos(valor, true);
                             // Agregar valor
                             insertData.add(castedInsertVal);
                         }
                         continue;
                     }
                     // Si no se necesita casteo se agrega
-                    insertData.add(insertValues.get(i));
+                    insertData.add(valor);
+                }
+            }
+            // Caso en el que los datos del insert sean menor a los necesarios
+            if (insertValues.size() < cantColumnasTabla) {
+                ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
+                for (int i = 0; i < columnasTabla.size(); i++) {
+                    String tipoColumna = columnasTabla.get(i).getTipo();
+                    // Obtenemos el valor
+                    if (!(i < insertValues.size())) {
+                        insertData.add("Null");
+                        continue;
+                    }
+                    int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
+                    String valor = insertValues.get(i).substring(indexOfSubs);
+                    
+                    if (!insertValues.get(i).contains(tipoColumna)) {
+                        
+                        if (tipoColumna.equals("INT")) {
+                            int castedInsertVal = (Integer)casteoDatos(valor, false);
+                            // Agregar valor
+                            insertData.add(castedInsertVal);
+                        }
+                        
+                        if (tipoColumna.endsWith("FLOAT")) {
+                            double castedInsertVal = (Double)casteoDatos(valor, true);
+                            // Agregar valor
+                            insertData.add(castedInsertVal);
+                        }
+                        continue;
+                    }
+                    // Si no se necesita casteo se agrega
+                    insertData.add(valor);
                 }
             }
         }
@@ -299,6 +348,8 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         if (tipoCasteo) {
             return (T)Double.valueOf(dato1);
         }
+        
+        System.out.println("Trying to cast.... " + dato1);
         
         double val = Double.valueOf(dato1);
         Integer val_casteado = (int)Math.round(val);
