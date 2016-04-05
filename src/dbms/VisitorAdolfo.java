@@ -7,6 +7,7 @@ package dbms;
 
 import antlr.sqlBaseVisitor;
 import antlr.sqlParser;
+import static dbms.ANTGui.bdActual;
 import java.util.ArrayList;
 import org.antlr.v4.runtime.misc.NotNull;
 
@@ -18,7 +19,6 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     
     private JSONParser json = new JSONParser();
     private FileManager manejador = new FileManager();
-    public String bdActual ="";
     
     @Override
     public T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx) { 
