@@ -212,10 +212,10 @@ rename_table_statement: alter table ID rename to ID ';';
 
 
 accion:
-          add column_terminal ID tipo_literal (constraint)
-        | add constraint
-        | drop column_terminal ID 
-        | drop constraint_terminal ID
+          add column_terminal ID tipo_literal (constraint)? #accionAddColumn
+        | add constraint                                    #accionAddConstraint
+        | drop column_terminal ID                           #accionDropColumn
+        | drop constraint_terminal ID                       #accionDropConstraint
     ;
 
 

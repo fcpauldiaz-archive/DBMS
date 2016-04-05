@@ -1,4 +1,4 @@
-// Generated from /Users/usuario/NetBeansProjects/DBMS/src/antlr/sql.g4 by ANTLR 4.4
+// Generated from C:\Users\sergio\Documents\u005Cuniversidad\BDD\proyecto1\src\antlr\sql.g4 by ANTLR 4.4
 package antlr;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
@@ -41,6 +41,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitReferences(@NotNull sqlParser.ReferencesContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code accionDropColumn}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAccionDropColumn(@NotNull sqlParser.AccionDropColumnContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#use}.
 	 * @param ctx the parse tree
@@ -132,6 +139,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAdd(@NotNull sqlParser.AddContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code accionAddColumn}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#column_terminal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -198,12 +212,6 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDrop(@NotNull sqlParser.DropContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link sqlParser#accion}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAccion(@NotNull sqlParser.AccionContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link sqlParser#id_list}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -217,7 +225,7 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	T visitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code values}
-	 * labeled alternative in {@link sqlParser#constraintTypeconstraintTypeconstraintType}.
+	 * labeled alternative in {@link sqlParser#accionaccionaccionaccionconstraintTypeconstraintTypeconstraintType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
@@ -290,6 +298,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteral(@NotNull sqlParser.LiteralContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code accionDropConstraint}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAccionDropConstraint(@NotNull sqlParser.AccionDropConstraintContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#database_plural}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -301,6 +316,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitInto(@NotNull sqlParser.IntoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code accionAddConstraint}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAccionAddConstraint(@NotNull sqlParser.AccionAddConstraintContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#database}.
 	 * @param ctx the parse tree

@@ -1,4 +1,4 @@
-// Generated from /Users/usuario/NetBeansProjects/DBMS/src/antlr/sql.g4 by ANTLR 4.4
+// Generated from C:\Users\sergio\Documents\u005Cuniversidad\BDD\proyecto1\src\antlr\sql.g4 by ANTLR 4.4
 package antlr;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -72,6 +72,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitReferences(@NotNull sqlParser.ReferencesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAccionDropColumn(@NotNull sqlParser.AccionDropColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAccionDropColumn(@NotNull sqlParser.AccionDropColumnContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -257,6 +269,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterColumn_terminal(@NotNull sqlParser.Column_terminalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -384,18 +408,6 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDrop(@NotNull sqlParser.DropContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAccion(@NotNull sqlParser.AccionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAccion(@NotNull sqlParser.AccionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -569,6 +581,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAccionDropConstraint(@NotNull sqlParser.AccionDropConstraintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAccionDropConstraint(@NotNull sqlParser.AccionDropConstraintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDatabase_plural(@NotNull sqlParser.Database_pluralContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -588,6 +612,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitInto(@NotNull sqlParser.IntoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAccionAddConstraint(@NotNull sqlParser.AccionAddConstraintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAccionAddConstraint(@NotNull sqlParser.AccionAddConstraintContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

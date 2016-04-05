@@ -164,26 +164,26 @@ public class Visitor<T> extends sqlBaseVisitor {
         constraint.setNombre(nombreConstraint);
          //ahora busco la tabla y verifico los campos de los constraints
         Tabla tabla_c = tabla;
-                
-        ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
-        for (int i =0;i<tabla.getConstraints().size();i++){
-             if (tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
-                 DBMS.throwMessage("Error: el nombre del constraint " + nombreConstraint + " ya ha sido usado",ctx.getStart());
-                 tabla = null;
-                 return null;
-                }
+            if(tabla!=null){      
+            ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
+            for (int i =0;i<tabla.getConstraints().size();i++){
+                 if (tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
+                     DBMS.throwMessage("Error: el nombre del constraint " + nombreConstraint + " ya ha sido usado",ctx.getStart());
+                     tabla = null;
+                     return null;
+                    }
+            }
+            boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
+            if (verificador){
+                constraint.setReferences(listadoIDS);
+                tabla.addConstraint(constraint);
+                DBMS.debug("Se ha agregado el constraint" + nombreConstraint + "a la tabla " + nombreTabla, ctx.getStart());
+            }
+            else{
+                 DBMS.throwMessage("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla, ctx.getStart() );
+                 tabla = null; //ya no se guarda la tabla.
+            }
         }
-        boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
-        if (verificador){
-            constraint.setReferences(listadoIDS);
-            tabla.addConstraint(constraint);
-            DBMS.debug("Se ha agregado el constraint" + nombreConstraint + "a la tabla " + nombreTabla, ctx.getStart());
-        }
-        else{
-             DBMS.throwMessage("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla, ctx.getStart() );
-             tabla = null; //ya no se guarda la tabla.
-        }
-        
         return super.visitConstraintPrimaryKey(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 

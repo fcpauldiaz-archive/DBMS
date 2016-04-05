@@ -9,6 +9,7 @@ import antlr.sqlBaseVisitor;
 import antlr.sqlParser;
 import static dbms.ANTGui.bdActual;
 import static dbms.ANTGui.jTable1;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -21,9 +22,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
     private FileManager manejador = new FileManager();
     @Override
     public Object visitUse_schema_statement(sqlParser.Use_schema_statementContext ctx) {
-        
         bdActual = ctx.getChild(2).getText();
-       
         if (manejador.checkDB(bdActual)==false)
             bdActual = "";
         return super.visitUse_schema_statement(ctx); //To change body of generated methods, choose Tools | Templates.
@@ -67,7 +66,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 }
             }
             if(existe){
-                DBMS.throwMessage( "La tabla: "+nombreTabla+" tiene referencias en otra(s) tablas sobre llaves foraneas, no se puede eliminar", ctx.getStart());
+                DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" tiene referencias en otra(s) tablas sobre llaves foraneas, no se puede eliminar", ctx.getStart());
                 return super.visitDrop_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
             }
           
@@ -85,7 +84,112 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             }
             json.objectToJSON(bdActual, "MasterTable"+bdActual, ar);
         }else
-            DBMS.throwMessage( "La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
+            DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
         return super.visitDrop_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }  
+
+    @Override
+    public Object visitAccionDropConstraint(sqlParser.AccionDropConstraintContext ctx) {
+        String nombreTabla = ctx.getParent().getChild(2).getText();
+        String nombreConstraint = ctx.getChild(2).getText();
+        Tabla tabla = (Tabla)json.JSONtoObject(bdActual,nombreTabla , "Tabla");
+        ArrayList<Constraint> constraints = tabla.getConstraints();
+        boolean existe = false;
+        int indice =0;
+        for(int i = 0;i<constraints.size();i++)
+         if(constraints.get(i).getNombre().equals(nombreConstraint)){
+             existe = true;
+             indice = i;
+         }
+        if(!existe)
+             DBMS.throwMessage( "Error: constraint: "+nombreConstraint+" no existe en la tabla "+ nombreTabla, ctx.getStart());
+        else{
+             tabla.getConstraints().remove(indice);
+             DBMS.throwMessage( "constraint: "+nombreConstraint+" eliminado la tabla "+ nombreTabla, ctx.getStart());
+             json.objectToJSON(bdActual, nombreTabla, tabla);
+        }
+        return super.visitAccionDropConstraint(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitAlter_table_statement(sqlParser.Alter_table_statementContext ctx) {
+        String nombreTabla =  ctx.getChild(2).getText();  
+        boolean check = manejador.checkFile(bdActual, nombreTabla);
+        if (check ){
+            for (int i = 0;i<ctx.getChildCount();i++)
+                this.visit(ctx.getChild(i));
+        }else
+            DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
+        return super.visitAlter_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+    /**
+     * Método que regresa un array con los nombres de los ids en constraints
+     * 
+     * @param ctx
+     * @return ArrayList de Strings
+     */
+    @Override
+    public Object visitId_list(sqlParser.Id_listContext ctx) {
+        
+        ArrayList<String> listadoId = new ArrayList();
+        for (int i = 0; i<ctx.getChildCount(); i++) {
+            
+            if (!ctx.getChild(i).getText().equals(",")) {
+                listadoId.add(ctx.getChild(i).getText());
+            }
+        }
+        
+       return listadoId; //To change body of generated methods, choose Tools | Templates.
+    }
+    @Override
+    public Object visitConstraintPrimaryKey(sqlParser.ConstraintPrimaryKeyContext ctx) {
+        String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
+        String nombreConstraint = ctx.getChild(0).getText();
+        String tipoConstraint = ctx.getChild(1).getText();
+        ArrayList<String> listadoIDS = (ArrayList<String>)visit(ctx.getChild(4));
+        Constraint constraint = new Constraint();
+        constraint.setTipo(tipoConstraint);
+        constraint.setNombre(nombreConstraint);
+         //ahora busco la tabla y verifico los campos de los constraints
+        Tabla tabla = (Tabla) json.JSONtoObject(bdActual+"/", nombreTabla, "Tabla");
+        Tabla tabla_c = tabla;
+                
+        ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
+        for (int i =0;i<tabla.getConstraints().size();i++){
+             if (tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
+                 DBMS.throwMessage("Error: el nombre del constraint " + nombreConstraint + " ya ha sido usado",ctx.getStart());
+                 tabla = null;
+                 return null;
+                }
+        }
+        boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
+        if (verificador){
+            constraint.setReferences(listadoIDS);
+            tabla.addConstraint(constraint);
+            DBMS.debug("Se ha agregado el constraint " + nombreConstraint + " a la tabla " + nombreTabla, ctx.getStart());
+            json.objectToJSON(bdActual, nombreTabla, tabla);
+        }
+        else{
+             DBMS.throwMessage("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla, ctx.getStart() );
+             tabla = null; //ya no se guarda la tabla.
+        }
+        return super.visitConstraintPrimaryKey(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public boolean revisarListadoIDs(ArrayList<TuplaColumna> camposActuales, ArrayList<String> listadoIDS){
+        boolean verificador = true;
+        for (int i = 0;i<listadoIDS.size();i++){
+            String idActual = listadoIDS.get(i);
+            boolean verificadorInterno = false;
+            for (int j = 0;j<camposActuales.size();j++){
+                String campoActual = camposActuales.get(j).getNombre();
+                if (idActual.equals(campoActual)){
+                    verificadorInterno = true;
+                }
+            }
+            verificador = verificadorInterno;
+
+        }
+        return verificador;
+    }
 }

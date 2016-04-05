@@ -1,4 +1,4 @@
-// Generated from /Users/usuario/NetBeansProjects/DBMS/src/antlr/sql.g4 by ANTLR 4.4
+// Generated from C:\Users\sergio\Documents\u005Cuniversidad\BDD\proyecto1\src\antlr\sql.g4 by ANTLR 4.4
 package antlr;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
@@ -58,6 +58,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitReferences(@NotNull sqlParser.ReferencesContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code accionDropColumn}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void enterAccionDropColumn(@NotNull sqlParser.AccionDropColumnContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code accionDropColumn}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void exitAccionDropColumn(@NotNull sqlParser.AccionDropColumnContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#use}.
 	 * @param ctx the parse tree
@@ -209,6 +221,18 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitAdd(@NotNull sqlParser.AddContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code accionAddColumn}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void enterAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code accionAddColumn}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void exitAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#column_terminal}.
 	 * @param ctx the parse tree
 	 */
@@ -319,16 +343,6 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitDrop(@NotNull sqlParser.DropContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#accion}.
-	 * @param ctx the parse tree
-	 */
-	void enterAccion(@NotNull sqlParser.AccionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#accion}.
-	 * @param ctx the parse tree
-	 */
-	void exitAccion(@NotNull sqlParser.AccionContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link sqlParser#id_list}.
 	 * @param ctx the parse tree
 	 */
@@ -350,13 +364,13 @@ public interface sqlListener extends ParseTreeListener {
 	void exitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code values}
-	 * labeled alternative in {@link sqlParser#constraintTypeconstraintTypeconstraintType}.
+	 * labeled alternative in {@link sqlParser#accionaccionaccionaccionconstraintTypeconstraintTypeconstraintType}.
 	 * @param ctx the parse tree
 	 */
 	void enterValues(@NotNull sqlParser.ValuesContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code values}
-	 * labeled alternative in {@link sqlParser#constraintTypeconstraintTypeconstraintType}.
+	 * labeled alternative in {@link sqlParser#accionaccionaccionaccionconstraintTypeconstraintTypeconstraintType}.
 	 * @param ctx the parse tree
 	 */
 	void exitValues(@NotNull sqlParser.ValuesContext ctx);
@@ -473,6 +487,18 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitLiteral(@NotNull sqlParser.LiteralContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code accionDropConstraint}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void enterAccionDropConstraint(@NotNull sqlParser.AccionDropConstraintContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code accionDropConstraint}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void exitAccionDropConstraint(@NotNull sqlParser.AccionDropConstraintContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#database_plural}.
 	 * @param ctx the parse tree
 	 */
@@ -492,6 +518,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInto(@NotNull sqlParser.IntoContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code accionAddConstraint}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void enterAccionAddConstraint(@NotNull sqlParser.AccionAddConstraintContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code accionAddConstraint}
+	 * labeled alternative in {@link sqlParser#accion}.
+	 * @param ctx the parse tree
+	 */
+	void exitAccionAddConstraint(@NotNull sqlParser.AccionAddConstraintContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#database}.
 	 * @param ctx the parse tree
