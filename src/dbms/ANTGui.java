@@ -404,22 +404,29 @@ public class ANTGui extends javax.swing.JFrame {
                 in = leerArchivo(inputFile);
             }catch(Exception e){}
             if (inputFile == null){
-                in = this.jTextArea2.getText();
+                if (this.jTextArea2.getStringSelected().isEmpty()) {
+                    in = this.jTextArea2.getText();
+                }
+                else {
+                    in = this.jTextArea2.getStringSelected();
+                    this.jTextArea2.setStringSelected("");
+                }
             }
             CharStream cs =  new ANTLRInputStream(in);
 
            sqlLexer lexer = new sqlLexer(cs);
-            //lexer.removeErrorListeners();
-            //lexer.addErrorListener(DescriptiveErrorListener.INSTANCE);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(DescriptiveErrorListener.INSTANCE);
             CommonTokenStream tokens = new CommonTokenStream( lexer);
             parser = new sqlParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
             contexto = parser.sql2003Parser();
             ParseTree tree = contexto;
 
             
 
-            //parser.removeErrorListeners();
-            //parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
+         
 
             // Specify our entry point
             
