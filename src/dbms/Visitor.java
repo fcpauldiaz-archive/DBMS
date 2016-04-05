@@ -466,6 +466,9 @@ public class Visitor<T> extends sqlBaseVisitor {
         if (ctx.getChild(1).getChildCount() == 1 && ctx.getChild(1).getText().equals("*")){
             
         }
+        String nombreTabla = ctx.getChild(3).getText();
+        
+      
         
         
         return super.visitSelect_value(ctx); //To change body of generated methods, choose Tools | Templates.

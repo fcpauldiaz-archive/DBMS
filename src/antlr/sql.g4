@@ -238,7 +238,7 @@ update_value: update ID set column '=' value where condition ';' ;
 
 delete_value: delete from ID where condition ';' ;
 
-select_value: select select_values from ID (where condition)?  (order by (asc | desc))? ';';
+select_value: select select_values from ID (where condition)?  (order by ID (asc | desc)? )? ';';
 
 select_values: ('*' | ID (',' ID)* );
               

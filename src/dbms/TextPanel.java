@@ -272,7 +272,7 @@ public class TextPanel extends JPanel{
         String regex_reserved_1 = "(where|WHERE|use|USE|database|DATABASE|select|SELECT|"
                 + "show|SHOW|table|TABLE|tables|TABLES|insert|INSERT|from|FROM|constraint|CONSTRAINT|values|VALUES"
                 + "|into|INTO|foreign|FOREIGN|primary|PRIMARY|key|KEY|column|COLUMN|columns|COLUMNS|update|UPDATE"
-                + "|drop|DROP|delete|DELETE|alter|ALTER|create|CREATE|databases|DATABASES|add|ADD)";
+                + "|drop|DROP|delete|DELETE|alter|ALTER|create|CREATE|databases|DATABASES|add|ADD|order|ORDER|by|BY|asc|ASC|desc|DESC)";
         String regex_reserved_2 = "(int|INT|char|CHAR|float|FLOAT|boolean)";
         String regex_method = id+"( )*"+"\\(";
         //*************************************************
