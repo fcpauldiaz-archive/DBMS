@@ -29,15 +29,15 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         // true es cuando no tiene columnas definidas y el caso contrario pues se deduce
         
         String nombreTabla = ctx.getChild(2).getText();
-        boolean existenciaTabla = manejador.checkFile(bdActual, nombreTabla);
         
-        if (!existenciaTabla) {
+        Tabla tabla = getTablaFromNombre(bdActual, nombreTabla);
+        
+        /* Verificar si la tabla existe */
+        if (tabla == null) {
             DBMS.throwMessage("Error: Insert fallido, la tabla " + nombreTabla + " no existe", ctx.getStart());
             
             return null;
         }
-        
-        Tabla tabla = (Tabla)json.JSONtoObject(bdActual + "/", nombreTabla, "Tabla");
         
         // Todos los elementos que se iran en el insert
         ArrayList<String> insertValues = null;
@@ -59,20 +59,35 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         // La cantidad de columnas de la tabla
         int cantColumnasTabla = tabla.getColumnas().size();
         
-        // En el caso en donde se haya definido las columnas a insertar
-        if (!isSimpleInsert) {
-            if (insertValues.size() != insertColumnNames.size()) {
-                DBMS.throwMessage("Insert Error: Cantidad de columnas y valores no coinciden", ctx.getStart());
-
-                return null;
-            }
-        }
-        
         // Si la cantidad de valores del insert es mayor que la que necesitamos está mal
         if (insertValues.size() > cantColumnasTabla) {
             DBMS.throwMessage("Insert Error: Cantidad de valores mayor de los necesarios", ctx.getStart());
             
             return null;
+        }
+        
+        // En el caso en donde se haya definido las columnas a insertar
+        if (!isSimpleInsert) {
+            // Validar cantidad de columnas contra inserts
+            if (insertValues.size() != insertColumnNames.size()) {
+                DBMS.throwMessage("Insert Error: Cantidad de columnas y valores no coinciden", ctx.getStart());
+
+                return null;
+            }
+            
+            // Validar que la cantidad de columnas a insertar no sean mayores que la definición de la tabla
+            if (insertColumnNames.size() > cantColumnasTabla) {
+                DBMS.throwMessage("Insert Error: Cantidad de columnas mayor de los necesarios", ctx.getStart());
+            
+                return null;
+            }
+            
+            // Validar que las columnas a ingresar no sean repetidas
+            if (!verificarDobleLlamadaColumna(insertColumnNames)) {
+                DBMS.throwMessage("Insert Error: Columnas repetidas", ctx.getStart());
+            
+                return null;  
+            }
         }
         
         // La cantidad de valores son exactamente los que necesita el INSERT de la tabla
@@ -101,7 +116,8 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
             }
         }
         
-        // En el caso en el que se hayan definido las columnas, debemos validar que las columnas existan
+        // Si está definida la lista de columnas, vamos a verificar
+        // que la columnas existan
         if (!isSimpleInsert) {
             int cantValidColumnNames = 0;
             
@@ -119,7 +135,36 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     
                     return null;
             }
+        }
+        
+        // Vemos si la cantidad de columnas listada en el insert es menor que la cantidad
+        // de columnas en la tabla
+        if (!isSimpleInsert && (insertColumnNames.size() < cantColumnasTabla)) {
+            int contInvalidInsertValues = 0;
+            for (int i = 0; i < insertColumnNames.size(); i++) {
+                String tipoColumna = getColumnTypeFromColumnName(insertColumnNames.get(i), tabla);
+                
+                if (!insertValues.get(i).contains(tipoColumna)) {
+                    ArrayList datosInsertValue = getTypeAndValueFromInsertValue(insertValues.get(i));
+                    
+                    DBMS.throwMessage(
+                            "Insert Error: Tipo de dato del valor: " + datosInsertValue.get(0) +
+                            " Es incorrecto, se requiere un " + datosInsertValue.get(1),
+                            ctx.getStart()
+                    );
+                    
+                    contInvalidInsertValues++;
+                }
+            }
             
+            if (contInvalidInsertValues > 0) {
+                return null;
+            }
+            
+        }
+        
+        // En el caso en el que se hayan definido las columnas y es la misma cantidad de la tabla
+        if (!isSimpleInsert && (insertColumnNames.size() == cantColumnasTabla)) {
             int contInvalidInsertValue = 0;
             
             for (int i = 0; i < insertColumnNames.size(); i++) {
@@ -154,6 +199,57 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         }
         
         return null;
+    }
+    
+    public Tabla getTablaFromNombre(String bd, String nombre) {
+        if (!manejador.checkFile(bdActual, nombre)) {
+            return null;
+        }
+        
+        Tabla tabla = (Tabla)json.JSONtoObject(bdActual + "/", nombre, "Tabla");
+        
+        return tabla;
+    }
+    
+    public ArrayList getTypeAndValueFromInsertValue(String value) {
+        int indexOfEpsilon = value.indexOf("€");
+        ArrayList returnData = new ArrayList();
+        
+        returnData.add(0, value.substring(0, indexOfEpsilon));
+        returnData.add(0, value.substring(indexOfEpsilon + 1));
+        
+        return returnData;
+    }
+    
+    public boolean verificarDobleLlamadaColumna(ArrayList<String> columnasEval) {
+        for (String s: columnasEval) {
+            int contRepetidos = 0;
+            for (String s_1: columnasEval) {
+                if (s.equals(s_1)) {
+                    contRepetidos++;
+                }
+            }
+            
+            if (contRepetidos > 1) {
+                return false;
+            }
+            
+            contRepetidos = 0;
+        }
+        
+        return true;
+    }
+    
+    public boolean verifyPossibleCast(String insertType, String columnType) {
+        if (
+            (insertType.contains("INT") && columnType.contains("FLOAT")) ||
+            (insertType.contains("FLOAT") && columnType.contains("INT")) ||
+            (insertType.contains("CHAR") && columnType.contains("DATE"))
+        ) {
+            return true;
+        }
+        
+        return false;
     }
     
     @Override
