@@ -285,4 +285,18 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         }
         return verificador;
     }
+
+    @Override
+    public Object visitShow_table_statement(sqlParser.Show_table_statementContext ctx) {
+        if(!bdActual.isEmpty()){
+            ArchivoMaestroTabla archivo = (ArchivoMaestroTabla)json.JSONtoObject(bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setRowCount(0);
+            model.setColumnIdentifiers(new Object[]{"Nombre de la Tabla","Cantidad de Registros"});
+            for(int i = 0;i<archivo.getTablas().size();i++)
+                model.addRow(new Object[]{archivo.getTablas().get(i).getNombreTabla(),archivo.getTablas().get(i).getCantidadRegistros()});
+        }else
+           DBMS.throwMessage("Error: No hay base de datos seleccionada ", ctx.getStart() ); 
+        return super.visitShow_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
 }
