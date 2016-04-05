@@ -102,12 +102,15 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                 if (!insertValues.get(i).contains(tipoColumna)) {
                     int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
                     String valor = insertValues.get(i).substring(indexOfSubs);
-                    DBMS.throwMessage(
-                            "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
-                            ctx.getStart()
-                    );
                     
-                    contInvalidInsertValue++;
+                    if (!verifyPossibleCast(insertValues.get(i), tipoColumna)) {
+                        DBMS.throwMessage(
+                                "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
+                                ctx.getStart()
+                        );
+
+                        contInvalidInsertValue++;
+                    }
                 }
             }
             
@@ -145,15 +148,18 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                 String tipoColumna = getColumnTypeFromColumnName(insertColumnNames.get(i), tabla);
                 
                 if (!insertValues.get(i).contains(tipoColumna)) {
-                    ArrayList datosInsertValue = getTypeAndValueFromInsertValue(insertValues.get(i));
-                    
-                    DBMS.throwMessage(
-                            "Insert Error: Tipo de dato del valor: " + datosInsertValue.get(0) +
-                            " Es incorrecto, se requiere un " + datosInsertValue.get(1),
-                            ctx.getStart()
-                    );
-                    
-                    contInvalidInsertValues++;
+                    if (!verifyPossibleCast(insertValues.get(i), tipoColumna)) {
+
+                        ArrayList datosInsertValue = getTypeAndValueFromInsertValue(insertValues.get(i));
+
+                        DBMS.throwMessage(
+                                "Insert Error: Tipo de dato del valor: " + datosInsertValue.get(0) +
+                                " Es incorrecto, se requiere un " + datosInsertValue.get(1),
+                                ctx.getStart()
+                        );
+
+                        contInvalidInsertValues++;
+                    }
                 }
             }
             
@@ -172,13 +178,16 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                 if (!insertValues.get(i).contains(tipoColumna)) {
                     int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
                     String valor = insertValues.get(i).substring(indexOfSubs);
+                    String tipoInsertVal = insertValues.get(i).substring(0, indexOfSubs);
                     
-                    DBMS.throwMessage(
-                            "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
-                            ctx.getStart()
-                    );
-                    
-                    contInvalidInsertValue++;
+                    if (!verifyPossibleCast(tipoInsertVal, tipoColumna)) {
+                        DBMS.throwMessage(
+                                "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
+                                ctx.getStart()
+                        );
+
+                        contInvalidInsertValue++;
+                    }
                 }
             }
             
@@ -187,6 +196,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
             }
         }
         
+        // Al terminar de realizar todas las validaciones se procede a crear la estructura del insert
         
         return (T)visitChildren(ctx);
     }
@@ -241,8 +251,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     }
     
     public boolean verifyPossibleCast(String insertType, String columnType) {
-        if (
-            (insertType.contains("INT") && columnType.contains("FLOAT")) ||
+        if ((insertType.contains("INT") && columnType.contains("FLOAT")) ||
             (insertType.contains("FLOAT") && columnType.contains("INT")) ||
             (insertType.contains("CHAR") && columnType.contains("DATE"))
         ) {
