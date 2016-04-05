@@ -218,27 +218,28 @@ public class Visitor<T> extends sqlBaseVisitor {
             //este campo puede ser número o un ID, como lo identifico?.
             //bueno, no me sirve saber esto hasta que haga la operación.
             String op2 = ctx.getChild(5).getText();
-            ArrayList<TuplaColumna> columnas = tabla.getColumnas();
-            boolean verCheck = false;
-            for (int i = 0;i<columnas.size();i++){
-                if (columnas.get(i).getNombre().equals(op1)){
-                    verCheck= true;
+            if(tabla!=null){
+                ArrayList<TuplaColumna> columnas = tabla.getColumnas();
+                boolean verCheck = false;
+                for (int i = 0;i<columnas.size();i++){
+                    if (columnas.get(i).getNombre().equals(op1)){
+                        verCheck= true;
+                    }
                 }
+                if (!verCheck){
+                    tabla = null;
+                    DBMS.throwMessage("El nombre del constraint "+nombreConstraint + " ya existe " , ctx.getStart());
+                    return null;
+                }
+                TuplaCheck check = new TuplaCheck();
+                check.setOp1(op1);
+                check.setOp2(op2);
+
+                check.setOperador(relOp);
+                constraint.setTuplaCheck(check);
+                tabla.addConstraint(constraint);
+                DBMS.debug("Se ha agregado el constraint " + nombreConstraint, ctx.getStart());
             }
-            if (!verCheck){
-                tabla = null;
-                DBMS.throwMessage("El nombre del constraint "+nombreConstraint + " ya existe " , ctx.getStart());
-                return null;
-            }
-            TuplaCheck check = new TuplaCheck();
-            check.setOp1(op1);
-            check.setOp2(op2);
-            
-            check.setOperador(relOp);
-            constraint.setTuplaCheck(check);
-            tabla.addConstraint(constraint);
-            DBMS.debug("Se ha agregado el constraint " + nombreConstraint, ctx.getStart());
-        
         
         return super.visitConstraintCheck(ctx); //To change body of generated methods, choose Tools | Templates.
     }
@@ -280,6 +281,11 @@ public class Visitor<T> extends sqlBaseVisitor {
              //ahora busco la tabla y verifico los campos de los constraints
             Tabla tabla_c = tabla;
                 if(tabla!=null){
+                    for(int i = 0;i<tabla.getConstraints().size();i++)
+                        if(tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
+                            DBMS.throwMessage("Error: Constraint "+nombreConstraint+" ya existe en la tabla " + nombreTabla,ctx.getStart() );
+                            return super.visitConstraintForeignKey(ctx); //To change body of generated methods, choose Tools | Templates.
+                        }
                 ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
                 boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
                 if (verificador){
