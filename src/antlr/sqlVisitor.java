@@ -1,4 +1,4 @@
-// Generated from C:\Users\sergio\Documents\u005Cuniversidad\BDD\proyecto1\src\antlr\sql.g4 by ANTLR 4.4
+// Generated from /Users/usuario/NetBeansProjects/DBMS/src/antlr/sql.g4 by ANTLR 4.4
 package antlr;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
@@ -511,6 +511,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitUpdate_value(@NotNull sqlParser.Update_valueContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#select_values}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelect_values(@NotNull sqlParser.Select_valuesContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#constraint}.
 	 * @param ctx the parse tree

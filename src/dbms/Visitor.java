@@ -148,8 +148,12 @@ public class Visitor<T> extends sqlBaseVisitor {
         
         bdActual = ctx.getChild(2).getText();
        
-        if (manejador.checkDB(bdActual)==false)
+        if (manejador.checkDB(bdActual)==false){
+            DBMS.throwMessage("Error: la base de datos "  + bdActual + " no existe " , ctx.getStart());
             bdActual = "";
+           return super.visitUse_schema_statement(ctx); 
+        }
+        DBMS.throwMessage("La base de datos " + bdActual + " ha sido seleccionada",ctx.getStart());
         return super.visitUse_schema_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -451,6 +455,12 @@ public class Visitor<T> extends sqlBaseVisitor {
     
     }
 
+    @Override
+    public Object visitSelect(sqlParser.SelectContext ctx) {
+        return super.visitSelect(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
     
    
     
