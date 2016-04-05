@@ -13,6 +13,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.*;
@@ -31,6 +33,7 @@ public class TextPanel extends JPanel{
     private JTextPane textPane = new JTextPane();
     private Timer timer, timer2;
     private boolean activar_timer = false;
+    private String stringSelected = "";
 
     private int pos_selected_start = 0;
     private int pos_selected_end = 0;
@@ -58,6 +61,18 @@ public class TextPanel extends JPanel{
 
         //add the  listener
         this.textPane.getDocument().addDocumentListener(new myDocumentListener());
+        this.textPane.addMouseListener(new MouseAdapter(){
+           
+            @Override 
+            public void mouseReleased(MouseEvent e) {
+                if (textPane.getSelectedText() != null) { // See if they selected something 
+
+                 stringSelected  = textPane.getSelectedText();
+                 }
+             
+             }
+        });
+
 
         timer = new javax.swing.Timer(1, (ActionEvent e) -> {
             if(activar_timer == false){
@@ -254,7 +269,7 @@ public class TextPanel extends JPanel{
         String number=digit+"("+digit+")*";
         String id = letter+"("+letter+"|"+number+"|_)*";
         String regex_character = "\'"+"([^\\\'])*"+"\'";
-        String regex_reserved_1 = "(use|database|select|show|table|insert|from|constraint|values|into|foreign|primary|key|column|columns|update|drop|delete|alter|create)";
+        String regex_reserved_1 = "(where|use|database|select|show|table|insert|from|constraint|values|into|foreign|primary|key|column|columns|update|drop|delete|alter|create)";
         String regex_reserved_2 = "(int|char|float|boolean)";
         String regex_method = id+"( )*"+"\\(";
         //*************************************************
@@ -539,6 +554,22 @@ public class TextPanel extends JPanel{
         return start+retorno;
     }
 
+    public void setStringSelected(String stringSelected) {
+        this.stringSelected = stringSelected;
+    }
+
+   
+
+    
+  
+  
+   
+
+    public String getStringSelected() {
+        return stringSelected;
+    }
+
+    
 
 
     /*****************************************

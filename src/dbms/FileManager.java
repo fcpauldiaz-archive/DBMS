@@ -86,7 +86,7 @@ public class FileManager {
      */
     public boolean checkDB(String db){
         if (db.isEmpty()){
-            DBMS.debug("La base de datos no ha sido seleccionada");
+            DBMS.debug("La base de datos es inválida");
             return false;
         }
 
@@ -94,11 +94,11 @@ public class FileManager {
         
         if (!file.exists()) {
 
-            DBMS.debug("La base de datos " + db + " no existe");
+         
 
            return false;
         }else{
-            DBMS.debug("La base de datos " + db + " ha sido seleccionada");
+            
             return true;
     }
     }
