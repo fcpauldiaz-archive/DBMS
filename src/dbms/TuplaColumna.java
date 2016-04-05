@@ -20,7 +20,7 @@ public class TuplaColumna {
     public TuplaColumna(String tipo, String nombre) {
         this.nombre = nombre;
         this.tipo = tipo;
-        this.tamaño=0;
+        this.tamaño = 0;
     }
 
     public TuplaColumna(String nombre, String tipo, int tamaño) {
@@ -32,14 +32,12 @@ public class TuplaColumna {
     
     public TuplaColumna(String nombre) {
         this.nombre = nombre;
-        this.tamaño=0;
+        this.tamaño = 0;
     }
 
     public TuplaColumna() {
-        this.tamaño=0;
+        this.tamaño = 0;
     }
-    
-    
    
     public String getNombre() {
        
@@ -66,12 +64,8 @@ public class TuplaColumna {
         this.tamaño = tamaño;
     }
 
-    
     @Override
     public String toString() {
         return "Tupla{" + "nombre=" + nombre + ", tipo=" + tipo + '}';
     }
-    
-    
-
 }

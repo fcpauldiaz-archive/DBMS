@@ -16,10 +16,12 @@ public class Tabla {
     
     private final ArrayList<TuplaColumna> tablaDeclaration;
     private final ArrayList<Constraint> constraints;
+    private ArrayList<ArrayList> tableData;
 
     public Tabla(){
         this.tablaDeclaration = new ArrayList();
         this.constraints = new ArrayList();
+        this.tableData = new ArrayList();
     }
     
     public void agregarColumna(TuplaColumna tupla){
@@ -49,6 +51,10 @@ public class Tabla {
         this.constraints.add(constraint);
     }
 
+    public void addRowToTable(ArrayList element) {
+        this.tableData.add(element);
+    }
+    
     @Override
     public String toString() {
         return "Tabla{" + "tablaDeclaration=" + tablaDeclaration + ", constraints=" + constraints + '}';

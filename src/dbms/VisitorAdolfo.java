@@ -197,6 +197,34 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         }
         
         // Al terminar de realizar todas las validaciones se procede a crear la estructura del insert
+        ArrayList insertData = new ArrayList();
+        
+        if (isSimpleInsert) {
+            if (insertValues.size() == cantColumnasTabla) {
+                ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
+                for (int i = 0; i < columnasTabla.size(); i++) {
+                    String tipoColumna = columnasTabla.get(i).getTipo();
+                    if (!insertValues.get(i).contains(tipoColumna)) {
+                        if (tipoColumna.equals("INT")) {
+                            int castedInsertVal = (Integer)casteoDatos(insertValues.get(i), false);
+                            // Agregar valor
+                            insertData.add(castedInsertVal);
+                        }
+                        
+                        if (tipoColumna.endsWith("FLOAT")) {
+                            double castedInsertVal = (Double)casteoDatos(insertValues.get(i), true);
+                            // Agregar valor
+                            insertData.add(castedInsertVal);
+                        }
+                        continue;
+                    }
+                    // Si no se necesita casteo se agrega
+                    insertData.add(insertValues.get(i));
+                }
+            }
+        }
+        
+        System.out.println("Datos a ingresar: " + insertData);
         
         return (T)visitChildren(ctx);
     }
@@ -252,13 +280,29 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     
     public boolean verifyPossibleCast(String insertType, String columnType) {
         if ((insertType.contains("INT") && columnType.contains("FLOAT")) ||
-            (insertType.contains("FLOAT") && columnType.contains("INT")) ||
-            (insertType.contains("CHAR") && columnType.contains("DATE"))
+            (insertType.contains("FLOAT") && columnType.contains("INT"))
         ) {
             return true;
         }
         
         return false;
+    }
+    
+    /**
+     * tipoCasteo nos indica el casteo a realizar, en donde:
+     * true: indica que se debe castear de int a float
+     * false: indica que se debe castear de float a int
+     * 
+     * El parametro "dato" es lo que se debe castear
+     */
+    public T casteoDatos(String dato1, boolean tipoCasteo) {
+        if (tipoCasteo) {
+            return (T)Double.valueOf(dato1);
+        }
+        
+        double val = Double.valueOf(dato1);
+        Integer val_casteado = (int)Math.round(val);
+        return (T)val_casteado;
     }
     
     @Override
