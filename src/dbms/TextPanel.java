@@ -269,8 +269,11 @@ public class TextPanel extends JPanel{
         String number=digit+"("+digit+")*";
         String id = letter+"("+letter+"|"+number+"|_)*";
         String regex_character = "\'"+"([^\\\'])*"+"\'";
-        String regex_reserved_1 = "(where|use|database|select|show|table|insert|from|constraint|values|into|foreign|primary|key|column|columns|update|drop|delete|alter|create)";
-        String regex_reserved_2 = "(int|char|float|boolean)";
+        String regex_reserved_1 = "(where|WHERE|use|USE|database|DATABASE|select|SELECT|"
+                + "show|SHOW|table|TABLE|tables|TABLES|insert|INSERT|from|FROM|constraint|CONSTRAINT|values|VALUES"
+                + "|into|INTO|foreign|FOREIGN|primary|PRIMARY|key|KEY|column|COLUMN|columns|COLUMNS|update|UPDATE"
+                + "|drop|DROP|delete|DELETE|alter|ALTER|create|CREATE|databases|DATABASES|add|ADD)";
+        String regex_reserved_2 = "(int|INT|char|CHAR|float|FLOAT|boolean)";
         String regex_method = id+"( )*"+"\\(";
         //*************************************************
         Color orange = new Color(228,167,53);//orange

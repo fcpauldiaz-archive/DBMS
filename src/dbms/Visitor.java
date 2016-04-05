@@ -120,7 +120,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         }
        
         mdt = new ArchivoMaestroTabla(); //sirve para perder la referencia
-        return null; //To change body of generated methods, choose Tools | Templates.
+        return super.visitTable_definition(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -140,7 +140,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         tupla.setNombre(nombreColumna);
         tupla.setTipo(tipo);
         tabla.agregarColumna(tupla);
-        return null;
+        return super.visitColumn(ctx);
     }
 
     @Override
@@ -449,26 +449,29 @@ public class Visitor<T> extends sqlBaseVisitor {
                     model.addRow(new Object[]{tab.getColumnas().get(i).getNombre().toString(), tab.getColumnas().get(i).getTipo().toString(),temp,ref});
                         
                 }
-            }else
-                DBMS.throwMessage( "La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
+            }else{
+                DBMS.throwMessage( "Error:La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
+                if (bdActual.isEmpty()){
+                    DBMS.throwMessage("Error: No se ha seleccionado una base de datos", ctx.getStart());
+                }
+            }
         return super.visitShow_column_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     
     }
 
     @Override
-    public Object visitSelect(sqlParser.SelectContext ctx) {
-        return super.visitSelect(ctx); //To change body of generated methods, choose Tools | Templates.
+    public Object visitSelect_value(sqlParser.Select_valueContext ctx) {
+        
+        //caso select ALL
+        if (ctx.getChild(1).getChildCount() == 1 && ctx.getChild(1).getText().equals("*")){
+            
+        }
+        
+        
+        return super.visitSelect_value(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
-    
-   
-    
-
-    
-    
-    
-    
+  
     
   
 }

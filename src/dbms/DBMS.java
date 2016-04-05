@@ -35,27 +35,25 @@ public class DBMS {
      public static void debug(String str){
          debug = selected;
          if (debug){
-            agregarLog(str);
+            throwMessage(str);
             System.out.println(str);
          }
      }
+     
      public static void debug(String str, Token ctx){
          debug = selected;
          if (debug){
-             agregarLog(str,ctx);
+             throwMessage(str,ctx);
              System.out.println(str);
          }
      }
+     
      /**
       * Agregar la palabra "Error:" al principio para mostrar el mensaje en rojo
-      * @param str mensaje
+      * @param mensaje mensaje
       * @param ctx ctx.getStart()
       */
-     public static void throwMessage(String str, Token ctx){
-         agregarLog(str,ctx);
-     }
-       public static void agregarLog(String mensaje, Token ctx){
-        
+     public static void throwMessage(String mensaje, Token ctx){
         StyledDocument doc = jTextArea3.getStyledDocument();
         int linea = ctx.getLine();
         int columna = ctx.getCharPositionInLine();
@@ -75,34 +73,34 @@ public class DBMS {
             catch (BadLocationException e){}
         }
         
-        
-        
-    }
+     }
+     
+        /**
+         * Agregar la palabra "Error:" al principio para mostrar el mensaje en rojo
+         * @param mensaje mensaje
+         *
+         */
+        public static void throwMessage(String mensaje){
+            StyledDocument doc = jTextArea3.getStyledDocument();
        
-        public static void agregarLog(String mensaje){
-        
-        StyledDocument doc = jTextArea3.getStyledDocument();
-       
-        Style style = jTextArea3.addStyle("", null);
-        StyleConstants.setForeground(style, Color.red);
-        
-        
-      if (mensaje.contains("Error")){
-            try {
-                doc.insertString(doc.getLength(), " " + mensaje+"\n",style);
-                
+            Style style = jTextArea3.addStyle("", null);
+            StyleConstants.setForeground(style, Color.red);
+
+
+            if (mensaje.contains("Error")){
+                try {
+                    doc.insertString(doc.getLength(), " " + mensaje+"\n",style);
+
+                }
+                catch (BadLocationException e){}
             }
-            catch (BadLocationException e){}
-        }
-        else{
-            StyleConstants.setForeground(style, Color.blue);
-            try { doc.insertString(doc.getLength(),  " " + mensaje+"\n",style); }
-            catch (BadLocationException e){}
-        }
-    
-        
-        
-        
+            else{
+                StyleConstants.setForeground(style, Color.blue);
+                try { doc.insertString(doc.getLength(),  " " + mensaje+"\n",style); }
+                catch (BadLocationException e){}
+            }
+
     }
+               
 
 }
