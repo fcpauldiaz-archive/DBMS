@@ -246,7 +246,13 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
          //ahora busco la tabla y verifico los campos de los constraints
         Tabla tabla = (Tabla) json.JSONtoObject(bdActual+"/", nombreTabla, "Tabla");
         Tabla tabla_c = tabla;
-                
+        if(tipoConstraint.equals("primary"))
+            for(int i = 0;i<tabla.getConstraints().size();i++){
+                if(tabla.getConstraints().get(i).getTipo().equals("primary")){
+                     DBMS.throwMessage("Error: Constraint primary key ya existe en la tabla " + nombreTabla, ctx.getStart() );
+                    return super.visitConstraintPrimaryKey(ctx); //To change body of generated methods, choose Tools | Templates.
+                }
+            }        
         ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
         for (int i =0;i<tabla.getConstraints().size();i++){
              if (tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
