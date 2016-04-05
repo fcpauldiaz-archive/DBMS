@@ -133,7 +133,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             if(tabla.getColumnas().get(i).getNombre().equals(nombreColumna))
                 error = false;
         if(!error){
-            ArchivoMaestroTabla ar = (ArchivoMaestroTabla)json.JSONtoObject(bdActual+"/", "MasterTable"+bdActual, "ArchivoMaestroTabla");
+            ArchivoMaestroTabla ar = (ArchivoMaestroTabla)json.JSONtoObject(bdActual, "MasterTable"+bdActual, "ArchivoMaestroTabla");
             Tabla tab = (Tabla)json.JSONtoObject(bdActual,nombreTabla , "Tabla");
             boolean existe = false;
             for(int i = 0; i<ar.getTablas().size();i++){

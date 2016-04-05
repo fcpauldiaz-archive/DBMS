@@ -52,6 +52,7 @@ public class ANTGui extends javax.swing.JFrame {
     public static String bdActual = "";
     private TextPanel jTextArea2;
     private DefaultTreeModel model;
+    private boolean runSelected = false;
 //    
     /**
      * Creates new form ANTGui
@@ -128,6 +129,7 @@ public class ANTGui extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
+        jLabel2 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
 
@@ -187,6 +189,8 @@ public class ANTGui extends javax.swing.JFrame {
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jScrollPane3.setViewportView(jTree1);
 
+        jLabel2.setText("F5 run query F6 run selected query");
+
         jMenu2.setText("Acciones");
         jMenuBar1.add(jMenu2);
 
@@ -201,16 +205,16 @@ public class ANTGui extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
+                            .addComponent(jTabbedPane1)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 604, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 604, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jTabbedPane1)
-                                .addGap(5, 5, 5)))
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(208, 208, 208))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jTabbedPane2)
@@ -223,13 +227,12 @@ public class ANTGui extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jTabbedPane1)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -273,13 +276,23 @@ public class ANTGui extends javax.swing.JFrame {
         };
         
         
-          Action compileAction = new AbstractAction("Run Query", new ImageIcon("src/resources/compile.png")) {
+          Action compileAction = new AbstractAction("Run Query", new ImageIcon("src/resources/query-git.png")) {
             public void actionPerformed(ActionEvent e) {
                 compilar();
             }
         };
+         
+           Action runQuery = new AbstractAction("Run Selected Query", new ImageIcon("src/resources/compile.png")) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runSelected = true;
+                compilar();
+                runSelected = false;
+            }
+        };
           
-             Action showTree = new AbstractAction("Arbol", new ImageIcon("src/resources/tree-git.png")) {
+             Action showTree;
+        showTree = new AbstractAction("Arbol", new ImageIcon("src/resources/tree-git.png")) {
             public void actionPerformed(ActionEvent e) {
                 mostrarArbol();
             }
@@ -304,6 +317,9 @@ public class ANTGui extends javax.swing.JFrame {
         JMenuItem item = jMenu2.add(compileAction);
             jMenu2.add(item);
             item.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
+        item = jMenu2.add(runQuery);
+            jMenu2.add(item);
+            item.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F6, 0));
         jMenu2.setMnemonic('O');
         item = jMenu2.add(openFileAction);
             jMenu2.add(item);
@@ -343,6 +359,7 @@ public class ANTGui extends javax.swing.JFrame {
        
         this.jToolBar1.add(showTree).setToolTipText("Mostrar Arbol");
         this.jToolBar1.add(compileAction).setToolTipText("RUN Query");
+        this.jToolBar1.add(runQuery).setToolTipText("RUN SELECTED QUERY");
        
         
         
@@ -395,6 +412,8 @@ public class ANTGui extends javax.swing.JFrame {
        
     }
     
+    
+    
     public void compilar(){
           try{
               
@@ -404,11 +423,16 @@ public class ANTGui extends javax.swing.JFrame {
                 in = leerArchivo(inputFile);
             }catch(Exception e){}
             if (inputFile == null){
-                if (this.jTextArea2.getStringSelected().isEmpty()) {
+                if (!this.runSelected){
                     in = this.jTextArea2.getText();
                 }
                 else {
-                    in = this.jTextArea2.getStringSelected();
+                    if (this.jTextArea2.getStringSelected().isEmpty()){
+                        DBMS.throwMessage("No hay nada seleccionado");
+                    }
+                    else{
+                        in = this.jTextArea2.getStringSelected();
+                    }
                     this.jTextArea2.setStringSelected("");
                 }
             }
@@ -612,6 +636,7 @@ public class ANTGui extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel3;
