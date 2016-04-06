@@ -20,7 +20,7 @@ import javax.swing.table.DefaultTableModel;
 public class VisitorChuso <T> extends sqlBaseVisitor {
     private JSONParser json = new JSONParser();
     private FileManager manejador = new FileManager();
-    
+    private String globalLogic ="";
     @Override
     public Object visitUse_schema_statement(sqlParser.Use_schema_statementContext ctx) {
         bdActual = ctx.getChild(2).getText();
@@ -164,6 +164,8 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                             }
                         }else
                            if(tab.getConstraints().get(j).getTipo().equals("check")){
+                               //hay un error en esta línea porque se cambio la estructura de tupla check
+                               //ahora es un arraylist.
                                if(tab.getConstraints().get(j).getTuplaCheck().getOp1().equals(nombreColumna)||tab.getConstraints().get(j).getTuplaCheck().getOp2().equals(nombreColumna)){
                                     indices.add(j);
                                }
@@ -245,7 +247,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
        return listadoId; //To change body of generated methods, choose Tools | Templates.
     }
     @Override
-    public Object visitConstraintPrimaryKey(sqlParser.ConstraintPrimaryKeyContext ctx) {
+    public Object visitConstraintPrimaryKeyAlter(sqlParser.ConstraintPrimaryKeyAlterContext ctx) {
         String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
         String nombreConstraint = ctx.getChild(0).getText();
         String tipoConstraint = ctx.getChild(1).getText();
@@ -260,7 +262,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             for(int i = 0;i<tabla.getConstraints().size();i++){
                 if(tabla.getConstraints().get(i).getTipo().equals("primary")){
                      DBMS.throwMessage("Error: Constraint primary key ya existe en la tabla " + nombreTabla, ctx.getStart() );
-                    return super.visitConstraintPrimaryKey(ctx); //To change body of generated methods, choose Tools | Templates.
+                    return super.visitConstraintPrimaryKeyAlter(ctx); //To change body of generated methods, choose Tools | Templates.
                 }
             }        
         ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
@@ -282,10 +284,10 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
              DBMS.throwMessage("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla, ctx.getStart() );
              tabla = null; //ya no se guarda la tabla.
         }
-        return super.visitConstraintPrimaryKey(ctx); //To change body of generated methods, choose Tools | Templates.
+        return super.visitConstraintPrimaryKeyAlter(ctx); //To change body of generated methods, choose Tools | Templates.
     }
      @Override
-    public Object visitConstraintForeignKey(sqlParser.ConstraintForeignKeyContext ctx) {
+    public Object visitConstraintForeignKeyAlter(sqlParser.ConstraintForeignKeyAlterContext ctx) {
         String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
         String nombreConstraint = ctx.getChild(0).getText();
         String tipoConstraint = ctx.getChild(1).getText();
@@ -297,7 +299,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         for(int i = 0;i<tabla.getConstraints().size();i++)
             if(tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
                 DBMS.throwMessage("Error: Constraint "+nombreConstraint+" ya existe en la tabla " + nombreTabla,ctx.getStart() );
-                return super.visitConstraintForeignKey(ctx); //To change body of generated methods, choose Tools | Templates.
+                return super.visitConstraintForeignKeyAlter(ctx); //To change body of generated methods, choose Tools | Templates.
             }
          String nombreTablaRef = ctx.getChild(7).getText();
             ArrayList<String> listadoIDSREF = (ArrayList<String>)visit(ctx.getChild(9));
@@ -340,10 +342,10 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             }
         
         
-        return super.visitConstraintForeignKey(ctx); //To change body of generated methods, choose Tools | Templates.
+        return super.visitConstraintForeignKeyAlter(ctx); //To change body of generated methods, choose Tools | Templates.
     }
      @Override
-    public Object visitConstraintCheck(sqlParser.ConstraintCheckContext ctx) {
+    public Object visitConstraintCheckAlter(sqlParser.ConstraintCheckAlterContext ctx) {
          String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
             Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
             String nombreConstraint = ctx.getChild(0).getText();
@@ -354,19 +356,13 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             constraint.setNombre(nombreConstraint);
         
             
-            //tengo que revisar que exista este campo en la tabla actual
-            String op1 = ctx.getChild(3).getText();
-            //este solo sirve para guardar
-            String relOp = ctx.getChild(4).getText();
+         
             
-            //este campo puede ser número o un ID, como lo identifico?.
-            //bueno, no me sirve saber esto hasta que haga la operación.
-            String op2 = ctx.getChild(5).getText();
-            ArrayList<TuplaColumna> columnas = tabla.getColumnas();
-            boolean verCheck = false;
+            ArrayList<Constraint> columnas = tabla.getConstraints();
+            boolean verCheck = true;
             for (int i = 0;i<columnas.size();i++){
                 if (columnas.get(i).getNombre().equals(nombreConstraint)){
-                    verCheck= true;
+                    verCheck= false;
                 }
             }
             if (!verCheck){
@@ -374,19 +370,43 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 DBMS.throwMessage("Error: El nombre del constraint "+nombreConstraint + " ya existe " , ctx.getStart());
                 return null;
             }
-            TuplaCheck check = new TuplaCheck();
-            check.setOp1(op1);
-            check.setOp2(op2);
-            
-            check.setOperador(relOp);
-            constraint.setTuplaCheck(check);
+           
+            for (int i = 3;i<ctx.getChildCount();i++){
+                    T visitCheck = (T)this.visit(ctx.getChild(i));
+                    if (visitCheck instanceof TuplaCheck){
+                        if (!this.globalLogic.isEmpty()){
+                           
+                            ((TuplaCheck)visitCheck).setOperadorLogico(globalLogic);
+                        }
+                        constraint.addTuplaCheck((TuplaCheck)visitCheck);
+                    }
+                    
+            }
+            this.globalLogic = "";
             tabla.addConstraint(constraint);
             DBMS.debug("Se ha agregado el constraint " + nombreConstraint, ctx.getStart());
             json.objectToJSON(bdActual, nombreTabla, tabla);
         
         
-        return super.visitConstraintCheck(ctx); //To change body of generated methods, choose Tools | Templates.
+        return super.visitConstraintCheckAlter(ctx); //To change body of generated methods, choose Tools | Templates.
     }
+    @Override
+    public Object visitLogic(sqlParser.LogicContext ctx) {
+        this.globalLogic = ctx.getChild(0).getText();
+        return super.visitLogic(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+      @Override
+    public Object visitCheck_exp(sqlParser.Check_expContext ctx) {
+        String op1Check = ctx.getChild(0).getText();
+        String operatorCheck = ctx.getChild(1).getText();
+        String op2Check = ctx.getChild(2).getText();
+        TuplaCheck tupla = new TuplaCheck();
+        tupla.setOp1(op1Check);
+        tupla.setOperador(operatorCheck);
+        tupla.setOp2(op2Check);
+        return tupla; //To change body of generated methods, choose Tools | Templates.
+    }
+    
     public boolean revisarListadoIDs(ArrayList<TuplaColumna> camposActuales, ArrayList<String> listadoIDS){
         boolean verificador = true;
         for (int i = 0;i<listadoIDS.size();i++){

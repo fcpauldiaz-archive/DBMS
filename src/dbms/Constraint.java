@@ -18,17 +18,19 @@ public class Constraint {
     private String tipo;
     private ArrayList<String> references;
     private TuplaRefForeign referencesForeign;
-    private TuplaCheck  tuplaCheck;
+    private ArrayList<TuplaCheck>  tuplaCheck;
 
     public Constraint(String nombre, String tipo) {
         this.nombre = nombre;
         this.tipo = tipo;
         this.references = new ArrayList();
+        this.tuplaCheck = new ArrayList();
         
     }
     
     public Constraint(){
         this.references = new ArrayList();
+        this.tuplaCheck = new ArrayList();
         
     }
 
@@ -64,13 +66,17 @@ public class Constraint {
         return this.referencesForeign;
     }
 
-    public TuplaCheck getTuplaCheck() {
+    public ArrayList<TuplaCheck> getTuplaCheck() {
         return tuplaCheck;
     }
 
-    public void setTuplaCheck(TuplaCheck tuplaCheck) {
+    public void setTuplaCheck(ArrayList<TuplaCheck> tuplaCheck) {
         this.tuplaCheck = tuplaCheck;
     }
+
+   public void addTuplaCheck(TuplaCheck tupla){
+       this.tuplaCheck.add(tupla);
+   }
 
     @Override
     public String toString() {

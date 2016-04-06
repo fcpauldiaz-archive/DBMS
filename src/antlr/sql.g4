@@ -185,7 +185,7 @@ drop_table_statement: drop table ID ';';
 
 alter_database_statement: alter database ID rename to ID ';' ;
 
- show_schema_statement: show database_plural ';';
+show_schema_statement: show database_plural ';';
 
 use_schema_statement: use database ID ';';
 
@@ -217,13 +217,19 @@ rename_table_statement: alter table ID rename to ID ';';
 
 
 accion:
-          add column_terminal ID tipo_literal (constraint)? #accionAddColumn
-        | add constraint                                    #accionAddConstraint
+          add column_terminal ID tipo_literal (constraint_alter)? #accionAddColumn
+        | add constraint_alter                                    #accionAddConstraint
         | drop column_terminal ID                           #accionDropColumn
         | drop constraint_terminal ID                       #accionDropConstraint
     ;
 
+constraint_alter: constraint_terminal constraintTypeAlter;
 
+constraintTypeAlter:
+            ID primary key '(' id_list')' (',')?                                #constraintPrimaryKeyAlter                   
+        |   ID foreign key  '(' id_list')' references ID '(' id_list ')' (',')? #constraintForeignKeyAlter
+        |   ID check  '('check_exp (logic check_exp)* ')' (',')?                #constraintCheckAlter
+        ;
 
 
 show_table_statement: show tables ';';

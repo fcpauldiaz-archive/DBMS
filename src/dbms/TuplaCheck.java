@@ -15,6 +15,7 @@ public class TuplaCheck {
     private String op1;
     private String op2;
     private String operador;
+    private String operadorLogico;
 
     public TuplaCheck(String op1, String op2, String operador) {
         this.op1 = op1;
@@ -48,6 +49,16 @@ public class TuplaCheck {
     public void setOperador(String operador) {
         this.operador = operador;
     }
+
+    public String getOperadorLogico() {
+        return operadorLogico;
+    }
+
+    public void setOperadorLogico(String operadorLogico) {
+        this.operadorLogico = operadorLogico;
+    }
+    
+    
 
     @Override
     public String toString() {

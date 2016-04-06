@@ -221,6 +221,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterConstraint_alter(@NotNull sqlParser.Constraint_alterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraint_alter(@NotNull sqlParser.Constraint_alterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterChar_literal(@NotNull sqlParser.Char_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -576,6 +588,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConstraintForeignKeyAlter(@NotNull sqlParser.ConstraintForeignKeyAlterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraintForeignKeyAlter(@NotNull sqlParser.ConstraintForeignKeyAlterContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -953,6 +977,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterConstraintCheckAlter(@NotNull sqlParser.ConstraintCheckAlterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraintCheckAlter(@NotNull sqlParser.ConstraintCheckAlterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInsert_value(@NotNull sqlParser.Insert_valueContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -972,6 +1008,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConstraintPrimaryKeyAlter(@NotNull sqlParser.ConstraintPrimaryKeyAlterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraintPrimaryKeyAlter(@NotNull sqlParser.ConstraintPrimaryKeyAlterContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
