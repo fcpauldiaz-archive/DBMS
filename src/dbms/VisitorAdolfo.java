@@ -237,6 +237,14 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                         continue;
                     }
                     // Si no se necesita casteo se agrega
+                    if (tipoColumna.equals("INT")) {
+                        insertData.add(Integer.valueOf(valor));
+                        continue;
+                    }
+                    if (tipoColumna.equals("FLOAT")) {
+                        insertData.add(Double.valueOf(valor));
+                        continue;
+                    }
                     insertData.add(valor);
                 }
             }
@@ -269,6 +277,14 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                         continue;
                     }
                     // Si no se necesita casteo se agrega
+                    if (tipoColumna.equals("INT")) {
+                        insertData.add(Integer.valueOf(valor));
+                        continue;
+                    }
+                    if (tipoColumna.equals("FLOAT")) {
+                        insertData.add(Double.valueOf(valor));
+                        continue;
+                    }
                     insertData.add(valor);
                 }
             }
@@ -296,16 +312,22 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                                     insertData.add(castedInsertVal);
                                 }
 
-                                if (tipoColumna.endsWith("FLOAT")) {
+                                if (tipoColumna.equals("FLOAT")) {
                                     double castedInsertVal = (Double)casteoDatos(valor, true);
                                     // Agregar valor
                                     insertData.add(castedInsertVal);
                                 }
                                 continue;
                             }
-                            
+                            if (tipoColumna.equals("INT")) {
+                                insertData.add(Integer.valueOf(valor));
+                                continue;
+                            }
+                            if (tipoColumna.equals("FLOAT")) {
+                                insertData.add(Double.valueOf(valor));
+                                continue;
+                            }
                             insertData.add(valor);
-                            continue;
                         }
                     }
                 }
@@ -333,7 +355,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                                     insertData.add(castedInsertVal);
                                 }
 
-                                if (tipoColumna.endsWith("FLOAT")) {
+                                if (tipoColumna.equals("FLOAT")) {
                                     double castedInsertVal = (Double)casteoDatos(valor, true);
                                     // Agregar valor
                                     insertData.add(castedInsertVal);
@@ -341,6 +363,14 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                                 continue;
                             }
                             
+                            if (tipoColumna.equals("INT")) {
+                                insertData.add(Integer.valueOf(valor));
+                                continue;
+                            }
+                            if (tipoColumna.equals("FLOAT")) {
+                                insertData.add(Double.valueOf(valor));
+                                continue;
+                            }
                             insertData.add(valor);
                             continue;
                         }
@@ -429,11 +459,41 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
             return (T)Double.valueOf(dato1);
         }
         
-        System.out.println("Trying to cast.... " + dato1);
-        
         double val = Double.valueOf(dato1);
         Integer val_casteado = (int)Math.round(val);
         return (T)val_casteado;
+    }
+    
+    public boolean verifyDate(String date) {
+        String[] partition = date.split("-");
+        
+        if (partition.length != 3) {
+            return false;
+        }
+        
+        int anio, mes, dia;
+        
+        try {
+            anio = Integer.valueOf(partition[0]);
+            mes = Integer.valueOf(partition[1]);
+            dia = Integer.valueOf(partition[2]);
+        } catch (Exception e) {
+            return false;
+        }
+        
+        if (anio < 0 || partition[0].length() != 4) {
+            return false;
+        }
+        
+        if (mes < 0 || mes > 12) {
+            return false;
+        }
+        
+        if (dia < 0 || dia > 31) {
+            return false;
+        }
+        
+        return true;
     }
     
     @Override
