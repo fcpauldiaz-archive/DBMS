@@ -102,6 +102,8 @@ from: 'FROM'|'from';
 add: 'ADD'|'add';
 
 
+
+
 column_terminal: 'COLUMN'|'column';
 
 column_terminal_plural: 'COLUMNS' | 'columns';
@@ -255,13 +257,15 @@ literal:
         int_literal
     |   float_literal
     |   date_literal
-    |   char_literal
+    |   null_literal
+    |   char_literal  
     ;
 
 int_literal: NUM;
 float_literal: FLOAT;
 date_literal: DATE;
 char_literal: CHAR;
+null_literal: 'null'| 'NULL' ;
 
 
 

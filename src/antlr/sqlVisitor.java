@@ -336,6 +336,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNot(@NotNull sqlParser.NotContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#null_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNull_literal(@NotNull sqlParser.Null_literalContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#column_or_constraint}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

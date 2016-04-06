@@ -653,6 +653,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterNull_literal(@NotNull sqlParser.Null_literalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNull_literal(@NotNull sqlParser.Null_literalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterColumn_or_constraint(@NotNull sqlParser.Column_or_constraintContext ctx) { }
 	/**
 	 * {@inheritDoc}

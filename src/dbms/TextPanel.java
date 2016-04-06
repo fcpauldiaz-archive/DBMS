@@ -274,7 +274,7 @@ public class TextPanel extends JPanel{
                 + "|into|INTO|foreign|FOREIGN|primary|PRIMARY|key|KEY|column|COLUMN|columns|COLUMNS|update|UPDATE"
                 + "|drop|DROP|delete|DELETE|alter|ALTER|create|CREATE|databases|DATABASES|add|ADD|order|ORDER|by|BY|asc|ASC|desc|DESC)";
         String regex_reserved_2 = "(int|INT|char|CHAR|float|FLOAT|boolean)";
-        String regex_method = id+"( )*"+"\\(";
+        String regex_method ="(NULL|null)";
         //*************************************************
         Color orange = new Color(228,167,53);//orange
         Color blue       = Color.BLUE;
@@ -284,6 +284,7 @@ public class TextPanel extends JPanel{
         Color dark_blue  = new Color(0,102,153);//azul oscuro
         Color celeste    = new Color(0,153,255);//celeste
         Color morado     = new Color(153,102,255);//morado
+        Color red        = Color.RED;
         Color magenta    = Color.magenta;
         Color black      = Color.BLACK;
         Color gray       = Color.lightGray;
@@ -308,7 +309,7 @@ public class TextPanel extends JPanel{
             
             if(!to_print_method.isEmpty() && to_print_id.length() != to_print_reserved_1.length() && to_print_id.length() != to_print_reserved_2.length()){
                 //id() <- pinta el id de color
-                this.replaceSytleColor(set, bold, morado, to_print_id, indice);
+                this.replaceSytleColor(set, bold, red, to_print_id, indice);
                 indice+=to_print_id.length();
                 text = text.substring(to_print_id.length());
             }
