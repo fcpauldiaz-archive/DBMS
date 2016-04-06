@@ -124,6 +124,18 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                         contInvalidInsertValue++;
                     }
                 }
+                if (insertValues.get(i).contains(tipoColumna) && tipoColumna.equals("DATE")) {
+                    int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
+                    String valor = insertValues.get(i).substring(indexOfSubs);
+                    if (!verifyDate(valor)) {
+                        DBMS.throwMessage(
+                                "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
+                                ctx.getStart()
+                        );
+
+                        contInvalidInsertValue++;
+                    }
+                }
             }
             
             if (contInvalidInsertValue > 0) {
@@ -173,6 +185,18 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                         contInvalidInsertValues++;
                     }
                 }
+                if (insertValues.get(i).contains(tipoColumna) && tipoColumna.equals("DATE")) {
+                    int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
+                    String valor = insertValues.get(i).substring(indexOfSubs);
+                    if (!verifyDate(valor)) {
+                        DBMS.throwMessage(
+                                "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
+                                ctx.getStart()
+                        );
+
+                        contInvalidInsertValues++;
+                    }
+                }
             }
             
             if (contInvalidInsertValues > 0) {
@@ -193,6 +217,18 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     String tipoInsertVal = insertValues.get(i).substring(0, indexOfSubs);
                     
                     if (!verifyPossibleCast(tipoInsertVal, tipoColumna)) {
+                        DBMS.throwMessage(
+                                "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
+                                ctx.getStart()
+                        );
+
+                        contInvalidInsertValue++;
+                    }
+                }
+                if (insertValues.get(i).contains(tipoColumna) && tipoColumna.equals("DATE")) {
+                    int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
+                    String valor = insertValues.get(i).substring(indexOfSubs);
+                    if (!verifyDate(valor)) {
                         DBMS.throwMessage(
                                 "Insert Error: Tipo de dato del valor: " + valor + " Es incorrecto, se requiere un " + tipoColumna,
                                 ctx.getStart()
@@ -342,7 +378,6 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     // y si casa ingresamos el valor
                     for (int j = 0; j < insertColumnNames.size(); j++) {
                         String nombreColumnaInsert = insertColumnNames.get(j);
-                        System.out.println("Match: " + nombreColumnaInsert + " debe ser: " + nombreColumna);
                         if (nombreColumna.equals(nombreColumnaInsert)) {
                             int indexOfSubs = insertValues.get(j).indexOf("€") + 1;
                             String valor = insertValues.get(j).substring(indexOfSubs);
@@ -374,9 +409,9 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                             insertData.add(valor);
                             continue;
                         }
-                        if (!insertColumnNames.contains(nombreColumna)) {
-                            insertData.add("NULL");
-                        }
+                    }
+                    if (!insertColumnNames.contains(nombreColumna)) {
+                        insertData.add("NULL");
                     }
                 }
             }
@@ -384,6 +419,11 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         
         tabla.addRowToTable(insertData);
         json.objectToJSON(bdActual, nombreTabla, tabla);
+        
+        DBMS.throwMessage(
+                "Insert Correcto: En tabla: " + nombreTabla,
+                ctx.getStart()
+        );
         
         return (T)tabla;
     }
@@ -465,7 +505,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     }
     
     public boolean verifyDate(String date) {
-        String[] partition = date.split("-");
+        String[] partition = date.substring(1, date.length() - 1).split("-");
         
         if (partition.length != 3) {
             return false;
@@ -481,15 +521,15 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
             return false;
         }
         
-        if (anio < 0 || partition[0].length() != 4) {
+        if (anio == 0 || anio < 0 || partition[0].length() != 4) {
             return false;
         }
         
-        if (mes < 0 || mes > 12) {
+        if (mes == 0 || mes < 0 || mes > 12) {
             return false;
         }
         
-        if (dia < 0 || dia > 31) {
+        if (dia == 0 || dia < 0 || dia > 31) {
             return false;
         }
         
