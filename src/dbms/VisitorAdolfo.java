@@ -470,8 +470,6 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     ) {
         ArrayList<Integer> indicesEval = getArrayIndicesDataToEval(references, tabla.getColumnas());
         
-        System.out.println("Indices a evaluar: " + indicesEval);
-        
         for (int i = 0; i < datosTabla.size(); i++) {
             int contMatch = 0;
             for (Integer index: indicesEval) {
@@ -479,17 +477,23 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                 T valor_2 = (T)dataInsert.get(index);
                 
                 if (valor_1.equals(valor_2)) {
-                    System.out.println("Valores iguales: " + valor_1 + " - " + valor_2);
                     contMatch++;
                 }
-                System.out.println("");
             }
-            
-            System.out.println("Cantidad de valores que hicieron match: " + contMatch + "\n");
             if (contMatch == indicesEval.size()) {
                 return false;
             }
         }
+        
+        return true;
+    }
+    
+    public boolean verifyForeignKeyInTable(
+        ArrayList dataInsert,           // Datos a validar
+        String reference,               // Columnas a quien se hace referencia
+        Tabla tablaOwner,               // Tabla a la que pertenece el Foreign Key
+        Tabla tablaRef                  // Tabla a la que se hace una referencia
+    ) {
         
         return true;
     }
