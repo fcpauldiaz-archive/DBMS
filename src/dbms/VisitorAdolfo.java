@@ -24,6 +24,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
      * TODO: 
      * - Verificación de Primary Key
      * - Verificación de constraints
+     * - Referencias entre tablas
      */
     
     
@@ -246,7 +247,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     String tipoColumna = columnasTabla.get(i).getTipo();
                     // Obtenemos el valor
                     if (!(i < insertValues.size())) {
-                        insertData.add("Null");
+                        insertData.add("NULL");
                         continue;
                     }
                     int indexOfSubs = insertValues.get(i).indexOf("€") + 1;
@@ -269,6 +270,86 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     }
                     // Si no se necesita casteo se agrega
                     insertData.add(valor);
+                }
+            }
+        }
+        
+        if (!isSimpleInsert) {
+            if (insertColumnNames.size() == cantColumnasTabla) {
+                ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
+                for (int i = 0; i < columnasTabla.size(); i++) {
+                    String nombreColumna = columnasTabla.get(i).getNombre();
+                    String tipoColumna = columnasTabla.get(i).getTipo();
+                    // Recorremos todos los nombres de las columnas en la lista de insert
+                    // y si casa ingresamos el valor
+                    for (int j = 0; j < insertColumnNames.size(); j++) {
+                        String nombreColumnaInsert = insertColumnNames.get(j);
+                        if (nombreColumna.equals(nombreColumnaInsert)) {
+                            int indexOfSubs = insertValues.get(j).indexOf("€") + 1;
+                            String valor = insertValues.get(j).substring(indexOfSubs);
+                            
+                            if (!insertValues.get(j).contains(tipoColumna)) {
+
+                                if (tipoColumna.equals("INT")) {
+                                    int castedInsertVal = (Integer)casteoDatos(valor, false);
+                                    // Agregar valor
+                                    insertData.add(castedInsertVal);
+                                }
+
+                                if (tipoColumna.endsWith("FLOAT")) {
+                                    double castedInsertVal = (Double)casteoDatos(valor, true);
+                                    // Agregar valor
+                                    insertData.add(castedInsertVal);
+                                }
+                                continue;
+                            }
+                            
+                            insertData.add(valor);
+                            continue;
+                        }
+                    }
+                }
+            }
+            
+            if (insertColumnNames.size() < cantColumnasTabla) {
+                ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
+                for (int i = 0; i < columnasTabla.size(); i++) {
+                    //if (!(i < insertColumnNames.size())) {
+                    //    insertData.add("Null");
+                    //    continue;
+                    //}
+                    String nombreColumna = columnasTabla.get(i).getNombre();
+                    String tipoColumna = columnasTabla.get(i).getTipo();
+                    // Recorremos todos los nombres de las columnas en la lista de insert
+                    // y si casa ingresamos el valor
+                    for (int j = 0; j < insertColumnNames.size(); j++) {
+                        String nombreColumnaInsert = insertColumnNames.get(j);
+                        System.out.println("Match: " + nombreColumnaInsert + " debe ser: " + nombreColumna);
+                        if (nombreColumna.equals(nombreColumnaInsert)) {
+                            int indexOfSubs = insertValues.get(j).indexOf("€") + 1;
+                            String valor = insertValues.get(j).substring(indexOfSubs);
+                            
+                            if (!insertValues.get(j).contains(tipoColumna)) {
+
+                                if (tipoColumna.equals("INT")) {
+                                    int castedInsertVal = (Integer)casteoDatos(valor, false);
+                                    // Agregar valor
+                                    insertData.add(castedInsertVal);
+                                }
+
+                                if (tipoColumna.endsWith("FLOAT")) {
+                                    double castedInsertVal = (Double)casteoDatos(valor, true);
+                                    // Agregar valor
+                                    insertData.add(castedInsertVal);
+                                }
+                                continue;
+                            }
+                            
+                            insertData.add(valor);
+                            continue;
+                        }
+                        insertData.add("NULL");
+                    }
                 }
             }
         }
