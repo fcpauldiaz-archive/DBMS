@@ -262,7 +262,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                         if (tipoColumna.equals("INT")) {
                             int castedInsertVal = (Integer)casteoDatos(valor, false);
                             // Agregar valor
-                            insertData.add(castedInsertVal);
+                            insertData.add(valor);
                         }
                         
                         if (tipoColumna.endsWith("FLOAT")) {
@@ -274,7 +274,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     }
                     // Si no se necesita casteo se agrega
                     if (tipoColumna.equals("INT")) {
-                        insertData.add(Integer.valueOf(valor));
+                        insertData.add(Double.valueOf(valor));
                         continue;
                     }
                     if (tipoColumna.equals("FLOAT")) {
@@ -302,7 +302,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                         if (tipoColumna.equals("INT")) {
                             int castedInsertVal = (Integer)casteoDatos(valor, false);
                             // Agregar valor
-                            insertData.add(castedInsertVal);
+                            insertData.add(valor);
                         }
                         
                         if (tipoColumna.endsWith("FLOAT")) {
@@ -314,7 +314,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     }
                     // Si no se necesita casteo se agrega
                     if (tipoColumna.equals("INT")) {
-                        insertData.add(Integer.valueOf(valor));
+                        insertData.add(Double.valueOf(valor));
                         continue;
                     }
                     if (tipoColumna.equals("FLOAT")) {
@@ -345,7 +345,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                                 if (tipoColumna.equals("INT")) {
                                     int castedInsertVal = (Integer)casteoDatos(valor, false);
                                     // Agregar valor
-                                    insertData.add(castedInsertVal);
+                                    insertData.add(valor);
                                 }
 
                                 if (tipoColumna.equals("FLOAT")) {
@@ -356,7 +356,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                                 continue;
                             }
                             if (tipoColumna.equals("INT")) {
-                                insertData.add(Integer.valueOf(valor));
+                                insertData.add(Double.valueOf(valor));
                                 continue;
                             }
                             if (tipoColumna.equals("FLOAT")) {
@@ -387,7 +387,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                                 if (tipoColumna.equals("INT")) {
                                     int castedInsertVal = (Integer)casteoDatos(valor, false);
                                     // Agregar valor
-                                    insertData.add(castedInsertVal);
+                                    insertData.add(valor);
                                 }
 
                                 if (tipoColumna.equals("FLOAT")) {
@@ -399,7 +399,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                             }
                             
                             if (tipoColumna.equals("INT")) {
-                                insertData.add(Integer.valueOf(valor));
+                                insertData.add(Double.valueOf(valor));
                                 continue;
                             }
                             if (tipoColumna.equals("FLOAT")) {
@@ -444,7 +444,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         }
         
         tabla.addRowToTable(insertData);
-        //json.objectToJSON(bdActual, nombreTabla, tabla);
+        json.objectToJSON(bdActual, nombreTabla, tabla);
         
         DBMS.throwMessage(
                 "Insert Correcto: En tabla: " + nombreTabla,
@@ -464,8 +464,8 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         
         System.out.println("Indices a evaluar: " + indicesEval);
         
-        int contMatch = 0;
         for (int i = 0; i < datosTabla.size(); i++) {
+            int contMatch = 0;
             for (Integer index: indicesEval) {
                 T valor_1 = (T)datosTabla.get(i).get(index);
                 T valor_2 = (T)dataInsert.get(index);
