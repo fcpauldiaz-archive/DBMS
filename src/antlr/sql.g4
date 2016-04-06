@@ -247,7 +247,7 @@ relational: '<' | '<=' | '>' | '>=' | '<>' | '=' | '!=' ;
 
 update_value: update ID set column '=' value (where first_where_statement(where_statement)*)? ';' ;
 
-delete_value: delete from ID (where first_where_statement(where_statement)*)? condition ';' ;
+delete_value: delete from ID (where first_where_statement(where_statement)*)? ';' ;
 
 select_value: select select_values from ID (where first_where_statement(where_statement)*)?  (order by ID (asc | desc)? )? ';';
 
