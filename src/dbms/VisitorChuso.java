@@ -338,7 +338,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
      @Override
     public Object visitConstraintCheck(sqlParser.ConstraintCheckContext ctx) {
          String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
-            Tabla tabla = (Tabla) json.JSONtoObject(bdActual+"/", nombreTabla, "Tabla");
+            Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
             String nombreConstraint = ctx.getChild(0).getText();
             String tipoConstraint = ctx.getChild(1).getText();
            

@@ -139,6 +139,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAdd(@NotNull sqlParser.AddContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#check_exp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCheck_exp(@NotNull sqlParser.Check_expContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code accionAddColumn}
 	 * labeled alternative in {@link sqlParser#accion}.
 	 * @param ctx the parse tree

@@ -221,6 +221,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitAdd(@NotNull sqlParser.AddContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#check_exp}.
+	 * @param ctx the parse tree
+	 */
+	void enterCheck_exp(@NotNull sqlParser.Check_expContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#check_exp}.
+	 * @param ctx the parse tree
+	 */
+	void exitCheck_exp(@NotNull sqlParser.Check_expContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code accionAddColumn}
 	 * labeled alternative in {@link sqlParser#accion}.
 	 * @param ctx the parse tree

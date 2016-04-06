@@ -200,14 +200,17 @@ constraint: constraint_terminal constraintType ;
 constraintType:
             ID primary key '(' id_list')' (',')?                                #constraintPrimaryKey                    
         |   ID foreign key  '(' id_list')' references ID '(' id_list ')' (',')? #constraintForeignKey
-        |   ID check  '('ID exp (num_or_id) ')' (',')?                          #constraintCheck
+        |   ID check  '('check_exp (logic check_exp)* ')' (',')?                          #constraintCheck
         ;
 
 num_or_id: NUM | ID;
 
 id_list: ID (',' ID)*;
 
-exp: logic | relational;
+check_exp: ID relational (num_or_id) ;
+
+
+
 
 rename_table_statement: alter table ID rename to ID ';';
 

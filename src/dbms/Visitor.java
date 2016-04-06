@@ -125,21 +125,25 @@ public class Visitor<T> extends sqlBaseVisitor {
 
     @Override
     public Object visitColumn(sqlParser.ColumnContext ctx) {
-        
-        String nombreColumna = ctx.getChild(0).getText();
-        String tipo = (String)visit(ctx.getChild(1));
-        TuplaColumna tupla = new TuplaColumna();
-        if (tipo.contains("€")){
-            int tam = Integer.parseInt(tipo.substring(tipo.indexOf("€")+1));
-            tupla.setTamaño(tam);
-            tipo = tipo.substring(0,tipo.indexOf("€"));
-        }
-        DBMS.debug(nombreColumna);
-        DBMS.debug(tipo);
+        if (tabla != null){
+            String nombreColumna = ctx.getChild(0).getText();
+            String tipo = (String)visit(ctx.getChild(1));
+            TuplaColumna tupla = new TuplaColumna();
+            if (tipo.contains("€")){
+                int tam = Integer.parseInt(tipo.substring(tipo.indexOf("€")+1));
+                tupla.setTamaño(tam);
+                tipo = tipo.substring(0,tipo.indexOf("€"));
+            }
+            DBMS.debug(nombreColumna);
+            DBMS.debug(tipo);
 
-        tupla.setNombre(nombreColumna);
-        tupla.setTipo(tipo);
-        tabla.agregarColumna(tupla);
+            tupla.setNombre(nombreColumna);
+            tupla.setTipo(tipo);
+            tabla.agregarColumna(tupla);
+        }
+        else{
+            DBMS.debug("Ha ocurrido un error en cascada en la tabla ", ctx.getStart());
+        }
         return super.visitColumn(ctx);
     }
 
