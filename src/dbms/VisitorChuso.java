@@ -335,6 +335,51 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         
         return super.visitConstraintForeignKey(ctx); //To change body of generated methods, choose Tools | Templates.
     }
+     @Override
+    public Object visitConstraintCheck(sqlParser.ConstraintCheckContext ctx) {
+         String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
+            Tabla tabla = (Tabla) json.JSONtoObject(bdActual+"/", nombreTabla, "Tabla");
+            String nombreConstraint = ctx.getChild(0).getText();
+            String tipoConstraint = ctx.getChild(1).getText();
+           
+            Constraint constraint = new Constraint();
+            constraint.setTipo(tipoConstraint);
+            constraint.setNombre(nombreConstraint);
+        
+            
+            //tengo que revisar que exista este campo en la tabla actual
+            String op1 = ctx.getChild(3).getText();
+            //este solo sirve para guardar
+            String relOp = ctx.getChild(4).getText();
+            
+            //este campo puede ser número o un ID, como lo identifico?.
+            //bueno, no me sirve saber esto hasta que haga la operación.
+            String op2 = ctx.getChild(5).getText();
+            ArrayList<TuplaColumna> columnas = tabla.getColumnas();
+            boolean verCheck = false;
+            for (int i = 0;i<columnas.size();i++){
+                if (columnas.get(i).getNombre().equals(nombreConstraint)){
+                    verCheck= true;
+                }
+            }
+            if (!verCheck){
+                tabla = null;
+                DBMS.throwMessage("Error: El nombre del constraint "+nombreConstraint + " ya existe " , ctx.getStart());
+                return null;
+            }
+            TuplaCheck check = new TuplaCheck();
+            check.setOp1(op1);
+            check.setOp2(op2);
+            
+            check.setOperador(relOp);
+            constraint.setTuplaCheck(check);
+            tabla.addConstraint(constraint);
+            DBMS.debug("Se ha agregado el constraint " + nombreConstraint, ctx.getStart());
+            json.objectToJSON(bdActual, nombreTabla, tabla);
+        
+        
+        return super.visitConstraintCheck(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
     public boolean revisarListadoIDs(ArrayList<TuplaColumna> camposActuales, ArrayList<String> listadoIDS){
         boolean verificador = true;
         for (int i = 0;i<listadoIDS.size();i++){
