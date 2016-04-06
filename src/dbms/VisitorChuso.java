@@ -446,18 +446,73 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
 
     @Override
     public Object visitCondition(sqlParser.ConditionContext ctx) {
-        String nombrePapa = ctx.getParent().getText();
+        String nombrePapa = ctx.getParent().getParent().getChild(0).getText();
         String nombreTabla = "";
-        if(nombrePapa.equals("delete_value"))
-            nombreTabla = ctx.getParent().getChild(2).getText();
+        if(nombrePapa.equals("delete"))
+            nombreTabla = ctx.getParent().getParent().getChild(2).getText();
         else
-            if(nombrePapa.equals("update_value"))
-                nombreTabla = ctx.getParent().getChild(1).getText();
+            if(nombrePapa.equals("update"))
+                nombreTabla = ctx.getParent().getParent().getChild(1).getText();
             else
-                nombreTabla = ctx.getParent().getChild(3).getText();
-        System.out.println(nombreTabla);
-        
+                nombreTabla = ctx.getParent().getParent().getChild(3).getText();
+        Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+        String n=(String) (this.visit(ctx.getChild(0)));
         return super.visitCondition(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitIdentifier(sqlParser.IdentifierContext ctx) {
+        if(ctx.getChildCount()>1){
+            String nombreTabla = ctx.getChild(0).getText();
+            String nombreColumna = ctx.getChild(2).getText();
+            Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+            if(tableExist(nombreTabla)<0){
+                DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
+                return "error";
+            }
+            int indiceColumna = columnExist(nombreTabla,nombreColumna);
+            if(indiceColumna<0){
+                DBMS.throwMessage( "Error: La Columna: "+nombreColumna+" no existe en la tabla "+ nombreTabla, ctx.getStart());
+                return "error";
+            }
+            return tabla.getColumnas().get(indiceColumna).getTipo();
+        }else{
+            String contenido = ctx.getChild(0).getText();
+            try {
+                Integer.parseInt(contenido);
+                return "int";
+            } catch (NumberFormatException e) {
+                if(contenido.contains("\'")){
+                    if(!contenido.startsWith("\'")){
+                        DBMS.throwMessage( "String o char debe comenzar con \'", ctx.getStart());
+                        return "error";
+                    }else
+                        if(!contenido.endsWith("\'")){
+                            DBMS.throwMessage( "String o char debe terminar con \'", ctx.getStart());
+                            return "error";
+                        }else
+                            return "char";
+                }else{
+                    DBMS.throwMessage( "Error de referencia, debe ir de la forma tabla.columna ", ctx.getStart());
+                    return "error";
+                }
+             }
+            
+        }
+    }
+    public int tableExist(String nombreTabla){
+        ArchivoMaestroTabla archivo = (ArchivoMaestroTabla)json.JSONtoObject(bdActual, "MasterTable"+bdActual, "ArchivoMaestroTabla");
+        for(int i = 0;i<archivo.getTablas().size();i++)
+            if(archivo.getTablas().get(i).getNombreTabla().equals(nombreTabla))
+                return i;
+        return -1;
+    }
+    public int columnExist(String nombreTabla,String nombreColumna){
+        Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+        for(int i = 0;i<tabla.getColumnas().size();i++)
+            if(tabla.getColumnas().get(i).getNombre().equals(nombreColumna))
+                return i;
+        return -1;
     }
     
 }
