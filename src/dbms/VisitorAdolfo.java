@@ -314,10 +314,6 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
             if (insertColumnNames.size() < cantColumnasTabla) {
                 ArrayList<TuplaColumna> columnasTabla = tabla.getColumnas();
                 for (int i = 0; i < columnasTabla.size(); i++) {
-                    //if (!(i < insertColumnNames.size())) {
-                    //    insertData.add("Null");
-                    //    continue;
-                    //}
                     String nombreColumna = columnasTabla.get(i).getNombre();
                     String tipoColumna = columnasTabla.get(i).getTipo();
                     // Recorremos todos los nombres de las columnas en la lista de insert
@@ -348,15 +344,18 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                             insertData.add(valor);
                             continue;
                         }
-                        insertData.add("NULL");
+                        if (!insertColumnNames.contains(nombreColumna)) {
+                            insertData.add("NULL");
+                        }
                     }
                 }
             }
         }
         
-        System.out.println("Datos a ingresar: " + insertData);
+        tabla.addRowToTable(insertData);
+        json.objectToJSON(bdActual, nombreTabla, tabla);
         
-        return (T)visitChildren(ctx);
+        return (T)tabla;
     }
     
     public String getColumnTypeFromColumnName(String nombreColumna, Tabla tabla) {
