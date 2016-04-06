@@ -166,7 +166,13 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                            if(tab.getConstraints().get(j).getTipo().equals("check")){
                                //hay un error en esta línea porque se cambio la estructura de tupla check
                                //ahora es un arraylist.
-                               if(tab.getConstraints().get(j).getTuplaCheck().getOp1().equals(nombreColumna)||tab.getConstraints().get(j).getTuplaCheck().getOp2().equals(nombreColumna)){
+                               int cont=0;
+                               for(int p = 0;p<tab.getConstraints().get(j).getTuplaCheck().size();p++)
+                                   if(tab.getConstraints().get(j).getTuplaCheck().get(p).getOp1().contains(nombreColumna)||tab.getConstraints().get(j).getTuplaCheck().get(p).getOp2().contains(nombreColumna)){
+                                       tab.getConstraints().get(j).getTuplaCheck().remove(p-cont);
+                                       cont++;
+                                   }
+                               if(tab.getConstraints().get(j).getTuplaCheck().isEmpty()){
                                     indices.add(j);
                                }
                            }else{
