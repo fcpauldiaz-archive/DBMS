@@ -269,6 +269,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterCheck_exp(@NotNull sqlParser.Check_expContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCheck_exp(@NotNull sqlParser.Check_expContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -648,6 +660,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNot(@NotNull sqlParser.NotContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNull_literal(@NotNull sqlParser.Null_literalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNull_literal(@NotNull sqlParser.Null_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

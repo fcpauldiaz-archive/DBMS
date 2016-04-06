@@ -24,8 +24,8 @@ fragment DAY       : DIGIT | TWO_DIGITS ;
 
 //* \'
 ID : LETTER ( LETTER | DIGIT )* ;
-NUM : DIGIT (DIGIT)*;
-FLOAT:  DIGIT (DIGIT)* ('.' (DIGIT)*);
+NUM : ('-')? DIGIT (DIGIT)*;
+FLOAT:  ('-')? DIGIT (DIGIT)* ('.' (DIGIT)*);
 DATE: '\'' YEAR '-' MONTH '-' DAY '\'';
 CHAR :'\'' (ASCII)* '\'';
 
@@ -100,6 +100,8 @@ tables: 'TABLES'|'tables';
 from: 'FROM'|'from';
 
 add: 'ADD'|'add';
+
+
 
 
 column_terminal: 'COLUMN'|'column';
@@ -198,14 +200,17 @@ constraint: constraint_terminal constraintType ;
 constraintType:
             ID primary key '(' id_list')' (',')?                                #constraintPrimaryKey                    
         |   ID foreign key  '(' id_list')' references ID '(' id_list ')' (',')? #constraintForeignKey
-        |   ID check  '('ID exp (num_or_id) ')' (',')?                          #constraintCheck
+        |   ID check  '('check_exp (logic check_exp)* ')' (',')?                          #constraintCheck
         ;
 
 num_or_id: NUM | ID;
 
 id_list: ID (',' ID)*;
 
-exp: logic | relational;
+check_exp: ID relational (num_or_id) ;
+
+
+
 
 rename_table_statement: alter table ID rename to ID ';';
 
@@ -255,13 +260,15 @@ literal:
         int_literal
     |   float_literal
     |   date_literal
-    |   char_literal
+    |   null_literal
+    |   char_literal  
     ;
 
 int_literal: NUM;
 float_literal: FLOAT;
 date_literal: DATE;
 char_literal: CHAR;
+null_literal: 'null'| 'NULL' ;
 
 
 

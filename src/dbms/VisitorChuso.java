@@ -139,6 +139,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             ArchivoMaestroTabla ar = (ArchivoMaestroTabla)json.JSONtoObject(bdActual, "MasterTable"+bdActual, "ArchivoMaestroTabla");
             Tabla tab = (Tabla)json.JSONtoObject(bdActual,nombreTabla , "Tabla");
             boolean existe = false;
+            ArrayList indices = new ArrayList();
             for(int i = 0; i<ar.getTablas().size();i++){
                 String nombreTablaActual = ar.getTablas().get(i).getNombreTabla();
                 if(!nombreTabla.equals(nombreTablaActual)){
@@ -157,17 +158,21 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                     for(int j = 0 ;j<tab.getConstraints().size();j++){
                        if(tab.getConstraints().get(j).getTipo().equals("primary")){
                             if(tab.getConstraints().get(j).getReferences().contains(nombreColumna)){
-                                existe = true;
-                                DBMS.throwMessage( "Error: La tabla: "+nombreColumna+" tiene referencias a constraints de llaves pimarias, no se puede eliminar", ctx.getStart());
-                                return super.visitAccionDropColumn(ctx); //To change body of generated methods, choose Tools | Templates.
+                                tabla.getConstraints().get(j).getReferences().remove(tabla.getConstraints().get(j).getReferences().lastIndexOf(nombreColumna));
+                                if(tabla.getConstraints().get(j).getReferences().isEmpty())
+                                    indices.add(j);
                             }
                         }else
                            if(tab.getConstraints().get(j).getTipo().equals("check")){
                                if(tab.getConstraints().get(j).getTuplaCheck().getOp1().equals(nombreColumna)||tab.getConstraints().get(j).getTuplaCheck().getOp2().equals(nombreColumna)){
-                                    existe = true;
-                                    DBMS.throwMessage( "Error: La columna: "+nombreColumna+" tiene referencias a constraints de check, no se puede eliminar", ctx.getStart());
-                                    return super.visitAccionDropColumn(ctx); //To change body of generated methods, choose Tools | Templates.
+                                    indices.add(j);
                                }
+                           }else{
+                               if(tab.getConstraints().get(j).getReferences().contains(nombreColumna)){
+                                    tabla.getConstraints().get(j).getReferences().remove(tabla.getConstraints().get(j).getReferences().lastIndexOf(nombreColumna));
+                                    if(tabla.getConstraints().get(j).getReferences().isEmpty())
+                                        indices.add(j);
+                                }
                            }
                     }
                 }
@@ -176,6 +181,8 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 for(int i = 0;i<tabla.getColumnas().size();i++)
                     if(tabla.getColumnas().get(i).getNombre().equals(nombreColumna))
                         tabla.getColumnas().remove(i);
+                for(int i = 0;i<indices.size();i++)
+                    tabla.getConstraints().remove((int) indices.get(i)-i);
                 DBMS.throwMessage( "columna: "+nombreColumna+" eliminada de la tabla: "+ nombreTabla, ctx.getStart());
                 json.objectToJSON(bdActual, nombreTabla, tabla);
             }
@@ -338,7 +345,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
      @Override
     public Object visitConstraintCheck(sqlParser.ConstraintCheckContext ctx) {
          String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
-            Tabla tabla = (Tabla) json.JSONtoObject(bdActual+"/", nombreTabla, "Tabla");
+            Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
             String nombreConstraint = ctx.getChild(0).getText();
             String tipoConstraint = ctx.getChild(1).getText();
            
