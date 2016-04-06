@@ -287,6 +287,11 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         constraint.setTipo(tipoConstraint);
         constraint.setNombre(nombreConstraint);
         Tabla tabla = (Tabla) json.JSONtoObject(bdActual+"/", nombreTabla, "Tabla");
+        for(int i = 0;i<tabla.getConstraints().size();i++)
+            if(tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
+                DBMS.throwMessage("Error: Constraint "+nombreConstraint+" ya existe en la tabla " + nombreTabla,ctx.getStart() );
+                return super.visitConstraintForeignKey(ctx); //To change body of generated methods, choose Tools | Templates.
+            }
          String nombreTablaRef = ctx.getChild(7).getText();
             ArrayList<String> listadoIDSREF = (ArrayList<String>)visit(ctx.getChild(9));
             
