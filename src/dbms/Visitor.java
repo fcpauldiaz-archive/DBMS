@@ -280,6 +280,11 @@ public class Visitor<T> extends sqlBaseVisitor {
              //ahora busco la tabla y verifico los campos de los constraints
             Tabla tabla_c = tabla;
                 if(tabla!=null){
+                    for(int i = 0;i<tabla.getConstraints().size();i++)
+                        if(tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
+                            DBMS.throwMessage("Error: Constraint "+nombreConstraint+" ya existe en la tabla " + nombreTabla,ctx.getStart() );
+                            return super.visitConstraintForeignKey(ctx); //To change body of generated methods, choose Tools | Templates.
+                        }
                 ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
                 boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
                 if (verificador){
