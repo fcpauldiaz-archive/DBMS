@@ -19,9 +19,9 @@ public class Tabla {
     private ArrayList<ArrayList> tableData;
 
     public Tabla(){
-        this.tablaDeclaration = new ArrayList();
-        this.constraints = new ArrayList();
-        this.tableData = new ArrayList();
+        this.tablaDeclaration = new ArrayList(50);
+        this.constraints = new ArrayList(50);
+        this.tableData = new ArrayList(10000);
     }
     
     public void agregarColumna(TuplaColumna tupla){

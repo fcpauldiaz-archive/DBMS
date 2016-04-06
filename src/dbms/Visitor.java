@@ -11,6 +11,8 @@ import antlr.sqlParser;
 import static dbms.ANTGui.bdActual;
 import static dbms.ANTGui.jTable1;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -329,13 +331,19 @@ public class Visitor<T> extends sqlBaseVisitor {
     }
 
    
-
+    /**
+     * Método para revisar los campos referenciados en los constraints
+     * @param camposActuales
+     * @param listadoIDS
+     * @return true si es válido, false contrario
+     */
     public boolean revisarListadoIDs(ArrayList<TuplaColumna> camposActuales, ArrayList<String> listadoIDS){
         boolean verificador = true;
         for (int i = 0;i<listadoIDS.size();i++){
             String idActual = listadoIDS.get(i);
             boolean verificadorInterno = false;
             for (int j = 0;j<camposActuales.size();j++){
+                
                 String campoActual = camposActuales.get(j).getNombre();
                 if (idActual.equals(campoActual)){
                     verificadorInterno = true;
@@ -344,8 +352,25 @@ public class Visitor<T> extends sqlBaseVisitor {
             verificador = verificadorInterno;
             
         }
+        if (checkDuplicates(listadoIDS)){
+            DBMS.throwMessage("Error: Hay elementos repetidos en constraint");
+            return false;
+        }
         return verificador;
     }
+    
+   /**
+    * Revisar si hay duplicados en un arraylist
+    * @param list
+    * @return 
+    */
+   public boolean checkDuplicates(ArrayList<String> list){
+       
+    Set<String> set = new HashSet<String>(list);
+
+    return set.size() < list.size();
+   
+   }
     
     /**
      * Método que regresa un array con los nombres de los ids en constraints
