@@ -272,9 +272,10 @@ public class TextPanel extends JPanel{
         String regex_reserved_1 = "(where|WHERE|use|USE|database|DATABASE|select|SELECT|"
                 + "show|SHOW|table|TABLE|tables|TABLES|insert|INSERT|from|FROM|constraint|CONSTRAINT|values|VALUES"
                 + "|into|INTO|foreign|FOREIGN|primary|PRIMARY|key|KEY|column|COLUMN|columns|COLUMNS|update|UPDATE"
-                + "|drop|DROP|delete|DELETE|alter|ALTER|create|CREATE|databases|DATABASES|add|ADD|order|ORDER|by|BY|asc|ASC|desc|DESC)";
-        String regex_reserved_2 = "(int|INT|char|CHAR|float|FLOAT|boolean|AND|and|OR|or|not|NOT)";
-        String regex_method ="(NULL|null)";
+                + "|drop|DROP|delete|DELETE|alter|ALTER|create|CREATE|databases|DATABASES|add|ADD|order|ORDER|by|BY"
+                + "|asc|ASC|desc|DESC|CHECK|check|update|UPDATE)";
+        String regex_reserved_2 = "(int|INT|char|date|DATE|CHAR|float|FLOAT|boolean|AND|and|OR|or|not|NOT)";
+        String regex_method ="(NULL|null|=|>|>=|<=|<|!=|<>)";
         //*************************************************
         Color orange = new Color(228,167,53);//orange
         Color blue       = Color.BLUE;

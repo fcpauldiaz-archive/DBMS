@@ -245,9 +245,9 @@ logic: and | or | not;
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' | '!=' ;
 
 
-update_value: update ID set column '=' value where condition ';' ;
+update_value: update ID set column '=' value (where first_where_statement(where_statement)*)? ';' ;
 
-delete_value: delete from ID where condition ';' ;
+delete_value: delete from ID (where first_where_statement(where_statement)*)? condition ';' ;
 
 select_value: select select_values from ID (where first_where_statement(where_statement)*)?  (order by ID (asc | desc)? )? ';';
 
@@ -257,7 +257,7 @@ first_where_statement: condition;
 
 where_statement: logic condition;
 
-condition: ID ('.' ID )? relational ID ('.' ID)?;         
+condition:  (ID | CHAR) ('.' ID )?  relational (ID | CHAR) ('.' ID)?  ;         
               
 list_values : (value (',' (value))* ) ;
          
