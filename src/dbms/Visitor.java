@@ -471,11 +471,13 @@ public class Visitor<T> extends sqlBaseVisitor {
     @Override
     public Object visitSelect_value(sqlParser.Select_valueContext ctx) {
         
+        String nombreTabla = ctx.getChild(3).getText();
+         
         //caso select ALL
         if (ctx.getChild(1).getChildCount() == 1 && ctx.getChild(1).getText().equals("*")){
             
         }
-        String nombreTabla = ctx.getChild(3).getText();
+       
         
       
         
