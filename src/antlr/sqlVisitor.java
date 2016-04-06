@@ -115,6 +115,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDelete_value(@NotNull sqlParser.Delete_valueContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#constraint_alter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraint_alter(@NotNull sqlParser.Constraint_alterContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#char_literal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -231,7 +237,7 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	T visitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code values}
-	 * labeled alternative in {@link sqlParser#accionaccionaccionaccionconstraintTypeconstraintTypeconstraintType}.
+	 * labeled alternative in {@link sqlParser#accionaccionaccionaccionconstraintTypeconstraintTypeconstraintTypeAlterconstraintTypeAlterconstraintTypeconstraintTypeAlter}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
@@ -297,6 +303,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code constraintForeignKeyAlter}
+	 * labeled alternative in {@link sqlParser#constraintTypeAlter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraintForeignKeyAlter(@NotNull sqlParser.ConstraintForeignKeyAlterContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#literal}.
 	 * @param ctx the parse tree
@@ -488,6 +501,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitColumn_terminal_plural(@NotNull sqlParser.Column_terminal_pluralContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code constraintCheckAlter}
+	 * labeled alternative in {@link sqlParser#constraintTypeAlter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraintCheckAlter(@NotNull sqlParser.ConstraintCheckAlterContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#insert_value}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -499,6 +519,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code constraintPrimaryKeyAlter}
+	 * labeled alternative in {@link sqlParser#constraintTypeAlter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraintPrimaryKeyAlter(@NotNull sqlParser.ConstraintPrimaryKeyAlterContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#char_name}.
 	 * @param ctx the parse tree

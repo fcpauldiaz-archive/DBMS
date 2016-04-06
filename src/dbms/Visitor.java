@@ -28,7 +28,7 @@ public class Visitor<T> extends sqlBaseVisitor {
     private JSONParser json = new JSONParser();
     private Tabla tabla;
     public String tablaActual="";
-    
+    private String globalLogic="";
     /**
      * Método que crea la base de datos y actualiza el archivo maestro de bases de datos.
      * @param ctx
@@ -120,7 +120,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         }
        
         mdt = new ArchivoMaestroTabla(); //sirve para perder la referencia
-        return super.visitTable_definition(ctx); //To change body of generated methods, choose Tools | Templates.
+        return null; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -178,7 +178,8 @@ public class Visitor<T> extends sqlBaseVisitor {
                     for(int i = 0;i<tabla.getConstraints().size();i++){
                         if(tabla.getConstraints().get(i).getTipo().equals("primary")){
                             DBMS.throwMessage("Error: Constraint primary key ya existe en la tabla " + nombreTabla, ctx.getStart() );
-                            return super.visitConstraintPrimaryKey(ctx); //To change body of generated methods, choose Tools | Templates.
+                            tabla  = null;
+                            return null; //To change body of generated methods, choose Tools | Templates.
                         }
                     }
             ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
@@ -213,41 +214,61 @@ public class Visitor<T> extends sqlBaseVisitor {
             constraint.setTipo(tipoConstraint);
             constraint.setNombre(nombreConstraint);
         
-            
-            //tengo que revisar que exista este campo en la tabla actual
-            String op1 = ctx.getChild(3).getText();
-            //este solo sirve para guardar
-            String relOp = ctx.getChild(4).getText();
-            
-            //este campo puede ser número o un ID, como lo identifico?.
-            //bueno, no me sirve saber esto hasta que haga la operación.
-            String op2 = ctx.getChild(5).getText();
+           
+                    
             if(tabla!=null){
-                ArrayList<TuplaColumna> columnas = tabla.getColumnas();
-                boolean verCheck = false;
+                ArrayList<Constraint> columnas = tabla.getConstraints();
+                boolean verCheck = true;
                 for (int i = 0;i<columnas.size();i++){
-                    if (columnas.get(i).getNombre().equals(op1)){
-                        verCheck= true;
+                    if (columnas.get(i).getNombre().equals(nombreConstraint)){
+                        verCheck= false;
                     }
                 }
                 if (!verCheck){
                     tabla = null;
-                    DBMS.throwMessage("El nombre del constraint "+nombreConstraint + " ya existe " , ctx.getStart());
+                    DBMS.throwMessage("Error: El nombre del constraint "+nombreConstraint + " ya existe " , ctx.getStart());
                     return null;
                 }
-                TuplaCheck check = new TuplaCheck();
-                check.setOp1(op1);
-                check.setOp2(op2);
-
-                check.setOperador(relOp);
-                constraint.setTuplaCheck(check);
+                for (int i = 3;i<ctx.getChildCount();i++){
+                    T visitCheck = (T)this.visit(ctx.getChild(i));
+                    if (visitCheck instanceof TuplaCheck){
+                        if (!this.globalLogic.isEmpty()){
+                           
+                            ((TuplaCheck)visitCheck).setOperadorLogico(globalLogic);
+                        }
+                        constraint.addTuplaCheck((TuplaCheck)visitCheck);
+                    }
+                    
+                }
+                this.globalLogic = "";
                 tabla.addConstraint(constraint);
                 DBMS.debug("Se ha agregado el constraint " + nombreConstraint, ctx.getStart());
             }
         
-        return super.visitConstraintCheck(ctx); //To change body of generated methods, choose Tools | Templates.
+        return null; //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Object visitLogic(sqlParser.LogicContext ctx) {
+        this.globalLogic = ctx.getChild(0).getText();
+        return super.visitLogic(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+
+    @Override
+    public Object visitCheck_exp(sqlParser.Check_expContext ctx) {
+        String op1Check = ctx.getChild(0).getText();
+        String operatorCheck = ctx.getChild(1).getText();
+        String op2Check = ctx.getChild(2).getText();
+        TuplaCheck tupla = new TuplaCheck();
+        tupla.setOp1(op1Check);
+        tupla.setOperador(operatorCheck);
+        tupla.setOp2(op2Check);
+        return tupla; //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
     @Override
     public Object visitConstraintForeignKey(sqlParser.ConstraintForeignKeyContext ctx) {
         String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();

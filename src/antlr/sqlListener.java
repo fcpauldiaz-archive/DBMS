@@ -181,6 +181,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitDelete_value(@NotNull sqlParser.Delete_valueContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#constraint_alter}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraint_alter(@NotNull sqlParser.Constraint_alterContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#constraint_alter}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraint_alter(@NotNull sqlParser.Constraint_alterContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#char_literal}.
 	 * @param ctx the parse tree
 	 */
@@ -374,13 +384,13 @@ public interface sqlListener extends ParseTreeListener {
 	void exitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code values}
-	 * labeled alternative in {@link sqlParser#accionaccionaccionaccionconstraintTypeconstraintTypeconstraintType}.
+	 * labeled alternative in {@link sqlParser#accionaccionaccionaccionconstraintTypeconstraintTypeconstraintTypeAlterconstraintTypeAlterconstraintTypeconstraintTypeAlter}.
 	 * @param ctx the parse tree
 	 */
 	void enterValues(@NotNull sqlParser.ValuesContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code values}
-	 * labeled alternative in {@link sqlParser#accionaccionaccionaccionconstraintTypeconstraintTypeconstraintType}.
+	 * labeled alternative in {@link sqlParser#accionaccionaccionaccionconstraintTypeconstraintTypeconstraintTypeAlterconstraintTypeAlterconstraintTypeconstraintTypeAlter}.
 	 * @param ctx the parse tree
 	 */
 	void exitValues(@NotNull sqlParser.ValuesContext ctx);
@@ -486,6 +496,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code constraintForeignKeyAlter}
+	 * labeled alternative in {@link sqlParser#constraintTypeAlter}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintForeignKeyAlter(@NotNull sqlParser.ConstraintForeignKeyAlterContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constraintForeignKeyAlter}
+	 * labeled alternative in {@link sqlParser#constraintTypeAlter}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintForeignKeyAlter(@NotNull sqlParser.ConstraintForeignKeyAlterContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#literal}.
 	 * @param ctx the parse tree
@@ -805,6 +827,18 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitColumn_terminal_plural(@NotNull sqlParser.Column_terminal_pluralContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code constraintCheckAlter}
+	 * labeled alternative in {@link sqlParser#constraintTypeAlter}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintCheckAlter(@NotNull sqlParser.ConstraintCheckAlterContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constraintCheckAlter}
+	 * labeled alternative in {@link sqlParser#constraintTypeAlter}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintCheckAlter(@NotNull sqlParser.ConstraintCheckAlterContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#insert_value}.
 	 * @param ctx the parse tree
 	 */
@@ -824,6 +858,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code constraintPrimaryKeyAlter}
+	 * labeled alternative in {@link sqlParser#constraintTypeAlter}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintPrimaryKeyAlter(@NotNull sqlParser.ConstraintPrimaryKeyAlterContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constraintPrimaryKeyAlter}
+	 * labeled alternative in {@link sqlParser#constraintTypeAlter}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintPrimaryKeyAlter(@NotNull sqlParser.ConstraintPrimaryKeyAlterContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#char_name}.
 	 * @param ctx the parse tree
