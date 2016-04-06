@@ -423,12 +423,20 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                 case "primary":
                     boolean isOk_p = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
                     if (!isOk_p) {
+                        DBMS.throwMessage(
+                                "Insert Error: Primary key violation; Ya existe tupla con esos datos",
+                                ctx.getStart()
+                        );
                         return null;
                     }
                     break;
                 case "PRIMARY":
                     boolean isOk_P = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
                     if (!isOk_P) {
+                        DBMS.throwMessage(
+                                "Insert Error: Primary key violation; Ya existe tupla con esos datos",
+                                ctx.getStart()
+                        );
                         return null;
                     }
                     break;
