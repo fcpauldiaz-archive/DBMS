@@ -300,7 +300,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             }
             //si llega aquí es porque si existen
             TuplaRefForeign tuplaForeign = new TuplaRefForeign(nombreTablaRef);
-            tuplaForeign.setReferencesForeign(listadoIDS);
+            tuplaForeign.setReferencesForeign(listadoIDSREF);
             constraint.setReferencesForeign(tuplaForeign);
             
              //ahora busco la tabla y verifico los campos de los constraints
