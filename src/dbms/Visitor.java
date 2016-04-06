@@ -541,7 +541,16 @@ public class Visitor<T> extends sqlBaseVisitor {
         return super.visitSelect_value(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Object visitUpdate_value(sqlParser.Update_valueContext ctx) {
+        
+        
+        
+        return super.visitUpdate_value(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
   
+    
     
   
 }

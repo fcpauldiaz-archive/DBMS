@@ -245,7 +245,9 @@ logic: and | or | not;
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' | '!=' ;
 
 
-update_value: update ID set column '=' value (where first_where_statement(where_statement)*)? ';' ;
+update_value: update ID set update_column (where first_where_statement(where_statement)*) ';' ;
+
+update_column: (ID '=' value (',')?)+;
 
 delete_value: delete from ID (where first_where_statement(where_statement)*)? ';' ;
 
