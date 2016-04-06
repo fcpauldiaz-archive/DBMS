@@ -186,6 +186,13 @@ public class sqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements sq
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitUpdate_colmn(@NotNull sqlParser.Update_colmnContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitList_values(@NotNull sqlParser.List_valuesContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -501,6 +508,13 @@ public class sqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements sq
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitUpdate_column_multiple(@NotNull sqlParser.Update_column_multipleContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitDesc(@NotNull sqlParser.DescContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -530,13 +544,6 @@ public class sqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements sq
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitValues(@NotNull sqlParser.ValuesContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitUpdate_column(@NotNull sqlParser.Update_columnContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

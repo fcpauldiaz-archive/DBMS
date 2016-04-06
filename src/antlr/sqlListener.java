@@ -259,6 +259,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitConstraintCheck(@NotNull sqlParser.ConstraintCheckContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#update_colmn}.
+	 * @param ctx the parse tree
+	 */
+	void enterUpdate_colmn(@NotNull sqlParser.Update_colmnContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#update_colmn}.
+	 * @param ctx the parse tree
+	 */
+	void exitUpdate_colmn(@NotNull sqlParser.Update_colmnContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#list_values}.
 	 * @param ctx the parse tree
 	 */
@@ -715,6 +725,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitCondition(@NotNull sqlParser.ConditionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#update_column_multiple}.
+	 * @param ctx the parse tree
+	 */
+	void enterUpdate_column_multiple(@NotNull sqlParser.Update_column_multipleContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#update_column_multiple}.
+	 * @param ctx the parse tree
+	 */
+	void exitUpdate_column_multiple(@NotNull sqlParser.Update_column_multipleContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#desc}.
 	 * @param ctx the parse tree
 	 */
@@ -766,16 +786,6 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitValues(@NotNull sqlParser.ValuesContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#update_column}.
-	 * @param ctx the parse tree
-	 */
-	void enterUpdate_column(@NotNull sqlParser.Update_columnContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#update_column}.
-	 * @param ctx the parse tree
-	 */
-	void exitUpdate_column(@NotNull sqlParser.Update_columnContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#show}.
 	 * @param ctx the parse tree

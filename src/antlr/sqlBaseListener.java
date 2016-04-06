@@ -305,6 +305,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterUpdate_colmn(@NotNull sqlParser.Update_colmnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUpdate_colmn(@NotNull sqlParser.Update_colmnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterList_values(@NotNull sqlParser.List_valuesContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -845,6 +857,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterUpdate_column_multiple(@NotNull sqlParser.Update_column_multipleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUpdate_column_multiple(@NotNull sqlParser.Update_column_multipleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDesc(@NotNull sqlParser.DescContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -900,18 +924,6 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitValues(@NotNull sqlParser.ValuesContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterUpdate_column(@NotNull sqlParser.Update_columnContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitUpdate_column(@NotNull sqlParser.Update_columnContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

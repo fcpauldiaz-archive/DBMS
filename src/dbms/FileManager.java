@@ -75,7 +75,7 @@ public class FileManager {
      */
     public boolean checkFile(String path,String fileName){
        
-        File file = new File("DB/"+path+"/",fileName+".json");
+        File file = new File("DB/"+path+"/"+fileName+".json");
       
         return file.exists();
     }

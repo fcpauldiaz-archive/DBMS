@@ -544,11 +544,51 @@ public class Visitor<T> extends sqlBaseVisitor {
     @Override
     public Object visitUpdate_value(sqlParser.Update_valueContext ctx) {
         
-        
+        String nombreTabla = ctx.getChild(1).getText();
+        if (bdActual.isEmpty()){
+            DBMS.throwMessage("Error: no se ha seleccionado la base de datos");
+            return null;
+        }
+        if (!manejador.checkFile(bdActual, nombreTabla)){
+            DBMS.throwMessage("Error: la tabla "+ nombreTabla +" no existe", ctx.getStart());
+            return null;
+        }
+        tabla = (Tabla)json.JSONtoObject(bdActual, nombreTabla, "Tabla");
         
         return super.visitUpdate_value(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Object visitUpdate_colmn(sqlParser.Update_colmnContext ctx) {
+         String nombreColumna = ctx.getChild(0).getText();
+        boolean verificadorColumna = verificarColumnaUpdate(nombreColumna);
+        if (!verificadorColumna){
+            DBMS.throwMessage("Error: La columna " +nombreColumna+ " no existe ");
+            tabla = null;
+            return null;
+        }
+        
+        return super.visitUpdate_colmn(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    /**
+     * Método para verificar si existe una columna en una tabla
+     * UPDATE statement
+     * @param nombreColumna
+     * @return boolean
+     */
+    public boolean verificarColumnaUpdate(String nombreColumna){
+        boolean verificadorColumna = false;
+       
+        for(TuplaColumna columna : tabla.getColumnas()){
+            if (columna.getNombre().equals(nombreColumna)){
+                verificadorColumna = true;
+            }
+        }
+        //si es false no existe, si es true si existe.
+        return verificadorColumna;
+    }
+    
   
     
     
