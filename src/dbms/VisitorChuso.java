@@ -20,6 +20,7 @@ import javax.swing.table.DefaultTableModel;
 public class VisitorChuso <T> extends sqlBaseVisitor {
     private JSONParser json = new JSONParser();
     private FileManager manejador = new FileManager();
+    
     @Override
     public Object visitUse_schema_statement(sqlParser.Use_schema_statementContext ctx) {
         bdActual = ctx.getChild(2).getText();
@@ -108,11 +109,13 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         }
         Tabla tabla = (Tabla)json.JSONtoObject(bdActual,nombreTabla , "Tabla");
         boolean existe = false;
-        for(int i = 0;i<tabla.getColumnas().size();i++)
+        for(int i = 0;i<tabla.getColumnas().size();i++) {
             if(tabla.getColumnas().get(i).getNombre().equals(nombreColumna)){
                 existe = true;
-                DBMS.throwMessage( "Error: Columna: "+nombreColumna+" ya existe en la tabla "+ nombreTabla, ctx.getStart());
-            }
+                DBMS.throwMessage( "Error: Columna: "+nombreColumna+" ya existe en la tablana "+ nombreTabla, ctx.getStart());
+               
+            }   
+        }
         if(!existe){
             tupla.setNombre(nombreColumna);
             tupla.setTipo(tipo);
@@ -120,7 +123,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             json.objectToJSON(bdActual, nombreTabla, tabla);
             DBMS.throwMessage( "columna: "+nombreColumna+" agregada a la tabla: "+ nombreTabla, ctx.getStart());
         }
-        return super.visitAccionAddColumn(ctx); //To change body of generated methods, choose Tools | Templates.
+      return super.visitAccionAddColumn(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -213,7 +216,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 this.visit(ctx.getChild(i));
         }else
             DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
-        return super.visitAlter_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
     /**
      * Método que regresa un array con los nombres de los ids en constraints
