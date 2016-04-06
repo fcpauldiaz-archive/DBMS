@@ -417,8 +417,34 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
             }
         }
         
+        // Al tener todos los datos que se van a ingresar procedemos a hacer validaciones de constraints
+        for (Constraint cnt: tabla.getConstraints()) {
+            switch (cnt.getTipo()) {
+                case "primary":
+                    boolean isOk_p = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
+                    if (!isOk_p) {
+                        return null;
+                    }
+                    break;
+                case "PRIMARY":
+                    boolean isOk_P = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
+                    if (!isOk_P) {
+                        return null;
+                    }
+                    break;
+                case "foreign":
+                    break;
+                case "FOREIGN":
+                    break;
+                case "check":
+                    break;
+                case "CHECK":
+                    break;
+            }
+        }
+        
         tabla.addRowToTable(insertData);
-        json.objectToJSON(bdActual, nombreTabla, tabla);
+        //json.objectToJSON(bdActual, nombreTabla, tabla);
         
         DBMS.throwMessage(
                 "Insert Correcto: En tabla: " + nombreTabla,
@@ -426,6 +452,56 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         );
         
         return (T)tabla;
+    }
+    
+    public boolean verifyPrimaryKeyInTable(
+        ArrayList dataInsert,           // Datos a validar
+        ArrayList<ArrayList> datosTabla,           // Datos en tabla
+        ArrayList<String> references,   // Columnas a validar
+        Tabla tabla                     // Por cualquier cosa lol
+    ) {
+        ArrayList<Integer> indicesEval = getArrayIndicesDataToEval(references, tabla.getColumnas());
+        
+        System.out.println("Indices a evaluar: " + indicesEval);
+        
+        int contMatch = 0;
+        for (int i = 0; i < datosTabla.size(); i++) {
+            for (Integer index: indicesEval) {
+                T valor_1 = (T)datosTabla.get(i).get(index);
+                T valor_2 = (T)dataInsert.get(index);
+                
+                if (valor_1.equals(valor_2)) {
+                    System.out.println("Valores iguales: " + valor_1 + " - " + valor_2);
+                    contMatch++;
+                }
+                System.out.println("");
+            }
+            
+            System.out.println("Cantidad de valores que hicieron match: " + contMatch + "\n");
+            if (contMatch == indicesEval.size()) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public ArrayList<Integer> getArrayIndicesDataToEval(
+        ArrayList<String> referencias,          // Columnas a las que hacemos referencia
+        ArrayList<TuplaColumna> columnasTabla   // Columnas definción de la tabla
+    ) {
+        ArrayList<Integer> indices = new ArrayList();
+        for (int i = 0; i < referencias.size(); i++) {
+            String nombreReferencia = referencias.get(i);
+            for (int j = 0; j < columnasTabla.size(); j++) {
+                String nombreColumna = columnasTabla.get(j).getNombre();
+                if (nombreReferencia.equals(nombreColumna)) {
+                    indices.add(j);
+                }
+            }
+        }
+        
+        return indices;
     }
     
     public String getColumnTypeFromColumnName(String nombreColumna, Tabla tabla) {

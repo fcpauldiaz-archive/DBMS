@@ -55,6 +55,10 @@ public class Tabla {
         this.tableData.add(element);
     }
     
+    public ArrayList<ArrayList> getDataInTable() {
+        return this.tableData;
+    }
+    
     @Override
     public String toString() {
         return "Tabla{" + "tablaDeclaration=" + tablaDeclaration + ", constraints=" + constraints + '}';
