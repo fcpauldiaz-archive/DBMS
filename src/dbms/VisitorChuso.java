@@ -274,7 +274,59 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         }
         return super.visitConstraintPrimaryKey(ctx); //To change body of generated methods, choose Tools | Templates.
     }
+     @Override
+    public Object visitConstraintForeignKey(sqlParser.ConstraintForeignKeyContext ctx) {
+        String nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
+        String nombreConstraint = ctx.getChild(0).getText();
+        String tipoConstraint = ctx.getChild(1).getText();
+        ArrayList<String> listadoIDS = (ArrayList<String>)visit(ctx.getChild(4));
+        Constraint constraint = new Constraint();
+        constraint.setTipo(tipoConstraint);
+        constraint.setNombre(nombreConstraint);
+        Tabla tabla = (Tabla) json.JSONtoObject(bdActual+"/", nombreTabla, "Tabla");
+         String nombreTablaRef = ctx.getChild(7).getText();
+            ArrayList<String> listadoIDSREF = (ArrayList<String>)visit(ctx.getChild(9));
+            
+            //ahora tengo que revisar que existe la tabla que se referencia
+            //y revisar que el listado IDS REF existe en esa tabla.
+            
+            //paso 1. ir a buscar tabla de referencia
+            Tabla tablaRef = (Tabla)json.JSONtoObject(bdActual, nombreTablaRef, "Tabla");
+            //TODO: ¿Qué pasa si no existe la tabla? falta validar esto.
+            //paso 2. verificar que los campos de referencia existan en la tabla de referencia
+            ArrayList<TuplaColumna> columnasRef = tablaRef.getColumnas();
+         
+            boolean verificadorRef = this.revisarListadoIDs(columnasRef, listadoIDSREF);
+            //si no existen los campos en la referencia
+            if (!verificadorRef){//no pasa la validación
+                DBMS.throwMessage("No existe algún campo de " +listadoIDSREF, ctx.getStart());
+                tabla = null;
+                return null;
+            }
+            //si llega aquí es porque si existen
+            TuplaRefForeign tuplaForeign = new TuplaRefForeign(nombreTablaRef);
+            tuplaForeign.setReferencesForeign(listadoIDS);
+            constraint.setReferencesForeign(tuplaForeign);
+            
+             //ahora busco la tabla y verifico los campos de los constraints
+            Tabla tabla_c = tabla;
 
+            ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
+            boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
+            if (verificador){
+                constraint.setReferences(listadoIDS);
+                tabla.addConstraint(constraint);
+                DBMS.debug("Se ha agregado el constraint " + nombreConstraint,ctx.getStart());
+                json.objectToJSON(bdActual, nombreTabla, tabla);
+            }
+            else{
+                 DBMS.throwMessage("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla,ctx.getStart() );
+                 tabla = null; //ya no se guarda la tabla.
+            }
+        
+        
+        return super.visitConstraintForeignKey(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
     public boolean revisarListadoIDs(ArrayList<TuplaColumna> camposActuales, ArrayList<String> listadoIDS){
         boolean verificador = true;
         for (int i = 0;i<listadoIDS.size();i++){

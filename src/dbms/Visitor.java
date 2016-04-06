@@ -279,17 +279,18 @@ public class Visitor<T> extends sqlBaseVisitor {
             
              //ahora busco la tabla y verifico los campos de los constraints
             Tabla tabla_c = tabla;
-
-            ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
-            boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
-            if (verificador){
-                constraint.setReferences(listadoIDS);
-                tabla.addConstraint(constraint);
-                DBMS.debug("Se ha agregado el constraint " + nombreConstraint,ctx.getStart());
-            }
-            else{
-                 DBMS.throwMessage("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla,ctx.getStart() );
-                 tabla = null; //ya no se guarda la tabla.
+                if(tabla!=null){
+                ArrayList<TuplaColumna> camposActuales = tabla_c.getColumnas();
+                boolean verificador = revisarListadoIDs(camposActuales, listadoIDS);
+                if (verificador){
+                    constraint.setReferences(listadoIDS);
+                    tabla.addConstraint(constraint);
+                    DBMS.debug("Se ha agregado el constraint " + nombreConstraint,ctx.getStart());
+                }
+                else{
+                     DBMS.throwMessage("Error: campo "+listadoIDS+" no existe en la tabla " + nombreTabla,ctx.getStart() );
+                     tabla = null; //ya no se guarda la tabla.
+                }
             }
         
         
