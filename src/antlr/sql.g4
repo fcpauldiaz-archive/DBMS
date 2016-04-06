@@ -24,8 +24,8 @@ fragment DAY       : DIGIT | TWO_DIGITS ;
 
 //* \'
 ID : LETTER ( LETTER | DIGIT )* ;
-NUM : DIGIT (DIGIT)*;
-FLOAT:  DIGIT (DIGIT)* ('.' (DIGIT)*);
+NUM : ('-')? DIGIT (DIGIT)*;
+FLOAT:  ('-')? DIGIT (DIGIT)* ('.' (DIGIT)*);
 DATE: '\'' YEAR '-' MONTH '-' DAY '\'';
 CHAR :'\'' (ASCII)* '\'';
 
