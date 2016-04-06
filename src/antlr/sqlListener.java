@@ -81,6 +81,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitUse(@NotNull sqlParser.UseContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#where_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhere_statement(@NotNull sqlParser.Where_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#where_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhere_statement(@NotNull sqlParser.Where_statementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#int_literal}.
 	 * @param ctx the parse tree
 	 */
@@ -160,16 +170,6 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 */
-	void enterExp(@NotNull sqlParser.ExpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 */
-	void exitExp(@NotNull sqlParser.ExpContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#delete_value}.
 	 * @param ctx the parse tree
@@ -742,6 +742,16 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDrop_table_statement(@NotNull sqlParser.Drop_table_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#first_where_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterFirst_where_statement(@NotNull sqlParser.First_where_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#first_where_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitFirst_where_statement(@NotNull sqlParser.First_where_statementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#float_terminal}.
 	 * @param ctx the parse tree

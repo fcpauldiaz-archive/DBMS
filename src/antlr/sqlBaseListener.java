@@ -101,6 +101,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWhere_statement(@NotNull sqlParser.Where_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWhere_statement(@NotNull sqlParser.Where_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInt_literal(@NotNull sqlParser.Int_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -192,18 +204,6 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExp(@NotNull sqlParser.ExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExp(@NotNull sqlParser.ExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -876,6 +876,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDrop_table_statement(@NotNull sqlParser.Drop_table_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFirst_where_statement(@NotNull sqlParser.First_where_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFirst_where_statement(@NotNull sqlParser.First_where_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

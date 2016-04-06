@@ -55,6 +55,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitUse(@NotNull sqlParser.UseContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#where_statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhere_statement(@NotNull sqlParser.Where_statementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#int_literal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -102,12 +108,6 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExp(@NotNull sqlParser.ExpContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#delete_value}.
 	 * @param ctx the parse tree
@@ -450,6 +450,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDrop_table_statement(@NotNull sqlParser.Drop_table_statementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#first_where_statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFirst_where_statement(@NotNull sqlParser.First_where_statementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#float_terminal}.
 	 * @param ctx the parse tree

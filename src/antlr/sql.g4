@@ -236,18 +236,22 @@ insert_value: insert into ID (insert_column_names)?  values '(' list_values ')' 
 insert_column_names: '(' ID (',' ID)* ')';
           
 logic: and | or | not;
-relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
+relational: '<' | '<=' | '>' | '>=' | '<>' | '=' | '!=' ;
 
 
 update_value: update ID set column '=' value where condition ';' ;
 
 delete_value: delete from ID where condition ';' ;
 
-select_value: select select_values from ID (where condition)?  (order by ID (asc | desc)? )? ';';
+select_value: select select_values from ID (where first_where_statement(where_statement)*)?  (order by ID (asc | desc)? )? ';';
 
 select_values: ('*' | ID (',' ID)* );
               
-condition: ID ('.' ID )? '=' ID ('.' ID)?;         
+first_where_statement: condition;
+
+where_statement: logic condition;
+
+condition: ID ('.' ID )? relational ID ('.' ID)?;         
               
 list_values : (value (',' (value))* ) ;
          

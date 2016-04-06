@@ -138,7 +138,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             DBMS.debug(tipo);
 
             tupla.setNombre(nombreColumna);
-            tupla.setTipo(tipo);
+            tupla.setTipo(tipo.toUpperCase());
             tabla.agregarColumna(tupla);
         }
         else{
