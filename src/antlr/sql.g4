@@ -259,7 +259,9 @@ first_where_statement: condition;
 
 where_statement: logic condition;
 
-condition:  (ID | CHAR) ('.' ID )?  relational (ID | CHAR) ('.' ID)?  ;         
+condition:  identifier  relational identifier  ; 
+
+identifier: (ID | CHAR) ('.' ID )?;
               
 list_values : (value (',' (value))* ) ;
          

@@ -1,4 +1,4 @@
-// Generated from /Users/usuario/NetBeansProjects/DBMS/src/antlr/sql.g4 by ANTLR 4.4
+// Generated from C:\Users\sergio\Documents\u005Cuniversidad\BDD\proyecto1\src\antlr\sql.g4 by ANTLR 4.4
 package antlr;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
@@ -90,6 +90,16 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#identifier}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdentifier(@NotNull sqlParser.IdentifierContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#identifier}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdentifier(@NotNull sqlParser.IdentifierContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#column_terminal}.
 	 * @param ctx the parse tree
