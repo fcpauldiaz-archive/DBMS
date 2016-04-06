@@ -245,15 +245,17 @@ logic: and | or | not;
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' | '!=' ;
 
 
-update_value: update ID set update_column_multiple (where first_where_statement(where_statement)*)? ';' ;
+update_value: update ID set update_column_multiple (where final_where)? ';' ;
 
 update_column_multiple: (update_colmn)+;
 
 update_colmn: ID '=' value (',')?;
 
-delete_value: delete from ID (where first_where_statement(where_statement)*)? ';' ;
+delete_value: delete from ID (where final_where)? ';' ;
 
-select_value: select select_values from from_multiple  (where first_where_statement(where_statement)*)?  (order by ID (asc | desc)? )? ';';
+select_value: select select_values from from_multiple  (where final_where)?  (order by ID (asc | desc)? )? ';';
+
+final_where: first_where_statement(where_statement)*;
 
 from_multiple: ID (',' ID)* ;
 
