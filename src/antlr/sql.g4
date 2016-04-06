@@ -245,11 +245,17 @@ logic: and | or | not;
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' | '!=' ;
 
 
-update_value: update ID set column '=' value (where first_where_statement(where_statement)*)? ';' ;
+update_value: update ID set update_column_multiple (where first_where_statement(where_statement)*)? ';' ;
+
+update_column_multiple: (update_colmn)+;
+
+update_colmn: ID '=' value (',')?;
 
 delete_value: delete from ID (where first_where_statement(where_statement)*)? ';' ;
 
-select_value: select select_values from ID (where first_where_statement(where_statement)*)?  (order by ID (asc | desc)? )? ';';
+select_value: select select_values from from_multiple  (where first_where_statement(where_statement)*)?  (order by ID (asc | desc)? )? ';';
+
+from_multiple: ID (',' ID)* ;
 
 select_values: ('*' | ID (',' ID)* );
               
@@ -257,7 +263,9 @@ first_where_statement: condition;
 
 where_statement: logic condition;
 
-condition:  (ID | CHAR) ('.' ID )?  relational (ID | CHAR) ('.' ID)?  ;         
+condition:  identifier  relational identifier  ; 
+
+identifier: (ID | value) ('.' ID )?;
               
 list_values : (value (',' (value))* ) ;
          

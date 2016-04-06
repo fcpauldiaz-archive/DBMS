@@ -301,7 +301,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         Constraint constraint = new Constraint();
         constraint.setTipo(tipoConstraint);
         constraint.setNombre(nombreConstraint);
-        Tabla tabla = (Tabla) json.JSONtoObject(bdActual+"/", nombreTabla, "Tabla");
+        Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
         for(int i = 0;i<tabla.getConstraints().size();i++)
             if(tabla.getConstraints().get(i).getNombre().equals(nombreConstraint)){
                 DBMS.throwMessage("Error: Constraint "+nombreConstraint+" ya existe en la tabla " + nombreTabla,ctx.getStart() );
@@ -328,7 +328,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             }
             //si llega aquí es porque si existen
             TuplaRefForeign tuplaForeign = new TuplaRefForeign(nombreTablaRef);
-            tuplaForeign.setReferencesForeign(listadoIDS);
+            tuplaForeign.setReferencesForeign(listadoIDSREF);
             constraint.setReferencesForeign(tuplaForeign);
             
              //ahora busco la tabla y verifico los campos de los constraints
@@ -443,4 +443,21 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
            DBMS.throwMessage("Error: No hay base de datos seleccionada ", ctx.getStart() ); 
         return super.visitShow_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public Object visitCondition(sqlParser.ConditionContext ctx) {
+        String nombrePapa = ctx.getParent().getText();
+        String nombreTabla = "";
+        if(nombrePapa.equals("delete_value"))
+            nombreTabla = ctx.getParent().getChild(2).getText();
+        else
+            if(nombrePapa.equals("update_value"))
+                nombreTabla = ctx.getParent().getChild(1).getText();
+            else
+                nombreTabla = ctx.getParent().getChild(3).getText();
+        System.out.println(nombreTabla);
+        
+        return super.visitCondition(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

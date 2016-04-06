@@ -11,6 +11,8 @@ import antlr.sqlParser;
 import static dbms.ANTGui.bdActual;
 import static dbms.ANTGui.jTable1;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -300,7 +302,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             }
             //si llega aquí es porque si existen
             TuplaRefForeign tuplaForeign = new TuplaRefForeign(nombreTablaRef);
-            tuplaForeign.setReferencesForeign(listadoIDS);
+            tuplaForeign.setReferencesForeign(listadoIDSREF);
             constraint.setReferencesForeign(tuplaForeign);
             
              //ahora busco la tabla y verifico los campos de los constraints
@@ -329,13 +331,19 @@ public class Visitor<T> extends sqlBaseVisitor {
     }
 
    
-
+    /**
+     * Método para revisar los campos referenciados en los constraints
+     * @param camposActuales
+     * @param listadoIDS
+     * @return true si es válido, false contrario
+     */
     public boolean revisarListadoIDs(ArrayList<TuplaColumna> camposActuales, ArrayList<String> listadoIDS){
         boolean verificador = true;
         for (int i = 0;i<listadoIDS.size();i++){
             String idActual = listadoIDS.get(i);
             boolean verificadorInterno = false;
             for (int j = 0;j<camposActuales.size();j++){
+                
                 String campoActual = camposActuales.get(j).getNombre();
                 if (idActual.equals(campoActual)){
                     verificadorInterno = true;
@@ -344,8 +352,25 @@ public class Visitor<T> extends sqlBaseVisitor {
             verificador = verificadorInterno;
             
         }
+        if (checkDuplicates(listadoIDS)){
+            DBMS.throwMessage("Error: Hay elementos repetidos en constraint");
+            return false;
+        }
         return verificador;
     }
+    
+   /**
+    * Revisar si hay duplicados en un arraylist
+    * @param list
+    * @return 
+    */
+   public boolean checkDuplicates(ArrayList<String> list){
+       
+    Set<String> set = new HashSet<String>(list);
+
+    return set.size() < list.size();
+   
+   }
     
     /**
      * Método que regresa un array con los nombres de los ids en constraints
@@ -516,7 +541,56 @@ public class Visitor<T> extends sqlBaseVisitor {
         return super.visitSelect_value(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Object visitUpdate_value(sqlParser.Update_valueContext ctx) {
+        
+        String nombreTabla = ctx.getChild(1).getText();
+        if (bdActual.isEmpty()){
+            DBMS.throwMessage("Error: no se ha seleccionado la base de datos");
+            return null;
+        }
+        if (!manejador.checkFile(bdActual, nombreTabla)){
+            DBMS.throwMessage("Error: la tabla "+ nombreTabla +" no existe", ctx.getStart());
+            return null;
+        }
+        tabla = (Tabla)json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+        
+        return super.visitUpdate_value(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitUpdate_colmn(sqlParser.Update_colmnContext ctx) {
+         String nombreColumna = ctx.getChild(0).getText();
+        boolean verificadorColumna = verificarColumnaUpdate(nombreColumna);
+        if (!verificadorColumna){
+            DBMS.throwMessage("Error: La columna " +nombreColumna+ " no existe ");
+            tabla = null;
+            return null;
+        }
+        
+        return super.visitUpdate_colmn(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    /**
+     * Método para verificar si existe una columna en una tabla
+     * UPDATE statement
+     * @param nombreColumna
+     * @return boolean
+     */
+    public boolean verificarColumnaUpdate(String nombreColumna){
+        boolean verificadorColumna = false;
+       
+        for(TuplaColumna columna : tabla.getColumnas()){
+            if (columna.getNombre().equals(nombreColumna)){
+                verificadorColumna = true;
+            }
+        }
+        //si es false no existe, si es true si existe.
+        return verificadorColumna;
+    }
+    
   
+    
     
   
 }
