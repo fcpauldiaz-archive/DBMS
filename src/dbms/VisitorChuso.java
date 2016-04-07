@@ -119,7 +119,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         }
         if(!existe){
             tupla.setNombre(nombreColumna);
-            tupla.setTipo(tipo);
+            tupla.setTipo(tipo.toUpperCase());
             tabla.agregarColumna(tupla);
             for(int i = 0;i<tabla.getDataInTable().size();i++)
                 tabla.getDataInTable().get(i).add("NULL");
