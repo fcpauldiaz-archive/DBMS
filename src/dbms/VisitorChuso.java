@@ -28,6 +28,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
     private ArrayList indexActuales = new ArrayList();
     private ArrayList<String> nombreTablas;
     private ArrayList indexGlobal = new ArrayList();
+    private GeneralFunctions funciones = new GeneralFunctions();
     
     @Override
     public Object visitUse_schema_statement(sqlParser.Use_schema_statementContext ctx) {
@@ -1495,6 +1496,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                     ArrayList<ArrayList> data = tabla.getDataInTable();
                     if (columnaIndex >= 0){
                         for (ArrayList data1 : data) {
+                            System.out.println(columnaIndex);
                             innerReturnArray.add(data1.get(columnaIndex));
                         }
                         returnArray.add(innerReturnArray);
@@ -1509,6 +1511,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 returnArray = computeCombinations2(returnArray);
             }
             System.out.println("NO where statement");
+            funciones.generarTabla(returnArray, new ArrayList());
             return "";
         }
        //EN RETURN ARRAY SE TIENE LA DATA A MOSTRAR EN EL IDE
@@ -1546,7 +1549,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             System.out.println("result");
            
             System.out.println(returnArray);
-        
+             funciones.generarTabla(returnArray, new ArrayList());
       
         return ""; //To change body of generated methods, choose Tools | Templates.
     }
@@ -1606,6 +1609,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             }
             if (select_value.equals("*")){
                   for (int j= 0;j<nombreTablas.size();j++){
+                      System.out.println(nombreTablas);
                        Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTablas.get(j), "Tabla");
                       for (TuplaColumna columna : tabla.getColumnas()) {
                           columnasVerificadas.add(columna.getNombre());

@@ -23,7 +23,9 @@ public class GeneralFunctions {
         model.setColumnIdentifiers(nombreColumnas.toArray());
 
         for(int i = 0; i < datos.size(); i++) {
-            model.addRow(datos.get(i).toArray());
+            System.out.println("Datos: " + datos.get(i).toArray());
+            model.addColumn("-", datos.get(i).toArray());
+            //model.addColumn(datos.get(i).toArray());
         }
         
         return null;
