@@ -31,6 +31,8 @@ public class Visitor<T> extends sqlBaseVisitor {
     private Tabla tabla;
     public String tablaActual="";
     private String globalLogic="";
+    private boolean updateAll = false;
+    private VisitorAdolfo visitorAdolfo = new VisitorAdolfo();
     /**
      * Método que crea la base de datos y actualiza el archivo maestro de bases de datos.
      * @param ctx
@@ -170,15 +172,15 @@ public class Visitor<T> extends sqlBaseVisitor {
         String tipoConstraint = ctx.getChild(1).getText();
         ArrayList<String> listadoIDS = (ArrayList<String>)visit(ctx.getChild(4));
         Constraint constraint = new Constraint();
-        constraint.setTipo(tipoConstraint);
+        constraint.setTipo(tipoConstraint.toUpperCase());
         constraint.setNombre(nombreConstraint);
     
          //ahora busco la tabla y verifico los campos de los constraints
         Tabla tabla_c = tabla;
             if(tabla!=null){ 
-                if(tipoConstraint.equals("primary"))
+                if(tipoConstraint.equals("PRIMARY"))
                     for(int i = 0;i<tabla.getConstraints().size();i++){
-                        if(tabla.getConstraints().get(i).getTipo().equals("primary")){
+                        if(tabla.getConstraints().get(i).getTipo().equals("PRIMARY")){
                             DBMS.throwMessage("Error: Constraint primary key ya existe en la tabla " + nombreTabla, ctx.getStart() );
                             tabla  = null;
                             return null; //To change body of generated methods, choose Tools | Templates.
@@ -554,8 +556,13 @@ public class Visitor<T> extends sqlBaseVisitor {
             return null;
         }
         tabla = (Tabla)json.JSONtoObject(bdActual, nombreTabla, "Tabla");
-        
-        return super.visitUpdate_value(ctx); //To change body of generated methods, choose Tools | Templates.
+        //visitar todas las reglas de los hijos antes de guardar la tabla actualizada
+        super.visitUpdate_value(ctx);
+        //si no hubo errores, se guarda la data.
+        if (tabla!= null){
+             json.objectToJSON(bdActual, nombreTabla, tabla);
+        }
+        return null; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -567,10 +574,124 @@ public class Visitor<T> extends sqlBaseVisitor {
             tabla = null;
             return null;
         }
+         if (updateAll){
+            updateALLColumnTable(nombreColumna, (String)(ctx.getChild(2).getText()));
+            return super.visitUpdate_colmn(ctx);
+        }
+        //actualizar solo los del where
+        
         
         return super.visitUpdate_colmn(ctx); //To change body of generated methods, choose Tools | Templates.
     }
     
+    /**
+     * Método para actualizar toda la data de una tabla
+     * No considera where statement
+     * @param nombreColumna
+     * @param valor 
+     */
+    public void updateALLColumnTable(String nombreColumna, String valor){
+        System.out.println("valor" + valor);
+        ArrayList array = tabla.getIndexOfColumn(nombreColumna);
+        System.out.println(array);
+        int indiceActualizar = (int)array.get(0);
+        String tipo = (String)array.get(1);
+      
+        boolean unique = tabla.checkPrimaryKey(nombreColumna);
+        boolean pass = true;
+        
+        try {
+        //recorrer toda la data en la tabla
+        int cantidadUpdates = 0;
+        for (int i = 0;i<tabla.getDataInTable().size();i++){
+            ArrayList innerArray = tabla.getDataInTable().get(i);
+            //si es numérico hay que hacer casteo 
+           if (tipo.equals("INT")||tipo.equals("FLOAT")) {
+               
+                //si el indice a actualizar no existe, lo agregamos a la data
+               if (innerArray.size() < indiceActualizar+1) {
+                   if (unique){
+                       pass = this.revisarPrimaryKey(innerArray , indiceActualizar , casteoNumerico(valor));
+                   }
+                   if (pass){
+                        innerArray.add(casteoNumerico(valor));
+                        cantidadUpdates++;
+                   }
+               }
+               //si ya existe lo seteamos
+               else{
+                    if (unique) {
+                        pass = this.revisarPrimaryKey(tabla.getDataInTable(), indiceActualizar, casteoNumerico(valor));
+                    }
+                    if (pass) {
+                        
+                        innerArray.set(indiceActualizar, casteoNumerico(valor));
+                        cantidadUpdates++;
+                    }
+                    else{
+                        tabla = null;
+                        DBMS.throwMessage("Se ha actualizado 1 columna");
+                        DBMS.throwMessage("Error: no ha pasado verificacion de primary key");
+                    }
+               }
+           }
+           //si no hay que hacer casteo
+           else{
+                //si el indice a actualizar no existe, lo agregamos a la data
+                if (innerArray.size() < indiceActualizar+1){
+                    innerArray.add(valor);
+                    cantidadUpdates++;
+                }
+                //si ya existe lo seteamos
+                else{       
+                    innerArray.set(indiceActualizar, valor);
+                    cantidadUpdates++;
+                }
+           }
+        }
+        
+        DBMS.throwMessage("Se han actualizado " + cantidadUpdates + " columnas");
+        } catch (Exception e){
+            tabla = null;
+            DBMS.throwMessage("Error: ha ingresado un tipo incorrecto");
+        }
+      
+    }
+    
+    public T casteoNumerico(String valor){
+        if (valor.equals("NULL")){
+            return (T)"NULL";
+        }
+        return (T)Double.valueOf(valor);
+    }
+    
+    public boolean revisarPrimaryKey(ArrayList valoresActuales, int indexActualiar, T valorNuevo){
+      
+        for (int i = 0;i < valoresActuales.size();i++){
+            ArrayList innerArray = tabla.getDataInTable().get(i);
+           
+            if (innerArray.get(indexActualiar).equals(valorNuevo)){
+               return false;
+               
+            }
+        }
+        
+        return true;
+    }
+    
+    @Override
+    public Object visitUpdate_column_multiple(sqlParser.Update_column_multipleContext ctx) {
+        
+        if (ctx.getChildCount()==1){
+            updateAll = true;
+        }
+        
+        return super.visitUpdate_column_multiple(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+   
+    
+            
+          
     /**
      * Método para verificar si existe una columna en una tabla
      * UPDATE statement
@@ -579,13 +700,17 @@ public class Visitor<T> extends sqlBaseVisitor {
      */
     public boolean verificarColumnaUpdate(String nombreColumna){
         boolean verificadorColumna = false;
-        if (tabla != null){
-            for(TuplaColumna columna : tabla.getColumnas()){
-                if (columna.getNombre().equals(nombreColumna)){
+        if (tabla != null) {
+            for(TuplaColumna columna : tabla.getColumnas()) {
+                System.out.println("ver");
+                System.out.println(columna.getNombre());
+                if (columna.getNombre().equals(nombreColumna)) {
                     verificadorColumna = true;
                 }
             }
         }
+        System.out.println(nombreColumna);
+        System.out.println(verificadorColumna);
         //si es false no existe, si es true si existe.
         return verificadorColumna;
     }
@@ -594,8 +719,8 @@ public class Visitor<T> extends sqlBaseVisitor {
     public Object visitCondition(sqlParser.ConditionContext ctx) {
         //revisar que el nombre de la columna exista
         String nombreColumna = ctx.getChild(0).getText();
-         boolean verificadorColumna = verificarColumnaUpdate(nombreColumna);
-        if (!verificadorColumna){
+        boolean verificadorColumna = verificarColumnaUpdate(nombreColumna);
+        if (!verificadorColumna) {
             DBMS.throwMessage("Error: La columna " +nombreColumna+ " no existe ");
             tabla = null;
             return null;
@@ -607,6 +732,8 @@ public class Visitor<T> extends sqlBaseVisitor {
     @Override
     public Object visitFirst_where_statement(sqlParser.First_where_statementContext ctx) {
        
+       
+        
       
         return super.visitFirst_where_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }

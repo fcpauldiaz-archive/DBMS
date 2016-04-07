@@ -59,6 +59,31 @@ public class Tabla {
         return this.tableData;
     }
     
+    //devolver el indice y el tipo
+    public ArrayList getIndexOfColumn(String nombreColumna){
+        ArrayList array = new ArrayList();
+        for (int i = 0;i<this.tablaDeclaration.size();i++){
+            TuplaColumna tupla = this.tablaDeclaration.get(i);
+            if (tupla.getNombre().equals(nombreColumna)){
+                array.add(i);
+                array.add(tupla.getTipo());
+                return array;
+            }
+        }
+        return new ArrayList();
+    }
+    
+    public boolean checkPrimaryKey(String nombreColumna){
+        for (Constraint constraint : this.constraints) {
+            if (constraint.getTipo().equals("PRIMARY") &&
+                    constraint.getReferences().contains(nombreColumna)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
     @Override
     public String toString() {
         return "Tabla{" + "tablaDeclaration=" + tablaDeclaration + ", constraints=" + constraints + '}';
