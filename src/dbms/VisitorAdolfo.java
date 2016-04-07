@@ -538,6 +538,10 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         TuplaColumna posibleColumna = getColumnInTableFromName(second_operator, tabla.getColumnas());
         
         int indexInData = getIndexOfColumn(columnaCheck.getNombre(), tabla.getColumnas());
+        int indexInData_2 = -1;
+        
+        T valor1 = (T)insert_values.get(indexInData);
+        T valor2 = (T)second_operator;
         
         boolean secondOp_isColumn = false;
         
@@ -548,12 +552,20 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         
         if (posibleColumna != null) {
             secondOp_isColumn = true;
+            indexInData_2 = getIndexOfColumn(columnaCheck.getNombre(), tabla.getColumnas());
+            valor2 = (T)insert_values.get(indexInData_2);
         }
         
         switch(tipo_comparacion) {
             case "=":
+                if (valor1.equals(valor2)) {
+                    return true;
+                }
                 break;
             case "!=":
+                if (!valor1.equals(valor2)) {
+                    return true;
+                }
                 break;
             case ">":
                 break;
