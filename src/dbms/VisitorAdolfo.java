@@ -448,8 +448,6 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
 
                         String nombreColumnaRef_1 = cnt.getReferencesForeign().getReferencesForeign().get(i);
                         String nombreColumnOwner_1 = cnt.getReferences().get(i);
-                        
-                        System.out.println("Columna a referenciar: " + nombreColumnaRef_1 + " Nombre columna Owner: " + nombreColumnOwner_1);
 
                         //boolean isOk_f = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
                         boolean isOk_f = verifyForeignKeyInTable(insertData, nombreColumnOwner_1, nombreColumnaRef_1, tabla, tablaRef_1);
@@ -470,8 +468,6 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
 
                         String nombreColumnaRef = cnt.getReferencesForeign().getReferencesForeign().get(i);
                         String nombreColumnOwner = cnt.getReferences().get(i);
-                        
-                        System.out.println("Columna a referenciar: " + nombreColumnaRef + " Nombre columna Owner: " + nombreColumnOwner);
 
                         //boolean isOk_f = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
                         boolean isOk_F = verifyForeignKeyInTable(insertData, nombreColumnOwner, nombreColumnaRef, tabla, tablaRef);
@@ -526,6 +522,47 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
             if (contMatch == indicesEval.size()) {
                 return false;
             }
+        }
+        
+        return true;
+    }
+    
+    public boolean verifyCheckInTable(
+        ArrayList insert_values,// Datos que se van a insertar
+        String first_operator,  // Se asume que el primer valor siempre va a ser un nombre de columna
+        String second_operator, // No sabemso si es un nombre columna o si es un terminal
+        String tipo_comparacion,       // Criterio de comparación
+        Tabla tabla
+    ) {
+        TuplaColumna columnaCheck = getColumnInTableFromName(first_operator, tabla.getColumnas());
+        TuplaColumna posibleColumna = getColumnInTableFromName(second_operator, tabla.getColumnas());
+        
+        int indexInData = getIndexOfColumn(columnaCheck.getNombre(), tabla.getColumnas());
+        
+        boolean secondOp_isColumn = false;
+        
+        if (columnaCheck == null) {
+            System.out.println("No existe la columna: " + columnaCheck);
+            return false;
+        }
+        
+        if (posibleColumna != null) {
+            secondOp_isColumn = true;
+        }
+        
+        switch(tipo_comparacion) {
+            case "=":
+                break;
+            case "!=":
+                break;
+            case ">":
+                break;
+            case "<":
+                break;
+            case ">=":
+                break;
+            case "<=":
+                break;
         }
         
         return true;
@@ -593,6 +630,18 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         }
         
         return -1;
+    }
+    
+       
+    public TuplaColumna getColumnInTableFromName(String nombreColumna, ArrayList<TuplaColumna> columnas) {
+        for (int i = 0; i < columnas.size(); i++) {
+            String nombreColumnaTablaActual = columnas.get(i).getNombre();
+            if (nombreColumna.equals(nombreColumnaTablaActual)) {
+                return columnas.get(i);
+            }
+        }
+        
+        return null;
     }
     
     public ArrayList<Integer> getArrayIndicesDataToEval(
