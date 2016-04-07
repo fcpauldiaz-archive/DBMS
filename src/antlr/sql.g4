@@ -1,3 +1,4 @@
+
 /*
  * PD
  * UVG
@@ -261,7 +262,7 @@ final_where_update: first_where_statement_update(where_statement_update)*;
 
 from_multiple: ID (',' ID)* ;
 
-select_values: ('*' | ID (',' ID)* );
+select_values: ('*' | identifier_select_value  (',' identifier_select_value)* );
               
 first_where_statement: condition;
 
@@ -276,6 +277,8 @@ condition:  identifier  relational identifier  ;
 condition_update:  identifier_update  relational identifier_update  ; 
 
 identifier: (ID | value) ('.' ID )?;
+
+identifier_select_value: (ID ) ('.' ID )?;
 
 identifier_update: (ID | value);
               

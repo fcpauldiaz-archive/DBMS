@@ -295,6 +295,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitConstraintPrimaryKeyAlter(@NotNull sqlParser.ConstraintPrimaryKeyAlterContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#identifier_select_value}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdentifier_select_value(@NotNull sqlParser.Identifier_select_valueContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#asc}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

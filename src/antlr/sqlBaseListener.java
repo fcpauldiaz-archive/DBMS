@@ -569,6 +569,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterIdentifier_select_value(@NotNull sqlParser.Identifier_select_valueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdentifier_select_value(@NotNull sqlParser.Identifier_select_valueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAsc(@NotNull sqlParser.AscContext ctx) { }
 	/**
 	 * {@inheritDoc}
