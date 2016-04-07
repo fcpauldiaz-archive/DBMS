@@ -9,7 +9,9 @@ import antlr.sqlBaseVisitor;
 import antlr.sqlParser;
 import static dbms.ANTGui.bdActual;
 import static dbms.ANTGui.jTable1;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -22,6 +24,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
     private FileManager manejador = new FileManager();
     private String globalLogic ="";
     private ArrayList indexActuales = new ArrayList();
+     private ArrayList<String> nombreTablas;
     @Override
     public Object visitUse_schema_statement(sqlParser.Use_schema_statementContext ctx) {
         bdActual = ctx.getChild(2).getText();
@@ -446,23 +449,18 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
            DBMS.throwMessage("Error: No hay base de datos seleccionada ", ctx.getStart() ); 
         return super.visitShow_table_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
+ 
     @Override
     public Object visitFinal_where(sqlParser.Final_whereContext ctx) {
         ArrayList indexes = new ArrayList();
          String nombrePapa = ctx.getParent().getChild(0).getText();
-        String nombreTabla = "";
-        if(nombrePapa.equals("delete"))
-            nombreTabla = ctx.getParent().getChild(2).getText();
-        else
-            if(nombrePapa.equals("update"))
-                nombreTabla = ctx.getParent().getChild(1).getText();
-            else
-                nombreTabla = ctx.getParent().getChild(3).getText();
-        Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+     
+   
         for(int i = 0;i<ctx.getChildCount();i++){
             indexes = (ArrayList) this.visit(ctx.getChild(i));
             indexActuales = indexes;
         }
+        System.out.println(indexes);
         return indexes;
     }
     @Override
@@ -476,7 +474,8 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             if(nombrePapa.equals("update"))
                 nombreTabla = ctx.getParent().getParent().getChild(1).getText();
             else
-                nombreTabla = ctx.getParent().getParent().getChild(3).getText();
+                nombreTabla = ctx.getParent().getParent().getChild(3).getChild(0).getText();
+        
         Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
         for(int i = 0;i<tabla.getDataInTable().size();i++)
             indexActuales.add(i);
@@ -510,27 +509,31 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             }
         return null;
     }
-
+    
     @Override
     public Object visitCondition(sqlParser.ConditionContext ctx) {
         String nombrePapa = ctx.getParent().getParent().getParent().getChild(0).getText();
         String nombreTabla = "";
-        if(nombrePapa.equals("delete"))
+        if(nombrePapa.equals("delete")||nombrePapa.equals("DELETE"))
             nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
         else
-            if(nombrePapa.equals("update"))
+            if(nombrePapa.equals("update")|nombrePapa.equals("UPDATE"))
                 nombreTabla = ctx.getParent().getParent().getParent().getChild(1).getText();
             else
-                nombreTabla = ctx.getParent().getParent().getParent().getChild(3).getText();
+                nombreTabla = ctx.getChild(0).getChild(0).getText();
         Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
         String op1 =(String) (this.visit(ctx.getChild(0)));
         op1 = op1.toUpperCase();
         String op2 =(String) (this.visit(ctx.getChild(2)));
         op2 = op2.toUpperCase();
         String operacion = ctx.getChild(1).getText();
+        System.out.println("operadores");
+        System.out.println(op1);
+        System.out.println(op2);
+        System.out.println("operadores");
         //CAMBIAR CAMBIAR CAMBIAR CAMBIAR CAMBIAR EL RETURN
-        if(!op1.equals(op2)){
-            DBMS.throwMessage( "Error: La comparacion no se realizo con los mismos tipos de variables", ctx.getStart());
+        if(!op1.equals(op2)&&!op1.equals("NULL")&&!op2.equals("NULL")){
+            DBMS.throwMessage( "Error: La comparación no se realizó con los mismos tipos de variables1", ctx.getStart());
             return "error";
         }
         //la columna esta en el primero y no en el segundo
@@ -542,50 +545,137 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 registro = tabla.getDataInTable().get((int)indexActuales.get(i));
                 switch(operacion){
                     case "<":
-                        if(!op1.equals("INT")){
-                            DBMS.throwMessage( "Error: la comparacion < solo se puede entre int", ctx.getStart());
-                            return "error";
-                        }else{
-                            int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                        if(op1.equals("INT")){
+                             int operador2 = Integer.parseInt(ctx.getChild(2).getText());
                             int operador1 =(int)Math.round((Double) registro.get(columna));
                             if(operador1<operador2){
                                 listaFinal.add(indexActuales.get(i));
                             }
+                           
+                        }else if (op1.equals("DATE")){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            //para comparar fechas se utiliza una clase de java
+                            //y hay que quitar los apostrofes
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\"", "");
+                            operador2  = operador2.replaceAll("\'", "");
+                            operador2  = operador2.replaceAll("\"", "");
+                            try{
+                                Date date1 = sdf.parse(operador1);
+                                Date date2 = sdf.parse(operador2);
+                                if (date2.compareTo(date1)<0){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }catch(Exception e){
+                                System.out.println("error fecha");
+                            }
+                        }
+                        
+                        else{
+                            DBMS.throwMessage( "Error: la comparacion < solo se puede entre int", ctx.getStart());
+                            return "error";
                         }
                     break;
                     case "<=":
-                        if(!op1.equals("INT")){
-                            DBMS.throwMessage( "Error: la comparacion <= solo se puede entre int", ctx.getStart());
-                            return "error";
-                        }else{
-                           int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                        if(op1.equals("INT")){
+                             int operador2 = Integer.parseInt(ctx.getChild(2).getText());
                             int operador1 =(int)Math.round((Double) registro.get(columna));
                             if(operador1<=operador2){
                                 listaFinal.add(indexActuales.get(i));
                             }
+                           
+                        }else if (op1.equals("DATE")){
+                             String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                               //para comparar fechas se utiliza una clase de java
+                            //y hay que quitar los apostrofes
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\"", "");
+                            operador2  = operador2.replaceAll("\'", "");
+                            operador2  = operador2.replaceAll("\"", "");
+                            try{
+                                Date date1 = sdf.parse(operador1);
+                                Date date2 = sdf.parse(operador2);
+                                if (date2.compareTo(date1)<=0){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }catch(Exception e){
+                                
+                            }
+                        }
+                        else{
+                           DBMS.throwMessage( "Error: la comparacion <= solo se puede entre int o dates", ctx.getStart());
+                            return "error";
                         }
                     case ">":
-                        if(!op1.equals("INT")){
-                            DBMS.throwMessage( "Error: la comparacion > solo se puede entre int", ctx.getStart());
-                            return "error";
-                        }else{
-                            int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                        if(op1.equals("INT")){
+                              int operador2 = Integer.parseInt(ctx.getChild(2).getText());
                             int operador1 =(int)Math.round((Double) registro.get(columna));
                             if(operador1>operador2){
                                 listaFinal.add(indexActuales.get(i));
                             }
+                         
+                        }else if (op1.equals("DATE")){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            //para comparar fechas se utiliza una clase de java
+                            //y hay que quitar los apostrofes
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\"", "");
+                            operador2  = operador2.replaceAll("\'", "");
+                            operador2  = operador2.replaceAll("\"", "");
+                            try{
+                                Date date1 = sdf.parse(operador1);
+                                Date date2 = sdf.parse(operador2);
+                                if (date2.compareTo(date1)>0){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }catch(Exception e){
+                                
+                            }
+                        }
+                        else{
+                             DBMS.throwMessage( "Error: la comparacion > solo se puede entre int o dates", ctx.getStart());
+                            return "error";
                         }
                     break;
                     case ">=":
-                        if(!op1.equals("INT")){
-                            DBMS.throwMessage( "Error: la comparacion >= solo se puede entre int", ctx.getStart());
-                            return "error";
-                        }else{
+                        if(op1.equals("INT")){
                             int operador2 = Integer.parseInt(ctx.getChild(2).getText());
                             int operador1 =(int)Math.round((Double) registro.get(columna));
                             if(operador1>=operador2){
                                 listaFinal.add(indexActuales.get(i));
                             }
+                        }
+                        else if(op1.equals("DATE")){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            //para comparar fechas se utiliza una clase de java
+                            //y hay que quitar los apostrofes
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\"", "");
+                            operador2  = operador2.replaceAll("\'", "");
+                            operador2  = operador2.replaceAll("\"", "");
+                            try{
+                                Date date1 = sdf.parse(operador1);
+                                Date date2 = sdf.parse(operador2);
+                               
+                                if (date2.compareTo(date1)>=0){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }catch(Exception e){
+                                e.printStackTrace();
+                                System.out.println("Error fecha");
+                            }
+                        }
+                        else{
+                              DBMS.throwMessage( "Error: la comparacion >= solo se puede entre int o date", ctx.getStart());
+                            return "error";
                         }
                     break;
                     case "<>":
@@ -595,8 +685,15 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                             if(operador1!=operador2){
                                 listaFinal.add(indexActuales.get(i));
                             }
-                        }else
-                            if(!registro.get(columna).equals(ctx.getChild(2).getText())){
+                        }else if (op1.equals("CHAR")||op1.equals("DATE") ){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            if (!operador1.equals(operador2)){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                        else
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(2).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -607,23 +704,49 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                             if(operador1!=operador2){
                                 listaFinal.add(indexActuales.get(i));
                             }
+                        }else if (op1.equals("CHAR")||op1.equals("DATE")){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            if (!operador1.equals(operador2)){
+                                listaFinal.add(indexActuales.get(i));
+                            }
                         }else
-                            if(!registro.get(columna).equals(ctx.getChild(2).getText())){
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(2).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
                     case "=":
                         if(op1.equals("INT")){
-                            int operador2 = Integer.parseInt(ctx.getChild(2).getText());
-                            int operador1 =(int)Math.round((Double) registro.get(columna));
-                            if(operador1==operador2){
-                                listaFinal.add(indexActuales.get(i));
+                            Object reg = registro.get(columna);
+                            if (!reg.equals("NULL")){
+                                int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                                int operador1 =(int)Math.round((Double)(reg));
+
+                                if(operador1==operador2){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
                             }
-                        }else{
-                            if(registro.get(columna).equals(ctx.getChild(2).getText())){
+                            else{//si es NULL se trata como string
+                                String operador1 = ctx.getChild(2).getText();
+                                String operador2 = (String)registro.get(columna);
+
+                                if (operador1.equals(operador2)){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }
+                        }else if (op1.equals("CHAR")||op1.equals("DATE")){
+                           
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                        
+                            if (operador1.equals(operador2)){
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }
+                        else
+                            if(Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(2).getText())){
+                                listaFinal.add(indexActuales.get(i));
+                            }
                     break;
                 }
             }
@@ -689,7 +812,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!registro.get(columna).equals(ctx.getChild(0).getText())){
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(0).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -701,7 +824,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!registro.get(columna).equals(ctx.getChild(0).getText())){
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(0).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -713,7 +836,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(registro.get(columna).equals(ctx.getChild(0).getText())){
+                            if(Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(0).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -782,7 +905,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!registro.get(columna1).equals(registro.get(columna2))){
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna1))).equals(Integer.toString((int)Math.round((Double) registro.get(columna2))))){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -794,7 +917,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!(registro.get(columna1).equals(registro.get(columna2)))){
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna1))).equals(Integer.toString((int)Math.round((Double) registro.get(columna2))))){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -806,7 +929,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(registro.get(columna1).equals(registro.get(columna2))){
+                            if(Integer.toString((int)Math.round((Double) registro.get(columna1))).equals(Integer.toString((int)Math.round((Double) registro.get(columna2))))){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -814,14 +937,15 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             }
         }
         indexActuales = new ArrayList();
-        return listaFinal;
-    }
-
+        return listaFinal;    }
+    
     @Override
     public Object visitIdentifier(sqlParser.IdentifierContext ctx) {
+    
         if(ctx.getChildCount()>1){
-            String nombreTabla = ctx.getChild(0).getText();
+          
             String nombreColumna = ctx.getChild(2).getText();
+             String nombreTabla = ctx.getChild(0).getText();
             Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
             if(tableExist(nombreTabla)<0){
                 DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
@@ -832,13 +956,16 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 DBMS.throwMessage( "Error: La Columna: "+nombreColumna+" no existe en la tabla "+ nombreTabla, ctx.getStart());
                 return "error";
             }
+            System.out.println(tabla.getColumnas().get(indiceColumna).getTipo());
             return tabla.getColumnas().get(indiceColumna).getTipo();
         }else{
             String contenido = ctx.getChild(0).getText();
             try {
+
                 Integer.parseInt(contenido);
                 return "INT";
             } catch (NumberFormatException e) {
+                System.out.println(contenido+ " contenido");
                 if(contenido.contains("\'")){
                     if(!contenido.startsWith("\'")){
                         DBMS.throwMessage( "String o char debe comenzar con \'", ctx.getStart());
@@ -847,16 +974,43 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                         if(!contenido.endsWith("\'")){
                             DBMS.throwMessage( "String o char debe terminar con \'", ctx.getStart());
                             return "error";
-                        }else
+                        }else if (this.countOccurrences(contenido, '-')==2){
+                            return "DATE";
+                        }
+                        else
                             return "CHAR";
-                }else{
-                    DBMS.throwMessage( "Error de referencia, debe ir de la forma tabla.columna ", ctx.getStart());
-                    return "error";
+                }
+                else if (contenido.equals("NULL")){
+                    return "NULL";
+                }
+                else{
+                    String nombrePapa = ctx.getParent().getParent().getParent().getParent().getChild(0).getText();
+                   String nombreTabla = "";
+                    if(nombrePapa.equals("delete")||nombrePapa.equals("DELETE")){
+                        nombreTabla = ctx.getParent().getParent().getParent().getParent().getChild(2).getText();
+                        //this.columnas.push(contenido);
+                    }
+                    else
+                        if(nombrePapa.equals("update")||nombrePapa.equals("UPDATE"))
+                            nombreTabla = ctx.getParent().getParent().getParent().getParent().getChild(1).getText();
+                    int indiceColumna = columnExist(nombreTabla,contenido);
+                    if(indiceColumna<0){
+                        DBMS.throwMessage( "Error: La Columna: "+contenido+" no existe en la tabla ", ctx.getStart());
+                        return "error";
+                    }
+                    Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+                    return tabla.getColumnas().get(indiceColumna).getTipo();
+                    //System.out.println(contenido.charAt(0));
+                    //DBMS.throwMessage( "Error de referencia, debe ir de la forma tabla.columna ", ctx.getStart());
+                   // return "ID";
                 }
              }
-            
-        }
+
+        }//To change body of generated methods, choose Tools | Templates.
+
+        
     }
+    
     public int tableExist(String nombreTabla){
         ArchivoMaestroTabla archivo = (ArchivoMaestroTabla)json.JSONtoObject(bdActual, "MasterTable"+bdActual, "ArchivoMaestroTabla");
         for(int i = 0;i<archivo.getTablas().size();i++)
@@ -871,5 +1025,100 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 return i;
         return -1;
     }
+     public int countOccurrences(String haystack, char needle)
+    {
+        int count = 0;
+        for (int i=0; i < haystack.length(); i++)
+        {
+            if (haystack.charAt(i) == needle)
+            {
+                 count++;
+            }
+        }
+
+        return count;
+    }
+     
+    @Override
+    public Object visitSelect_value(sqlParser.Select_valueContext ctx) {
+        
+        ArrayList<ArrayList> returnArray = new ArrayList();
+    
+        visit(ctx.getChild(3));
+        //caso select ALL
+        if (ctx.getChild(1).getChildCount() == 1 && ctx.getChild(1).getText().equals("*")){
+            
+        }
+        if (ctx.getChildCount()==5){
+            ArrayList<String> columnasVerificadas = (ArrayList)visit(ctx.getChild(1));
+            for (String columnasVerificada : columnasVerificadas) {
+                for (String nombreTabla1 : nombreTablas) {
+                    //buscar cada columna en cada tabla
+                    ArrayList innerReturnArray = new ArrayList();
+                    String nombreTabla = (String) nombreTabla1;
+                    Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+                    int columnaIndex = this.columnExist(nombreTabla1, columnasVerificada);
+                    ArrayList<ArrayList> data = tabla.getDataInTable();
+                    if (columnaIndex >= 0){
+                        for (ArrayList data1 : data) {
+                            innerReturnArray.add(data1.get(columnaIndex));
+                        }
+                        returnArray.add(innerReturnArray);
+                    }
+                }
+            }
+            System.out.println(returnArray);
+            System.out.println("NO where statement");
+            
+        }
+       
+      
+        return super.visitSelect_value(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+  
+    
+    @Override
+    public Object visitSelect_values(sqlParser.Select_valuesContext ctx) {
+        ArrayList<String> columnasVerificadas = new ArrayList();
+        for (int i = 0;i<ctx.getChildCount();i++){
+            String select_value =ctx.getChild(i).getText();
+            boolean verificador = false;
+            if (!select_value.equals(",")){
+                //verificar que exista este campo en las tablas seleccionadas
+                for (int j= 0;j<nombreTablas.size();j++){
+                    String nombreTabla = nombreTablas.get(j);
+                    int verColumn = columnExist(nombreTabla, select_value);
+                    if (verColumn >= 0){
+                        verificador = true;
+                    }
+                }
+                if (!verificador){
+                   
+                        DBMS.throwMessage("Error: La columna " + select_value +" no existe en las tablas seleccionadas ", ctx.getStart());
+                        return new ArrayList();
+                   
+                }
+                columnasVerificadas.add(select_value);
+            }
+        }
+        //return super.visitSelect_values(ctx); //To change body of generated methods, choose Tools | Templates.
+        return columnasVerificadas;
+    }
+
+    @Override
+    public Object visitFrom_multiple(sqlParser.From_multipleContext ctx) {
+        nombreTablas = new ArrayList();
+       //no revise que las tablas existieran
+        for (int i = 0;i<ctx.getChildCount();i++){
+            String tabla_string = ctx.getChild(i).getText();
+            if (!tabla_string.equals(",")){
+                nombreTablas.add(tabla_string);
+            }
+        }
+        
+        return super.visitFrom_multiple(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
     
 }

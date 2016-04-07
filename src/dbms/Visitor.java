@@ -38,6 +38,7 @@ public class Visitor<T> extends sqlBaseVisitor {
     private VisitorChuso visitorChuso = new VisitorChuso();
     private ArrayList indexActuales = new ArrayList();
     private Stack columnas = new Stack();
+   
     /**
      * Método que crea la base de datos y actualiza el archivo maestro de bases de datos.
      * @param ctx
@@ -544,20 +545,9 @@ public class Visitor<T> extends sqlBaseVisitor {
     
     }
 
-    @Override
-    public Object visitSelect_value(sqlParser.Select_valueContext ctx) {
-        
-        String nombreTabla = ctx.getChild(3).getText();
-         
-        //caso select ALL
-        if (ctx.getChild(1).getChildCount() == 1 && ctx.getChild(1).getText().equals("*")){
-            
-        }
-       
-      
-        return super.visitSelect_value(ctx); //To change body of generated methods, choose Tools | Templates.
-    }
-
+  
+    
+    
     @Override
     public Object visitUpdate_value(sqlParser.Update_valueContext ctx) {
         
@@ -871,7 +861,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         }else{
             String contenido = ctx.getChild(0).getText();
             try {
-               
+
                 Integer.parseInt(contenido);
                 return "INT";
             } catch (NumberFormatException e) {
@@ -896,7 +886,7 @@ public class Visitor<T> extends sqlBaseVisitor {
                 else{
                     String nombrePapa = ctx.getParent().getParent().getParent().getParent().getChild(0).getText();
                     String nombreTabla = "";
-                    
+
                     if(nombrePapa.equals("delete")||nombrePapa.equals("DELETE")){
                         nombreTabla = ctx.getParent().getParent().getParent().getParent().getChild(2).getText();
                         this.columnas.push(contenido);
@@ -915,7 +905,7 @@ public class Visitor<T> extends sqlBaseVisitor {
                    // return "ID";
                 }
              }
-            
+
         }//To change body of generated methods, choose Tools | Templates.
     }
     
@@ -1424,18 +1414,18 @@ public class Visitor<T> extends sqlBaseVisitor {
     }
   
     public int countOccurrences(String haystack, char needle)
-{
-    int count = 0;
-    for (int i=0; i < haystack.length(); i++)
     {
-        if (haystack.charAt(i) == needle)
+        int count = 0;
+        for (int i=0; i < haystack.length(); i++)
         {
-             count++;
+            if (haystack.charAt(i) == needle)
+            {
+                 count++;
+            }
         }
+
+        return count;
     }
-   
-    return count;
-}
 
     @Override
     public Object visitDelete_value(sqlParser.Delete_valueContext ctx) {
