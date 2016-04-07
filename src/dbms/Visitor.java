@@ -579,15 +579,39 @@ public class Visitor<T> extends sqlBaseVisitor {
      */
     public boolean verificarColumnaUpdate(String nombreColumna){
         boolean verificadorColumna = false;
-       
-        for(TuplaColumna columna : tabla.getColumnas()){
-            if (columna.getNombre().equals(nombreColumna)){
-                verificadorColumna = true;
+        if (tabla != null){
+            for(TuplaColumna columna : tabla.getColumnas()){
+                if (columna.getNombre().equals(nombreColumna)){
+                    verificadorColumna = true;
+                }
             }
         }
         //si es false no existe, si es true si existe.
         return verificadorColumna;
     }
+
+    @Override
+    public Object visitCondition(sqlParser.ConditionContext ctx) {
+        //revisar que el nombre de la columna exista
+        String nombreColumna = ctx.getChild(0).getText();
+         boolean verificadorColumna = verificarColumnaUpdate(nombreColumna);
+        if (!verificadorColumna){
+            DBMS.throwMessage("Error: La columna " +nombreColumna+ " no existe ");
+            tabla = null;
+            return null;
+        }
+        
+        return super.visitCondition(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitFirst_where_statement(sqlParser.First_where_statementContext ctx) {
+       
+      
+        return super.visitFirst_where_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
     
   
     
