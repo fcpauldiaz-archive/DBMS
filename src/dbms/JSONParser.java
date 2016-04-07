@@ -55,7 +55,7 @@ public class JSONParser<T> {
                 if (object.equals("Tabla"))
 		    obj = (T)gson.fromJson(br, Tabla.class);
  
-		System.out.println(obj);
+              
                 return (T)obj;
 	} catch (IOException e) {
             e.printStackTrace();
