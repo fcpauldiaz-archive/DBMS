@@ -1811,6 +1811,20 @@ public class Visitor<T> extends sqlBaseVisitor {
         tabla = (Tabla)json.JSONtoObject(bdActual, nombreTabla, "Tabla");
         //visitar todas las reglas de los hijos antes de guardar la tabla actualizada
         super.visitDelete_value(ctx);
+        //revisar foreign key 
+        ArchivoMaestroTabla masterTable = (ArchivoMaestroTabla) json.JSONtoObject(bdActual, "MasterTable"+bdActual, "ArchivoMaestroTabla");
+        for(int i = 0;i<masterTable.getTablas().size();i++){
+            Tabla tab=(Tabla)json.JSONtoObject(bdActual, masterTable.getTablas().get(i).getNombreTabla(), "Tabla");
+            for(int j = 0;j<tab.getConstraints().size();j++){
+                if(tab.getConstraints().get(j).getTipo().toUpperCase().equals("FOREIGN")){
+                    for(int p =0;p<columnas.size();p++)
+                        if(tab.getConstraints().get(j).getReferencesForeign().getNombreTablaRef().equals(nombreTabla)&&tab.getConstraints().get(j).getReferencesForeign().getReferencesForeign().contains(columnas.get(p))){
+                            DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" tiene referencias en otra(s) tablas sobre llaves foraneas, no se puede eliminar", ctx.getStart());
+                            return null;
+                        }
+                }
+            }
+        }
         while (!columnas.isEmpty())
             updateSelectedColumns((String)columnas.pop(),"NULL",this.indexActuales );
         //si no hubo errores, se guarda la data.
