@@ -121,6 +121,8 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
             tupla.setNombre(nombreColumna);
             tupla.setTipo(tipo);
             tabla.agregarColumna(tupla);
+            for(int i = 0;i<tabla.getDataInTable().size();i++)
+                tabla.getDataInTable().get(i).add("NULL");
             json.objectToJSON(bdActual, nombreTabla, tabla);
             DBMS.throwMessage( "columna: "+nombreColumna+" agregada a la tabla: "+ nombreTabla, ctx.getStart());
         }
