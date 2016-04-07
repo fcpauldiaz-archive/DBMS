@@ -251,7 +251,7 @@ update_column_multiple: (update_colmn)+;
 
 update_colmn: ID '=' value (',')?;
 
-delete_value: delete from ID (where final_where)? ';' ;
+delete_value: delete from ID (where final_where_update)? ';' ;
 
 select_value: select select_values from from_multiple  (where final_where)?  (order by ID (asc | desc)? )? ';';
 

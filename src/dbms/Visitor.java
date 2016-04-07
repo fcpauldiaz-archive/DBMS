@@ -15,9 +15,9 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Stack;
 
 
 /**
@@ -37,6 +37,7 @@ public class Visitor<T> extends sqlBaseVisitor {
     private VisitorAdolfo visitorAdolfo = new VisitorAdolfo();
     private VisitorChuso visitorChuso = new VisitorChuso();
     private ArrayList indexActuales = new ArrayList();
+    private Stack columnas = new Stack();
     /**
      * Método que crea la base de datos y actualiza el archivo maestro de bases de datos.
      * @param ctx
@@ -136,6 +137,14 @@ public class Visitor<T> extends sqlBaseVisitor {
         if (tabla != null){
             String nombreColumna = ctx.getChild(0).getText();
             String tipo = (String)visit(ctx.getChild(1));
+            DBMS.debug("Verificando unicidad en nombre de columnas ", ctx.getStart());
+            for (TuplaColumna columna : tabla.getColumnas()) {
+                if (columna.getNombre().equals(nombreColumna)){
+                    DBMS.throwMessage("Error: La columna  " + nombreColumna +" ya está definida", ctx.getStart());
+                    tabla = null;
+                    return super.visitColumn(ctx);
+                }
+            }
             TuplaColumna tupla = new TuplaColumna();
             if (tipo.contains("€")){
                 int tam = Integer.parseInt(tipo.substring(tipo.indexOf("€")+1));
@@ -441,6 +450,11 @@ public class Visitor<T> extends sqlBaseVisitor {
         return super.visitDrop_schema_statement(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * Método que altera la estructura de una base de datos
+     * @param ctx
+     * @return 
+     */
     @Override
     public Object visitAlter_database_statement(sqlParser.Alter_database_statementContext ctx) {
         
@@ -540,10 +554,7 @@ public class Visitor<T> extends sqlBaseVisitor {
             
         }
        
-        
       
-        
-        
         return super.visitSelect_value(ctx); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -571,7 +582,7 @@ public class Visitor<T> extends sqlBaseVisitor {
 
     @Override
     public Object visitUpdate_colmn(sqlParser.Update_colmnContext ctx) {
-         String nombreColumna = ctx.getChild(0).getText();
+        String nombreColumna = ctx.getChild(0).getText();
         boolean verificadorColumna = verificarColumnaUpdate(nombreColumna);
         if (!verificadorColumna){
             DBMS.throwMessage("Error: La columna " +nombreColumna+ " no existe ");
@@ -816,19 +827,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         
         return true;
     }
-    
-    @Override
-    public Object visitUpdate_column_multiple(sqlParser.Update_column_multipleContext ctx) {
-        
-       
-        
-        return super.visitUpdate_column_multiple(ctx); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    
-   
-    
-            
+  
           
     /**
      * Método para verificar si existe una columna en una tabla
@@ -851,20 +850,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         return verificadorColumna;
     }
 
-   /* @Override
-    public Object visitCondition_update(sqlParser.Condition_updateContext ctx) {
-        //revisar que el nombre de la columna exista
-        String nombreColumna = ctx.getChild(0).getText();
-        boolean verificadorColumna = verificarColumnaUpdate(nombreColumna);
-        if (!verificadorColumna) {
-            DBMS.throwMessage("Error: La columna " +nombreColumna+ " no existe ");
-            tabla = null;
-            return null;
-        }
-        //int indiceColumna = columnExist(nombreColumna);
-        
-        return super.visitCondition_update(ctx); //To change body of generated methods, choose Tools | Templates.
-    }*/
+
 
     @Override
     public Object visitIdentifier_update(sqlParser.Identifier_updateContext ctx) {
@@ -885,6 +871,7 @@ public class Visitor<T> extends sqlBaseVisitor {
         }else{
             String contenido = ctx.getChild(0).getText();
             try {
+               
                 Integer.parseInt(contenido);
                 return "INT";
             } catch (NumberFormatException e) {
@@ -902,8 +889,22 @@ public class Visitor<T> extends sqlBaseVisitor {
                         }
                         else
                             return "CHAR";
-                }else{
-                     int indiceColumna = visitorChuso.columnExist(ctx.getParent().getParent().getParent().getParent().getChild(1).getText(),contenido);
+                }
+                else if (contenido.equals("NULL")){
+                    return "NULL";
+                }
+                else{
+                    String nombrePapa = ctx.getParent().getParent().getParent().getParent().getChild(0).getText();
+                    String nombreTabla = "";
+                    
+                    if(nombrePapa.equals("delete")||nombrePapa.equals("DELETE")){
+                        nombreTabla = ctx.getParent().getParent().getParent().getParent().getChild(2).getText();
+                        this.columnas.push(contenido);
+                    }
+                    else
+                        if(nombrePapa.equals("update")||nombrePapa.equals("UPDATE"))
+                            nombreTabla = ctx.getParent().getParent().getParent().getParent().getChild(1).getText();
+                    int indiceColumna = visitorChuso.columnExist(nombreTabla,contenido);
                     if(indiceColumna<0){
                         DBMS.throwMessage( "Error: La Columna: "+contenido+" no existe en la tabla ", ctx.getStart());
                         return "error";
@@ -923,10 +924,10 @@ public class Visitor<T> extends sqlBaseVisitor {
         ArrayList indexes = new ArrayList();
          String nombrePapa = ctx.getParent().getChild(0).getText();
         String nombreTabla = "";
-        if(nombrePapa.equals("delete"))
+        if(nombrePapa.equals("delete")||nombrePapa.equals("DELETE"))
             nombreTabla = ctx.getParent().getChild(2).getText();
         else
-            if(nombrePapa.equals("update"))
+            if(nombrePapa.equals("update")||nombrePapa.equals("UPDATE"))
                 nombreTabla = ctx.getParent().getChild(1).getText();
             else
                 nombreTabla = ctx.getParent().getChild(3).getText();
@@ -990,10 +991,10 @@ public class Visitor<T> extends sqlBaseVisitor {
     public Object visitCondition_update(sqlParser.Condition_updateContext ctx) {
         String nombrePapa = ctx.getParent().getParent().getParent().getChild(0).getText();
         String nombreTabla = "";
-        if(nombrePapa.equals("delete"))
+        if(nombrePapa.equals("delete")||nombrePapa.equals("DELETE"))
             nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
         else
-            if(nombrePapa.equals("update"))
+            if(nombrePapa.equals("update")|nombrePapa.equals("UPDATE"))
                 nombreTabla = ctx.getParent().getParent().getParent().getChild(1).getText();
             else
                 nombreTabla = ctx.getParent().getParent().getParent().getChild(3).getText();
@@ -1006,8 +1007,8 @@ public class Visitor<T> extends sqlBaseVisitor {
         System.out.println(op1);
         System.out.println(op2);
         //CAMBIAR CAMBIAR CAMBIAR CAMBIAR CAMBIAR EL RETURN
-        if(!op1.equals(op2)){
-            DBMS.throwMessage( "Error: La comparacion no se realizo con los mismos tipos de variables", ctx.getStart());
+        if(!op1.equals(op2)&&!op1.equals("NULL")&&!op2.equals("NULL")){
+            DBMS.throwMessage( "Error: La comparación no se realizó con los mismos tipos de variables", ctx.getStart());
             return "error";
         }
         //la columna esta en el primero y no en el segundo
@@ -1029,8 +1030,10 @@ public class Visitor<T> extends sqlBaseVisitor {
                         }else if (op1.equals("DATE")){
                             String operador1 = ctx.getChild(2).getText();
                             String operador2 = (String)registro.get(columna);
+                            //para comparar fechas se utiliza una clase de java
+                            //y hay que quitar los apostrofes
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                              operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\'", "");
                             operador1  = operador1.replaceAll("\"", "");
                             operador2  = operador2.replaceAll("\'", "");
                             operador2  = operador2.replaceAll("\"", "");
@@ -1041,7 +1044,7 @@ public class Visitor<T> extends sqlBaseVisitor {
                                     listaFinal.add(indexActuales.get(i));
                                 }
                             }catch(Exception e){
-                                System.out.println("erro fecha");
+                                System.out.println("error fecha");
                             }
                         }
                         
@@ -1061,8 +1064,10 @@ public class Visitor<T> extends sqlBaseVisitor {
                         }else if (op1.equals("DATE")){
                              String operador1 = ctx.getChild(2).getText();
                             String operador2 = (String)registro.get(columna);
+                               //para comparar fechas se utiliza una clase de java
+                            //y hay que quitar los apostrofes
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                              operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\'", "");
                             operador1  = operador1.replaceAll("\"", "");
                             operador2  = operador2.replaceAll("\'", "");
                             operador2  = operador2.replaceAll("\"", "");
@@ -1091,8 +1096,10 @@ public class Visitor<T> extends sqlBaseVisitor {
                         }else if (op1.equals("DATE")){
                             String operador1 = ctx.getChild(2).getText();
                             String operador2 = (String)registro.get(columna);
+                            //para comparar fechas se utiliza una clase de java
+                            //y hay que quitar los apostrofes
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                              operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\'", "");
                             operador1  = operador1.replaceAll("\"", "");
                             operador2  = operador2.replaceAll("\'", "");
                             operador2  = operador2.replaceAll("\"", "");
@@ -1122,6 +1129,8 @@ public class Visitor<T> extends sqlBaseVisitor {
                         else if(op1.equals("DATE")){
                             String operador1 = ctx.getChild(2).getText();
                             String operador2 = (String)registro.get(columna);
+                            //para comparar fechas se utiliza una clase de java
+                            //y hay que quitar los apostrofes
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                             operador1  = operador1.replaceAll("\'", "");
                             operador1  = operador1.replaceAll("\"", "");
@@ -1130,9 +1139,7 @@ public class Visitor<T> extends sqlBaseVisitor {
                             try{
                                 Date date1 = sdf.parse(operador1);
                                 Date date2 = sdf.parse(operador2);
-                                System.out.println(date1);
-                                System.out.println(date2);
-                                System.out.println(date1.compareTo(date2));
+                               
                                 if (date2.compareTo(date1)>=0){
                                     listaFinal.add(indexActuales.get(i));
                                 }
@@ -1185,11 +1192,22 @@ public class Visitor<T> extends sqlBaseVisitor {
                     break;
                     case "=":
                         if(op1.equals("INT")){
-                            int operador2 = Integer.parseInt(ctx.getChild(2).getText());
-                            int operador1 =(int)Math.round((Double) registro.get(columna));
-                           
-                            if(operador1==operador2){
-                                listaFinal.add(indexActuales.get(i));
+                            Object reg = registro.get(columna);
+                            if (!reg.equals("NULL")){
+                                int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                                int operador1 =(int)Math.round((Double)(reg));
+
+                                if(operador1==operador2){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }
+                            else{//si es NULL se trata como string
+                                String operador1 = ctx.getChild(2).getText();
+                                String operador2 = (String)registro.get(columna);
+
+                                if (operador1.equals(operador2)){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
                             }
                         }else if (op1.equals("CHAR")||op1.equals("DATE")){
                             String operador1 = ctx.getChild(2).getText();
@@ -1418,6 +1436,32 @@ public class Visitor<T> extends sqlBaseVisitor {
    
     return count;
 }
+
+    @Override
+    public Object visitDelete_value(sqlParser.Delete_valueContext ctx) {
+     String nombreTabla = ctx.getChild(2).getText();
+        if (bdActual.isEmpty()){
+            DBMS.throwMessage("Error: no se ha seleccionado la base de datos");
+            return null;
+        }
+        if (!manejador.checkFile(bdActual, nombreTabla)){
+            DBMS.throwMessage("Error: la tabla "+ nombreTabla +" no existe", ctx.getStart());
+            return null;
+        }
+        tabla = (Tabla)json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+        //visitar todas las reglas de los hijos antes de guardar la tabla actualizada
+        super.visitDelete_value(ctx);
+        while (!columnas.isEmpty())
+            updateSelectedColumns((String)columnas.pop(),"NULL",this.indexActuales );
+        //si no hubo errores, se guarda la data.
+        if (tabla!= null){
+             json.objectToJSON(bdActual, nombreTabla, tabla);
+        }
+        return null; //To change body of generated methods, choose Tools |    }
+    
+    }
+    
+    
     
   
 }

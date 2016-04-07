@@ -4535,14 +4535,14 @@ public class sqlParser extends Parser {
 
 	public static class Delete_valueContext extends ParserRuleContext {
 		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
+		public Final_where_updateContext final_where_update() {
+			return getRuleContext(Final_where_updateContext.class,0);
+		}
 		public WhereContext where() {
 			return getRuleContext(WhereContext.class,0);
 		}
 		public FromContext from() {
 			return getRuleContext(FromContext.class,0);
-		}
-		public Final_whereContext final_where() {
-			return getRuleContext(Final_whereContext.class,0);
 		}
 		public DeleteContext delete() {
 			return getRuleContext(DeleteContext.class,0);
@@ -4581,7 +4581,7 @@ public class sqlParser extends Parser {
 			if (_la==T__46 || _la==T__11) {
 				{
 				setState(576); where();
-				setState(577); final_where();
+				setState(577); final_where_update();
 				}
 			}
 
@@ -6033,7 +6033,7 @@ public class sqlParser extends Parser {
 		"\u0097\3\2\2\2\u0239\u023a\7d\2\2\u023a\u023b\7\17\2\2\u023b\u023d\5\u00b8"+
 		"]\2\u023c\u023e\7\30\2\2\u023d\u023c\3\2\2\2\u023d\u023e\3\2\2\2\u023e"+
 		"\u0099\3\2\2\2\u023f\u0240\5\60\31\2\u0240\u0241\5F$\2\u0241\u0245\7d"+
-		"\2\2\u0242\u0243\5\66\34\2\u0243\u0244\5\u009eP\2\u0244\u0246\3\2\2\2"+
+		"\2\2\u0242\u0243\5\66\34\2\u0243\u0244\5\u00a0Q\2\u0244\u0246\3\2\2\2"+
 		"\u0245\u0242\3\2\2\2\u0245\u0246\3\2\2\2\u0246\u0247\3\2\2\2\u0247\u0248"+
 		"\7\67\2\2\u0248\u009b\3\2\2\2\u0249\u024a\5\62\32\2\u024a\u024b\5\u00a4"+
 		"S\2\u024b\u024c\5F$\2\u024c\u0250\5\u00a2R\2\u024d\u024e\5\66\34\2\u024e"+
