@@ -38,7 +38,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         
         String nombreTabla = ctx.getChild(2).getText();
         
-        Tabla tabla = getTablaFromNombre(bdActual, nombreTabla);
+        Tabla tabla = getTablaFromNombre(nombreTabla);
         
         /* Verificar si la tabla existe */
         if (tabla == null) {
@@ -441,8 +441,38 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     }
                     break;
                 case "foreign":
+                    String nombreTablaRef_1 = cnt.getReferencesForeign().getNombreTablaRef();
+                    String nombreColumnaRef_1 = cnt.getReferencesForeign().getReferencesForeign().get(0);
+                    
+                    String nombreColumnOwner_1 = cnt.getReferences().get(0);
+                    
+                    Tabla tablaRef_1 = getTablaFromNombre(nombreTablaRef_1);
+                    //boolean isOk_f = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
+                    boolean isOk_f = verifyForeignKeyInTable(insertData, nombreColumnOwner_1, nombreColumnaRef_1, tabla, tablaRef_1);
+                    if (!isOk_f) {
+                        DBMS.throwMessage(
+                                "Insert Error: Foreign key violation; No existe valor referenciado",
+                                ctx.getStart()
+                        );
+                        return null;
+                    }
                     break;
                 case "FOREIGN":
+                    String nombreTablaRef = cnt.getReferencesForeign().getNombreTablaRef();
+                    String nombreColumnaRef = cnt.getReferencesForeign().getReferencesForeign().get(0);
+                    
+                    String nombreColumnOwner = cnt.getReferences().get(0);
+                    
+                    Tabla tablaRef = getTablaFromNombre(nombreTablaRef);
+                    //boolean isOk_f = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
+                    boolean isOk_F = verifyForeignKeyInTable(insertData, nombreColumnOwner, nombreColumnaRef, tabla, tablaRef);
+                    if (!isOk_F) {
+                        DBMS.throwMessage(
+                                "Insert Error: Foreign key violation; No existe valor referenciado",
+                                ctx.getStart()
+                        );
+                        return null;
+                    }
                     break;
                 case "check":
                     break;
@@ -489,13 +519,67 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
     }
     
     public boolean verifyForeignKeyInTable(
-        ArrayList dataInsert,           // Datos a validar
+        ArrayList<T> dataInsert,           // Datos a validar
+        String referenceOwner,          // Columna que guarda la referencia
         String reference,               // Columnas a quien se hace referencia
         Tabla tablaOwner,               // Tabla a la que pertenece el Foreign Key
         Tabla tablaRef                  // Tabla a la que se hace una referencia
     ) {
+        ArrayList<T> datosColumna = getDataInColumnFromTable(reference, tablaRef);
         
-        return true;
+        if (datosColumna == null) {
+            System.out.println("No se encontraron datos para FK validation");
+        }
+        
+        int indexOfColumn = getIndexOfColumn(referenceOwner, tablaOwner.getColumnas());
+        
+        if (indexOfColumn == -1) {
+            System.out.println("La vida no es justa, no encontró el índice");
+        }
+        
+        T dato_eval = dataInsert.get(indexOfColumn);
+        
+        String columnType = getColumnTypeFromColumnName(reference, tablaRef);
+        
+        System.out.println("Datos columna: " + datosColumna + " DatoEval: " + dato_eval);
+        if (datosColumna.contains(dato_eval)) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public ArrayList<T> getDataInColumnFromTable(
+        String nombreColumna,
+        Tabla table
+    ) {
+        ArrayList<T> returnData = new ArrayList();
+        
+        ArrayList<ArrayList> dataTable = table.getDataInTable();
+        int indexOfColumn = getIndexOfColumn(nombreColumna, table.getColumnas());
+        
+        if (indexOfColumn == -1) {
+            System.out.println("No se encontró índice de la columna");
+            return null;
+        }
+        
+        for (int i = 0; i < dataTable.size(); i++) {
+            ArrayList dataRegistro = dataTable.get(i);
+            returnData.add((T)dataRegistro.get(indexOfColumn));
+        }
+        
+        return returnData;
+    }
+    
+    public int getIndexOfColumn(String nombreColumna, ArrayList<TuplaColumna> columnas) {
+        for (int i = 0; i < columnas.size(); i++) {
+            String nombreColumnaTablaActual = columnas.get(i).getNombre();
+            if (nombreColumna.equals(nombreColumnaTablaActual)) {
+                return i;
+            }
+        }
+        
+        return -1;
     }
     
     public ArrayList<Integer> getArrayIndicesDataToEval(
@@ -526,7 +610,7 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         return null;
     }
     
-    public Tabla getTablaFromNombre(String bd, String nombre) {
+    public Tabla getTablaFromNombre(String nombre) {
         if (!manejador.checkFile(bdActual, nombre)) {
             return null;
         }
