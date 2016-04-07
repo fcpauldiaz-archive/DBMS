@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -32,6 +35,8 @@ public class Visitor<T> extends sqlBaseVisitor {
     public String tablaActual="";
     private String globalLogic="";
     private VisitorAdolfo visitorAdolfo = new VisitorAdolfo();
+    private VisitorChuso visitorChuso = new VisitorChuso();
+    private ArrayList indexActuales = new ArrayList();
     /**
      * Método que crea la base de datos y actualiza el archivo maestro de bases de datos.
      * @param ctx
@@ -573,14 +578,117 @@ public class Visitor<T> extends sqlBaseVisitor {
             tabla = null;
             return null;
         }
-        
-        updateALLColumnTable(nombreColumna, (String)(ctx.getChild(2).getText()));
-           
+        if (ctx.getParent().getParent().getChildCount() < 6){
+            updateALLColumnTable(nombreColumna, (String)(ctx.getChild(2).getText()));
+            return null;
+        }
         
         //actualizar solo los del where
+        updateSelectedColumns(nombreColumna,(String)(ctx.getChild(2).getText()), (ArrayList)this.visit(ctx.getParent().getParent().getChild(5)) );
         
+        //return super.visitUpdate_colmn(ctx); //To change body of generated methods, choose Tools | Templates.
+        return null;
+    }
+    
+    
+    public void updateSelectedColumns(String nombreColumna, String valor, ArrayList<Integer> indexUpdates){
+         System.out.println("valor" + valor);
+        ArrayList array = tabla.getIndexOfColumn(nombreColumna);
+        System.out.println(array);
+        int indiceActualizar = (int)array.get(0);
+        String tipo = (String)array.get(1);
+      
+        boolean unique = tabla.checkPrimaryKey(nombreColumna);
+        boolean pass = true;
         
-        return super.visitUpdate_colmn(ctx); //To change body of generated methods, choose Tools | Templates.
+        try {
+        //recorrer toda la data en la tabla
+        int cantidadUpdates = 0;
+        for (int index : indexUpdates){
+            
+            ArrayList innerArray = tabla.getDataInTable().get(index);
+            //si es numérico hay que hacer casteo 
+           if (tipo.equals("INT")||tipo.equals("FLOAT")) {
+               
+                //si el indice a actualizar no existe, lo agregamos a la data
+               if (innerArray.size() < indiceActualizar+1) {
+                   if (unique){
+                       pass = this.revisarPrimaryKey(innerArray , indiceActualizar , casteoNumerico(valor));
+                   }
+                   if (pass){
+                        innerArray.add(casteoNumerico(valor));
+                        cantidadUpdates++;
+                   }
+               }
+               //si ya existe lo seteamos
+               else{
+                    if (unique) {
+                        pass = this.revisarPrimaryKey(tabla.getDataInTable(), indiceActualizar, casteoNumerico(valor));
+                    }
+                    if (pass) {
+                        
+                        innerArray.set(indiceActualizar, casteoNumerico(valor));
+                        cantidadUpdates++;
+                    }
+                    else{
+                        tabla = null;
+                        DBMS.throwMessage("Se ha actualizado 1 columna");
+                        DBMS.throwMessage("Error: no ha pasado verificacion de primary key");
+                    }
+               }
+           }
+           //si no hay que hacer casteo
+           else if (tipo.equals("DATE")){
+               if (visitorAdolfo.verifyDate(valor))
+               {
+                   innerArray.set(indiceActualizar, valor);
+                   cantidadUpdates++;
+               } 
+               else {
+                       tabla = null;
+                       DBMS.throwMessage("Error: fecha con formato inválido ");
+                }
+               
+           }
+           else if (tipo.equals("CHAR"))
+           {   //hay que restar los 2 apostrofes del string
+               if (valor.length()-2 > (int)array.get(2)){
+                    tabla = null;
+                   DBMS.throwMessage("Error: el tamaño del char se excede del límite establecido ");
+               }
+               else {
+                    //si el indice a actualizar no existe, lo agregamos a la data
+                    if (innerArray.size() < indiceActualizar+1){
+                        innerArray.add(valor);
+                        cantidadUpdates++;
+                    }
+                    //si ya existe lo seteamos
+                    else{       
+                        innerArray.set(indiceActualizar, valor);
+                        cantidadUpdates++;
+                    }
+                }
+           }
+           else{
+               //si el indice a actualizar no existe, lo agregamos a la data
+                if (innerArray.size() < indiceActualizar+1){
+                    innerArray.add(valor);
+                    cantidadUpdates++;
+                }
+                //si ya existe lo seteamos
+                else{       
+                    innerArray.set(indiceActualizar, valor);
+                    cantidadUpdates++;
+                }
+           }
+        }
+        
+        DBMS.throwMessage("Se han actualizado " + cantidadUpdates + " columnas");
+        } catch (Exception e){
+            tabla = null;
+            DBMS.throwMessage("Error: ha ingresado un tipo incorrecto");
+        }
+      
     }
     
     /**
@@ -647,6 +755,25 @@ public class Visitor<T> extends sqlBaseVisitor {
                 }
                
            }
+           else if (tipo.equals("CHAR"))
+           {   //hay que restar los 2 apostrofes del string
+               if (valor.length()-2 > (int)array.get(2)){
+                    tabla = null;
+                   DBMS.throwMessage("Error: el tamaño del char se excede del límite establecido ");
+               }
+               else {
+                    //si el indice a actualizar no existe, lo agregamos a la data
+                    if (innerArray.size() < indiceActualizar+1){
+                        innerArray.add(valor);
+                        cantidadUpdates++;
+                    }
+                    //si ya existe lo seteamos
+                    else{       
+                        innerArray.set(indiceActualizar, valor);
+                        cantidadUpdates++;
+                    }
+                }
+           }
            else{
                //si el indice a actualizar no existe, lo agregamos a la data
                 if (innerArray.size() < indiceActualizar+1){
@@ -697,6 +824,8 @@ public class Visitor<T> extends sqlBaseVisitor {
         
         return super.visitUpdate_column_multiple(ctx); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    
    
     
             
@@ -722,8 +851,8 @@ public class Visitor<T> extends sqlBaseVisitor {
         return verificadorColumna;
     }
 
-    @Override
-    public Object visitCondition(sqlParser.ConditionContext ctx) {
+   /* @Override
+    public Object visitCondition_update(sqlParser.Condition_updateContext ctx) {
         //revisar que el nombre de la columna exista
         String nombreColumna = ctx.getChild(0).getText();
         boolean verificadorColumna = verificarColumnaUpdate(nombreColumna);
@@ -732,23 +861,563 @@ public class Visitor<T> extends sqlBaseVisitor {
             tabla = null;
             return null;
         }
+        //int indiceColumna = columnExist(nombreColumna);
         
-        return super.visitCondition(ctx); //To change body of generated methods, choose Tools | Templates.
+        return super.visitCondition_update(ctx); //To change body of generated methods, choose Tools | Templates.
+    }*/
+
+    @Override
+    public Object visitIdentifier_update(sqlParser.Identifier_updateContext ctx) {
+       if(ctx.getChildCount()>1){
+            String nombreTabla = ctx.getChild(0).getText();
+            String nombreColumna = ctx.getChild(2).getText();
+            Tabla tablaLocal = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+            if(visitorChuso.tableExist(nombreTabla)<0){
+                DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" no existe en la base de datos "+ bdActual, ctx.getStart());
+                return "error";
+            }
+            int indiceColumna = visitorChuso.columnExist(nombreTabla, nombreColumna);
+            if(indiceColumna<0){
+                DBMS.throwMessage( "Error: La Columna: "+nombreColumna+" no existe en la tabla "+ nombreTabla, ctx.getStart());
+                return "error";
+            }
+            return tablaLocal.getColumnas().get(indiceColumna).getTipo();
+        }else{
+            String contenido = ctx.getChild(0).getText();
+            try {
+                Integer.parseInt(contenido);
+                return "INT";
+            } catch (NumberFormatException e) {
+                System.out.println(contenido+ " contenido");
+                if(contenido.contains("\'")){
+                    if(!contenido.startsWith("\'")){
+                        DBMS.throwMessage( "String o char debe comenzar con \'", ctx.getStart());
+                        return "error";
+                    }else
+                        if(!contenido.endsWith("\'")){
+                            DBMS.throwMessage( "String o char debe terminar con \'", ctx.getStart());
+                            return "error";
+                        }else if (this.countOccurrences(contenido, '-')==2){
+                            return "DATE";
+                        }
+                        else
+                            return "CHAR";
+                }else{
+                     int indiceColumna = visitorChuso.columnExist(ctx.getParent().getParent().getParent().getParent().getChild(1).getText(),contenido);
+                    if(indiceColumna<0){
+                        DBMS.throwMessage( "Error: La Columna: "+contenido+" no existe en la tabla ", ctx.getStart());
+                        return "error";
+                    }
+                    return tabla.getColumnas().get(indiceColumna).getTipo();
+                    //System.out.println(contenido.charAt(0));
+                    //DBMS.throwMessage( "Error de referencia, debe ir de la forma tabla.columna ", ctx.getStart());
+                   // return "ID";
+                }
+             }
+            
+        }//To change body of generated methods, choose Tools | Templates.
+    }
+    
+        @Override
+    public Object visitFinal_where_update(sqlParser.Final_where_updateContext ctx) {
+        ArrayList indexes = new ArrayList();
+         String nombrePapa = ctx.getParent().getChild(0).getText();
+        String nombreTabla = "";
+        if(nombrePapa.equals("delete"))
+            nombreTabla = ctx.getParent().getChild(2).getText();
+        else
+            if(nombrePapa.equals("update"))
+                nombreTabla = ctx.getParent().getChild(1).getText();
+            else
+                nombreTabla = ctx.getParent().getChild(3).getText();
+        Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+        for(int i = 0;i<ctx.getChildCount();i++){
+            indexes = (ArrayList) this.visit(ctx.getChild(i));
+            indexActuales = indexes;
+        }
+            System.out.println(indexes);
+        return indexes;
+    }
+  
+    
+    @Override
+    public Object visitFirst_where_statement_update(sqlParser.First_where_statement_updateContext ctx) {
+        indexActuales = new ArrayList();
+        String nombrePapa = ctx.getParent().getParent().getChild(0).getText();
+        String nombreTabla = "";
+        if(nombrePapa.equals("delete"))
+            nombreTabla = ctx.getParent().getParent().getChild(2).getText();
+        else
+            if(nombrePapa.equals("update"))
+                nombreTabla = ctx.getParent().getParent().getChild(1).getText();
+            else
+                nombreTabla = ctx.getParent().getParent().getChild(3).getText();
+        Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+        for(int i = 0;i<tabla.getDataInTable().size();i++)
+            indexActuales.add(i);
+        return (ArrayList) this.visit(ctx.getChild(0));
+    }
+     
+     @Override
+    public Object visitWhere_statement_update(sqlParser.Where_statement_updateContext ctx) {
+         String nombrePapa = ctx.getParent().getParent().getChild(0).getText();
+        String nombreTabla = "";
+        if(nombrePapa.equals("delete"))
+            nombreTabla = ctx.getParent().getParent().getChild(2).getText();
+        else
+            if(nombrePapa.equals("update"))
+                nombreTabla = ctx.getParent().getParent().getChild(1).getText();
+            else
+                nombreTabla = ctx.getParent().getParent().getChild(3).getText();
+        Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+        String logic = ctx.getChild(0).getText().toLowerCase();
+        ArrayList indexReturn = new ArrayList();
+        indexReturn.addAll(indexActuales);
+        if(logic.equals("or")){
+            indexActuales = new ArrayList();
+            for(int i = 0;i<tabla.getDataInTable().size();i++)
+                indexActuales.add(i);
+            indexReturn.addAll((ArrayList) this.visit(ctx.getChild(1)));
+            return indexReturn;
+        }else
+            if(logic.equals("and")){
+               return (ArrayList) this.visit(ctx.getChild(1)); 
+            }
+        return null;
     }
 
     @Override
-    public Object visitFirst_where_statement(sqlParser.First_where_statementContext ctx) {
-       
-       
-        
-      
-        return super.visitFirst_where_statement(ctx); //To change body of generated methods, choose Tools | Templates.
+    public Object visitCondition_update(sqlParser.Condition_updateContext ctx) {
+        String nombrePapa = ctx.getParent().getParent().getParent().getChild(0).getText();
+        String nombreTabla = "";
+        if(nombrePapa.equals("delete"))
+            nombreTabla = ctx.getParent().getParent().getParent().getChild(2).getText();
+        else
+            if(nombrePapa.equals("update"))
+                nombreTabla = ctx.getParent().getParent().getParent().getChild(1).getText();
+            else
+                nombreTabla = ctx.getParent().getParent().getParent().getChild(3).getText();
+        Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTabla, "Tabla");
+        String op1 =(String) (this.visit(ctx.getChild(0)));
+        op1 = op1.toUpperCase();
+        String op2 =(String) (this.visit(ctx.getChild(2)));
+        op2 = op2.toUpperCase();
+        String operacion = ctx.getChild(1).getText();
+        System.out.println(op1);
+        System.out.println(op2);
+        //CAMBIAR CAMBIAR CAMBIAR CAMBIAR CAMBIAR EL RETURN
+        if(!op1.equals(op2)){
+            DBMS.throwMessage( "Error: La comparacion no se realizo con los mismos tipos de variables", ctx.getStart());
+            return "error";
+        }
+        //la columna esta en el primero y no en el segundo
+        ArrayList registro = new ArrayList();
+        ArrayList listaFinal = new ArrayList();
+        if(ctx.getChild(0).getChildCount()>=1&&ctx.getChild(2).getChildCount()<2){
+            int columna = visitorChuso.columnExist(nombreTabla,ctx.getChild(0).getChild(0).getText());
+            for(int i = 0;i<indexActuales.size();i++){
+                registro = tabla.getDataInTable().get((int)indexActuales.get(i));
+                switch(operacion){
+                    case "<":
+                        if(op1.equals("INT")){
+                             int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                            int operador1 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1<operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                           
+                        }else if (op1.equals("DATE")){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                              operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\"", "");
+                            operador2  = operador2.replaceAll("\'", "");
+                            operador2  = operador2.replaceAll("\"", "");
+                            try{
+                                Date date1 = sdf.parse(operador1);
+                                Date date2 = sdf.parse(operador2);
+                                if (date2.compareTo(date1)<0){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }catch(Exception e){
+                                System.out.println("erro fecha");
+                            }
+                        }
+                        
+                        else{
+                            DBMS.throwMessage( "Error: la comparacion < solo se puede entre int", ctx.getStart());
+                            return "error";
+                        }
+                    break;
+                    case "<=":
+                        if(op1.equals("INT")){
+                             int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                            int operador1 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1<=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                           
+                        }else if (op1.equals("DATE")){
+                             String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                              operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\"", "");
+                            operador2  = operador2.replaceAll("\'", "");
+                            operador2  = operador2.replaceAll("\"", "");
+                            try{
+                                Date date1 = sdf.parse(operador1);
+                                Date date2 = sdf.parse(operador2);
+                                if (date2.compareTo(date1)<=0){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }catch(Exception e){
+                                
+                            }
+                        }
+                        else{
+                           DBMS.throwMessage( "Error: la comparacion <= solo se puede entre int o dates", ctx.getStart());
+                            return "error";
+                        }
+                    case ">":
+                        if(op1.equals("INT")){
+                              int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                            int operador1 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1>operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                         
+                        }else if (op1.equals("DATE")){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                              operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\"", "");
+                            operador2  = operador2.replaceAll("\'", "");
+                            operador2  = operador2.replaceAll("\"", "");
+                            try{
+                                Date date1 = sdf.parse(operador1);
+                                Date date2 = sdf.parse(operador2);
+                                if (date2.compareTo(date1)>0){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }catch(Exception e){
+                                
+                            }
+                        }
+                        else{
+                             DBMS.throwMessage( "Error: la comparacion > solo se puede entre int o dates", ctx.getStart());
+                            return "error";
+                        }
+                    break;
+                    case ">=":
+                        if(op1.equals("INT")){
+                            int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                            int operador1 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1>=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                        else if(op1.equals("DATE")){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            operador1  = operador1.replaceAll("\'", "");
+                            operador1  = operador1.replaceAll("\"", "");
+                            operador2  = operador2.replaceAll("\'", "");
+                            operador2  = operador2.replaceAll("\"", "");
+                            try{
+                                Date date1 = sdf.parse(operador1);
+                                Date date2 = sdf.parse(operador2);
+                                System.out.println(date1);
+                                System.out.println(date2);
+                                System.out.println(date1.compareTo(date2));
+                                if (date2.compareTo(date1)>=0){
+                                    listaFinal.add(indexActuales.get(i));
+                                }
+                            }catch(Exception e){
+                                e.printStackTrace();
+                                System.out.println("Error fecha");
+                            }
+                        }
+                        else{
+                              DBMS.throwMessage( "Error: la comparacion >= solo se puede entre int o date", ctx.getStart());
+                            return "error";
+                        }
+                    break;
+                    case "<>":
+                        if(op1.equals("INT")){
+                            int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                            int operador1 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1!=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else if (op1.equals("CHAR")||op1.equals("DATE") ){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            if (!operador1.equals(operador2)){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                        else
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(2).getText())){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                    break;
+                    case "!=":
+                        if(op1.equals("INT")){
+                            int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                            int operador1 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1!=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else if (op1.equals("CHAR")||op1.equals("DATE")){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                            if (!operador1.equals(operador2)){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(2).getText())){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                    break;
+                    case "=":
+                        if(op1.equals("INT")){
+                            int operador2 = Integer.parseInt(ctx.getChild(2).getText());
+                            int operador1 =(int)Math.round((Double) registro.get(columna));
+                           
+                            if(operador1==operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else if (op1.equals("CHAR")||op1.equals("DATE")){
+                            String operador1 = ctx.getChild(2).getText();
+                            String operador2 = (String)registro.get(columna);
+                        
+                            if (operador1.equals(operador2)){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                        else
+                            if(Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(2).getText())){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                    break;
+                }
+            }
+        }
+        //la columna no esta en el primero sino que en el segundo 
+        if(ctx.getChild(0).getChildCount()<2&&ctx.getChild(2).getChildCount()>1){
+            int columna = visitorChuso.columnExist(nombreTabla,ctx.getChild(2).getChild(2).getText());
+            for(int i = 0;i<indexActuales.size();i++){
+                registro = tabla.getDataInTable().get((int)indexActuales.get(i));
+                switch(operacion){
+                    case "<":
+                        if(!op1.equals("INT")){
+                            DBMS.throwMessage( "Error: la comparacion < solo se puede entre int", ctx.getStart());
+                            return "error";
+                        }else{
+                            int operador1 = Integer.parseInt(ctx.getChild(0).getText());
+                            int operador2 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1<operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                    break;
+                    case "<=":
+                        if(!op1.equals("INT")){
+                            DBMS.throwMessage( "Error: la comparacion <= solo se puede entre int", ctx.getStart());
+                            return "error";
+                        }else{
+                           int operador1 = Integer.parseInt(ctx.getChild(0).getText());
+                            int operador2 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1<=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                    case ">":
+                        if(!op1.equals("INT")){
+                            DBMS.throwMessage( "Error: la comparacion > solo se puede entre int", ctx.getStart());
+                            return "error";
+                        }else{
+                            int operador1 = Integer.parseInt(ctx.getChild(0).getText());
+                            int operador2 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1>operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                    break;
+                    case ">=":
+                        if(!op1.equals("INT")){
+                            DBMS.throwMessage( "Error: la comparacion >= solo se puede entre int", ctx.getStart());
+                            return "error";
+                        }else{
+                            int operador1 = Integer.parseInt(ctx.getChild(0).getText());
+                            int operador2 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1>=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                    break;
+                    case "<>":
+                        if(op1.equals("INT")){
+                            int operador1 = Integer.parseInt(ctx.getChild(0).getText());
+                            int operador2 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1!=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(0).getText())){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                    break;
+                    case "!=":
+                        if(op1.equals("INT")){
+                            int operador1 = Integer.parseInt(ctx.getChild(0).getText());
+                            int operador2 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1!=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(0).getText())){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                    break;
+                    case "=":
+                        if(op1.equals("INT")){
+                            int operador1 = Integer.parseInt(ctx.getChild(0).getText());
+                            int operador2 =(int)Math.round((Double) registro.get(columna));
+                            if(operador1==operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else
+                            if(Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(0).getText())){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                    break;
+                }
+            }
+        }
+        //la columna  esta en el primero y en el segundo 
+        if(ctx.getChild(0).getChildCount()>1&&ctx.getChild(2).getChildCount()>1){
+            int columna1 = visitorChuso.columnExist(nombreTabla,ctx.getChild(2).getChild(0).getText());
+            int columna2 = visitorChuso.columnExist(nombreTabla,ctx.getChild(2).getChild(2).getText());
+            for(int i = 0;i<indexActuales.size();i++){
+                registro = tabla.getDataInTable().get((int)indexActuales.get(i));
+                switch(operacion){
+                    case "<":
+                        if(!op1.equals("INT")){
+                            DBMS.throwMessage( "Error: la comparacion < solo se puede entre int", ctx.getStart());
+                            return "error";
+                        }else{
+                            int operador1 =(int)Math.round((Double) registro.get(columna1));
+                            int operador2 =(int)Math.round((Double) registro.get(columna2));
+                            if(operador1<operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                    break;
+                    case "<=":
+                        if(!op1.equals("INT")){
+                            DBMS.throwMessage( "Error: la comparacion <= solo se puede entre int", ctx.getStart());
+                            return "error";
+                        }else{
+                           int operador1 =(int)Math.round((Double) registro.get(columna1));
+                            int operador2 =(int)Math.round((Double) registro.get(columna2));
+                            if(operador1<=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                    case ">":
+                        if(!op1.equals("INT")){
+                            DBMS.throwMessage( "Error: la comparacion > solo se puede entre int", ctx.getStart());
+                            return "error";
+                        }else{
+                            int operador1 =(int)Math.round((Double) registro.get(columna1));
+                            int operador2 =(int)Math.round((Double) registro.get(columna2));
+                            if(operador1>operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                    break;
+                    case ">=":
+                        if(!op1.equals("INT")){
+                            DBMS.throwMessage( "Error: la comparacion >= solo se puede entre int", ctx.getStart());
+                            return "error";
+                        }else{
+                            int operador1 =(int)Math.round((Double) registro.get(columna1));
+                            int operador2 =(int)Math.round((Double) registro.get(columna2));
+                            if(operador1>=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }
+                    break;
+                    case "<>":
+                        if(op1.equals("INT")){
+                            int operador1 =(int)Math.round((Double) registro.get(columna1));
+                            int operador2 =(int)Math.round((Double) registro.get(columna2));
+                            if(operador1!=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna1))).equals(Integer.toString((int)Math.round((Double) registro.get(columna2))))){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                    break;
+                    case "!=":
+                        if(op1.equals("INT")){
+                            int operador1 =(int)Math.round((Double) registro.get(columna1));
+                            int operador2 =(int)Math.round((Double) registro.get(columna2));
+                            if(operador1!=operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else
+                            if(!Integer.toString((int)Math.round((Double) registro.get(columna1))).equals(Integer.toString((int)Math.round((Double) registro.get(columna2))))){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                    break;
+                    case "=":
+                        if(op1.equals("INT")){
+                            int operador1 =(int)Math.round((Double) registro.get(columna1));
+                            int operador2 =(int)Math.round((Double) registro.get(columna2));
+                            if(operador1==operador2){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                        }else
+                            if(Integer.toString((int)Math.round((Double) registro.get(columna1))).equals(Integer.toString((int)Math.round((Double) registro.get(columna2))))){
+                                listaFinal.add(indexActuales.get(i));
+                            }
+                    break;
+                }
+            }
+        }
+        indexActuales = new ArrayList();
+        return listaFinal;
     }
     
     
-    
+      public int columnExistActual(String nombreColumna){
+       
+        for(int i = 0;i<tabla.getColumnas().size();i++)
+            if(tabla.getColumnas().get(i).getNombre().equals(nombreColumna))
+                return i;
+        return -1;
+    }
   
-    
+    public int countOccurrences(String haystack, char needle)
+{
+    int count = 0;
+    for (int i=0; i < haystack.length(); i++)
+    {
+        if (haystack.charAt(i) == needle)
+        {
+             count++;
+        }
+    }
+   
+    return count;
+}
     
   
 }

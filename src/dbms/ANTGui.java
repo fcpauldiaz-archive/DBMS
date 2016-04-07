@@ -473,23 +473,20 @@ public class ANTGui extends javax.swing.JFrame {
               
             jTextArea3.setText("");
             String in="";
-            try{
-                in = leerArchivo(inputFile);
-            }catch(Exception e){}
-            if (inputFile == null){
-                if (!this.runSelected){
-                    in = this.jTextArea2.getText();
-                }
-                else {
-                    if (this.jTextArea2.getStringSelected().isEmpty()){
-                        DBMS.throwMessage("No hay nada seleccionado");
-                    }
-                    else{
-                        in = this.jTextArea2.getStringSelected();
-                    }
-                    this.jTextArea2.setStringSelected("");
-                }
+           
+            if (!this.runSelected){
+                in = this.jTextArea2.getText();
             }
+            else {
+                if (this.jTextArea2.getStringSelected().isEmpty()){
+                    DBMS.throwMessage("No hay nada seleccionado");
+                }
+                else{
+                    in = this.jTextArea2.getStringSelected();
+                }
+                this.jTextArea2.setStringSelected("");
+            }
+            
             CharStream cs =  new ANTLRInputStream(in);
 
            sqlLexer lexer = new sqlLexer(cs);
@@ -502,10 +499,7 @@ public class ANTGui extends javax.swing.JFrame {
             contexto = parser.sql2003Parser();
             ParseTree tree = contexto;
 
-            
-
-         
-
+        
             // Specify our entry point
             
             ruleNames = parser.getRuleNames();
@@ -533,51 +527,10 @@ public class ANTGui extends javax.swing.JFrame {
             System.out.println("ERROR");
 
         }
-       // insertarTablaIDE();
          
     }
     
-    
-//    public void insertarTablaIDE(){
-//        
-//       
-//        DefaultTableModel model = (DefaultTableModel) this.jTable1.getModel();
-//        model.setRowCount(0);
-//        for (Map.Entry<Integer, Symbol> entry : Visitor.tablaSimbolos.getTabla().entrySet()) {
-//            int key = entry.getKey();
-//            Symbol simbolo = entry.getValue();
-//            String paramsString="";
-//            String methodString ="";
-//            
-//            //agrega los tipos Method Type a un string y sus parametros para agregarlo a la tabla
-//            
-//            if (simbolo.getTipo().getClass().getName().equals("compiler.MethodType")){
-//                ArrayList<Symbol> params = ((MethodType)simbolo.getTipo()).getParameters();
-//               
-//                for (int i = 0;i<params.size();i++){
-//                    paramsString +="id: "+ (params.get(i).getId())+" -> "+ ((compiler.Type)params.get(i).getTipo()).getNombreVariable()+ "  ";
-//                }
-//                methodString = " method";
-//            }
-//            //agrega los tipos Struct Type a un string y sus miembros a un string
-//            //para agregarlo a la tabla.
-//            if (simbolo.getTipo().getClass().getName().equals("compiler.StructType")){
-//                ArrayList<Symbol> members = ((StructType)simbolo.getTipo()).getMembers();
-//               
-//                for (int i = 0;i<members.size();i++){
-//                    paramsString +="id: "+ (members.get(i).getId())+" -> "+ ((compiler.Type)members.get(i).getTipo()).getNombreVariable()+ "  ";
-//                }
-//                methodString = " ";
-//            }
-//            //agrega símbolo a a la tabla del IDE.
-//            model.addRow(new Object[]{key, ((compiler.Type)simbolo.getTipo()).getNombreVariable(),
-//               ((compiler.Type)simbolo.getTipo()).getModLiteralTipo()+ methodString ,
-//                simbolo.getAmbito(),
-//                paramsString});
-//        }
-//        
-//        
-//    }
+   
     
     public void mostrarArbol(){
         Trees.inspect(contexto, parser);

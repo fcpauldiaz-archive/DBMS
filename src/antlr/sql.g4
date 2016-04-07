@@ -14,7 +14,7 @@ DATETIME: 'datetime';
 
 fragment LETTER : ('a'..'z'|'A'..'Z' | '_') ;
 fragment DIGIT :'0'..'9' ;
-fragment ASCII : (' ' .. '+' ) | ('-' .. '~') | '\\' | '\'' | '\"' | '\t' | '\n' ;
+fragment ASCII : ('!' .. '+' ) | ('-' .. '~') | '\\' | '\'' | '\"' | '\t' | '\n' ;
 fragment TWO_DIGITS   : DIGIT DIGIT ;
 fragment THREE_DIGITS : DIGIT TWO_DIGITS ;
 fragment FOUR_DIGITS  : DIGIT THREE_DIGITS ;
@@ -245,7 +245,7 @@ logic: and | or | not;
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' | '!=' ;
 
 
-update_value: update ID set update_column_multiple (where final_where)? ';' ;
+update_value: update ID set update_column_multiple (where final_where_update)? ';' ;
 
 update_column_multiple: (update_colmn)+;
 
@@ -257,17 +257,27 @@ select_value: select select_values from from_multiple  (where final_where)?  (or
 
 final_where: first_where_statement(where_statement)*;
 
+final_where_update: first_where_statement_update(where_statement_update)*;
+
 from_multiple: ID (',' ID)* ;
 
 select_values: ('*' | ID (',' ID)* );
               
 first_where_statement: condition;
 
+first_where_statement_update: condition_update;
+
+where_statement_update: logic condition_update;
+
 where_statement: logic condition;
 
 condition:  identifier  relational identifier  ; 
 
+condition_update:  identifier_update  relational identifier_update  ; 
+
 identifier: (ID | value) ('.' ID )?;
+
+identifier_update: (ID | value);
               
 list_values : (value (',' (value))* ) ;
          

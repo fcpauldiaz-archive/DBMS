@@ -67,6 +67,8 @@ public class Tabla {
             if (tupla.getNombre().equals(nombreColumna)){
                 array.add(i);
                 array.add(tupla.getTipo());
+                if (tupla.getTipo().equals("CHAR"))
+                    array.add(tupla.getTamaño());
                 return array;
             }
         }

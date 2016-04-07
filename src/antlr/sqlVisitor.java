@@ -1,4 +1,4 @@
-// Generated from C:\Users\sergio\Documents\u005Cuniversidad\BDD\proyecto1\src\antlr\sql.g4 by ANTLR 4.4
+// Generated from /Users/usuario/NetBeansProjects/DBMS/src/antlr/sql.g4 by ANTLR 4.4
 package antlr;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
@@ -29,6 +29,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitReferences(@NotNull sqlParser.ReferencesContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#first_where_statement_update}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFirst_where_statement_update(@NotNull sqlParser.First_where_statement_updateContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#where_statement}.
 	 * @param ctx the parse tree
@@ -102,6 +108,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPrimary(@NotNull sqlParser.PrimaryContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#final_where_update}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFinal_where_update(@NotNull sqlParser.Final_where_updateContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#sql_data_statement}.
 	 * @param ctx the parse tree
@@ -440,11 +452,23 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCheck(@NotNull sqlParser.CheckContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#identifier_update}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdentifier_update(@NotNull sqlParser.Identifier_updateContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#condition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitCondition(@NotNull sqlParser.ConditionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#where_statement_update}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhere_statement_update(@NotNull sqlParser.Where_statement_updateContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#update_column_multiple}.
 	 * @param ctx the parse tree
@@ -592,6 +616,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#condition_update}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCondition_update(@NotNull sqlParser.Condition_updateContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#char_name}.
 	 * @param ctx the parse tree
