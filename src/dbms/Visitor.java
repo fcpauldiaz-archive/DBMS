@@ -1817,10 +1817,30 @@ public class Visitor<T> extends sqlBaseVisitor {
             Tabla tab=(Tabla)json.JSONtoObject(bdActual, masterTable.getTablas().get(i).getNombreTabla(), "Tabla");
             for(int j = 0;j<tab.getConstraints().size();j++){
                 if(tab.getConstraints().get(j).getTipo().toUpperCase().equals("FOREIGN")){
-                    for(int p =0;p<columnas.size();p++)
-                        if(tab.getConstraints().get(j).getReferencesForeign().getNombreTablaRef().equals(nombreTabla)&&tab.getConstraints().get(j).getReferencesForeign().getReferencesForeign().contains(columnas.get(p))){
-                            DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" tiene referencias en otra(s) tablas sobre llaves foraneas, no se puede eliminar", ctx.getStart());
-                            return null;
+                        if(tab.getConstraints().get(j).getReferencesForeign().getNombreTablaRef().equals(nombreTabla)){
+                            for(int p = 0;p<tab.getConstraints().get(j).getReferences().size();p++){
+                                String columnaForeign = tab.getConstraints().get(j).getReferencesForeign().getReferencesForeign().get(p);
+                                int temp = 0;
+                                for(int h = 0;h<tab.getColumnas().size();h++){
+                                    if(tab.getColumnas().get(h).getNombre().equals(tab.getConstraints().get(j).getReferences().get(p)))
+                                        temp = h;
+                                }
+                                int index2 = 0;
+                                for(int h = 0;h<tabla.getColumnas().size();h++){
+                                    if(tabla.getColumnas().get(h).getNombre().equals(tab.getConstraints().get(j).getReferencesForeign().getReferencesForeign().get(p)))
+                                        index2 = h;
+                                }
+                                for(int h = 0;h<indexActuales.size();h++){
+                                    for(int y = 0;y<tab.getDataInTable().size();y++){
+                                        T valor1 = (T)tab.getDataInTable().get(y).get(temp);
+                                        T valor2 = (T)tabla.getDataInTable().get((int)indexActuales.get(h)).get(index2);
+                                        if(valor1.equals(valor2)){
+                                            DBMS.throwMessage( "Error: La tabla: "+nombreTabla+" tiene referencias en otra(s) tablas sobre llaves foraneas, no se puede eliminar", ctx.getStart());
+                                        return null;
+                                        }
+                                    }
+                                }
+                            }
                         }
                 }
             }
