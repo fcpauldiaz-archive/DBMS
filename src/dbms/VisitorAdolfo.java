@@ -442,36 +442,46 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
                     break;
                 case "foreign":
                     String nombreTablaRef_1 = cnt.getReferencesForeign().getNombreTablaRef();
-                    String nombreColumnaRef_1 = cnt.getReferencesForeign().getReferencesForeign().get(0);
-                    
-                    String nombreColumnOwner_1 = cnt.getReferences().get(0);
-                    
                     Tabla tablaRef_1 = getTablaFromNombre(nombreTablaRef_1);
-                    //boolean isOk_f = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
-                    boolean isOk_f = verifyForeignKeyInTable(insertData, nombreColumnOwner_1, nombreColumnaRef_1, tabla, tablaRef_1);
-                    if (!isOk_f) {
-                        DBMS.throwMessage(
-                                "Insert Error: Foreign key violation; No existe valor referenciado",
-                                ctx.getStart()
-                        );
-                        return null;
+                    
+                    for (int i = 0; i < cnt.getReferencesForeign().getReferencesForeign().size(); i++) {
+
+                        String nombreColumnaRef_1 = cnt.getReferencesForeign().getReferencesForeign().get(i);
+                        String nombreColumnOwner_1 = cnt.getReferences().get(i);
+                        
+                        System.out.println("Columna a referenciar: " + nombreColumnaRef_1 + " Nombre columna Owner: " + nombreColumnOwner_1);
+
+                        //boolean isOk_f = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
+                        boolean isOk_f = verifyForeignKeyInTable(insertData, nombreColumnOwner_1, nombreColumnaRef_1, tabla, tablaRef_1);
+                        if (!isOk_f) {
+                            DBMS.throwMessage(
+                                    "Insert Error: Foreign key violation; No existe valor referenciado",
+                                    ctx.getStart()
+                            );
+                            return null;
+                        }
                     }
                     break;
                 case "FOREIGN":
                     String nombreTablaRef = cnt.getReferencesForeign().getNombreTablaRef();
-                    String nombreColumnaRef = cnt.getReferencesForeign().getReferencesForeign().get(0);
-                    
-                    String nombreColumnOwner = cnt.getReferences().get(0);
-                    
                     Tabla tablaRef = getTablaFromNombre(nombreTablaRef);
-                    //boolean isOk_f = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
-                    boolean isOk_F = verifyForeignKeyInTable(insertData, nombreColumnOwner, nombreColumnaRef, tabla, tablaRef);
-                    if (!isOk_F) {
-                        DBMS.throwMessage(
-                                "Insert Error: Foreign key violation; No existe valor referenciado",
-                                ctx.getStart()
-                        );
-                        return null;
+                    
+                    for (int i = 0; i < cnt.getReferencesForeign().getReferencesForeign().size(); i++) {
+
+                        String nombreColumnaRef = cnt.getReferencesForeign().getReferencesForeign().get(i);
+                        String nombreColumnOwner = cnt.getReferences().get(i);
+                        
+                        System.out.println("Columna a referenciar: " + nombreColumnaRef + " Nombre columna Owner: " + nombreColumnOwner);
+
+                        //boolean isOk_f = verifyPrimaryKeyInTable(insertData, tabla.getDataInTable(), cnt.getReferences(), tabla);
+                        boolean isOk_F = verifyForeignKeyInTable(insertData, nombreColumnOwner, nombreColumnaRef, tabla, tablaRef);
+                        if (!isOk_F) {
+                            DBMS.throwMessage(
+                                    "Insert Error: Foreign key violation; No existe valor referenciado",
+                                    ctx.getStart()
+                            );
+                            return null;
+                        }
                     }
                     break;
                 case "check":
