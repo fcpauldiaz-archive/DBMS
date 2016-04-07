@@ -11,7 +11,9 @@ import static dbms.ANTGui.bdActual;
 import static dbms.ANTGui.jTable1;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -1067,6 +1069,12 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                 }
             }
             System.out.println(returnArray);
+            
+           //PRODUCTO CARTESIANO
+            if (nombreTablas.size() >1){
+                System.out.println(computeCombinations2(returnArray));
+                returnArray = computeCombinations2(returnArray);
+            }
             System.out.println("NO where statement");
             
         }
@@ -1076,6 +1084,24 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
     }
 
   
+    public ArrayList<ArrayList> computeCombinations2(ArrayList<ArrayList> lists) {
+    List<List<T>> combinations = Arrays.asList(Arrays.asList());
+    for (ArrayList<T> list : lists) {
+       List<List<T>> extraColumnCombinations = new ArrayList<>();
+        
+        for (List<T> combination : combinations) {
+            for (T element : list) {
+              List<T> newCombination = new ArrayList<>(combination);
+                newCombination.add(element);
+                
+                extraColumnCombinations.add(newCombination);
+               
+            }
+        }
+        combinations = extraColumnCombinations;
+    }
+    return new ArrayList(combinations);
+}
     
     @Override
     public Object visitSelect_values(sqlParser.Select_valuesContext ctx) {
