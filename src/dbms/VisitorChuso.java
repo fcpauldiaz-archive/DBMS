@@ -1045,10 +1045,9 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         ArrayList<ArrayList> returnArray = new ArrayList();
     
         visit(ctx.getChild(3));
-        //caso select ALL
-        if (ctx.getChild(1).getChildCount() == 1 && ctx.getChild(1).getText().equals("*")){
-            
-        }
+       
+       
+        //esto pasa cuando no hay where statement
         if (ctx.getChildCount()==5){
             ArrayList<String> columnasVerificadas = (ArrayList)visit(ctx.getChild(1));
             for (String columnasVerificada : columnasVerificadas) {
@@ -1084,7 +1083,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
         for (int i = 0;i<ctx.getChildCount();i++){
             String select_value =ctx.getChild(i).getText();
             boolean verificador = false;
-            if (!select_value.equals(",")){
+            if (!select_value.equals(",")&&!select_value.equals("*")){
                 //verificar que exista este campo en las tablas seleccionadas
                 for (int j= 0;j<nombreTablas.size();j++){
                     String nombreTabla = nombreTablas.get(j);
@@ -1100,6 +1099,14 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                    
                 }
                 columnasVerificadas.add(select_value);
+            }
+            if (select_value.equals("*")){
+                  for (int j= 0;j<nombreTablas.size();j++){
+                       Tabla tabla = (Tabla) json.JSONtoObject(bdActual, nombreTablas.get(j), "Tabla");
+                      for (TuplaColumna columna : tabla.getColumnas()) {
+                          columnasVerificadas.add(columna.getNombre());
+                      }
+                  }
             }
         }
         //return super.visitSelect_values(ctx); //To change body of generated methods, choose Tools | Templates.
