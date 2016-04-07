@@ -483,6 +483,9 @@ public class VisitorAdolfo<T> extends sqlBaseVisitor{
         
         tabla.addRowToTable(insertData);
         json.objectToJSON(bdActual, nombreTabla, tabla);
+        ArchivoMaestroTabla maestroTabla = (ArchivoMaestroTabla) json.JSONtoObject(bdActual, "MasterTable"+bdActual, "ArchivoMaestroTabla");
+        maestroTabla.aumentarColumnaCount(nombreTabla);
+        json.objectToJSON(bdActual, "MasterTable"+bdActual, maestroTabla);
         
         DBMS.throwMessage(
                 "Insert Correcto: En tabla: " + nombreTabla,

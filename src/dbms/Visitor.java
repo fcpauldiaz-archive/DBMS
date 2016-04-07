@@ -31,7 +31,6 @@ public class Visitor<T> extends sqlBaseVisitor {
     private Tabla tabla;
     public String tablaActual="";
     private String globalLogic="";
-    private boolean updateAll = false;
     private VisitorAdolfo visitorAdolfo = new VisitorAdolfo();
     /**
      * Método que crea la base de datos y actualiza el archivo maestro de bases de datos.
@@ -574,10 +573,10 @@ public class Visitor<T> extends sqlBaseVisitor {
             tabla = null;
             return null;
         }
-         if (updateAll){
-            updateALLColumnTable(nombreColumna, (String)(ctx.getChild(2).getText()));
-            return super.visitUpdate_colmn(ctx);
-        }
+        
+        updateALLColumnTable(nombreColumna, (String)(ctx.getChild(2).getText()));
+           
+        
         //actualizar solo los del where
         
         
@@ -636,8 +635,20 @@ public class Visitor<T> extends sqlBaseVisitor {
                }
            }
            //si no hay que hacer casteo
+           else if (tipo.equals("DATE")){
+               if (visitorAdolfo.verifyDate(valor))
+               {
+                   innerArray.set(indiceActualizar, valor);
+                   cantidadUpdates++;
+               } 
+               else {
+                       tabla = null;
+                       DBMS.throwMessage("Error: fecha con formato inválido ");
+                }
+               
+           }
            else{
-                //si el indice a actualizar no existe, lo agregamos a la data
+               //si el indice a actualizar no existe, lo agregamos a la data
                 if (innerArray.size() < indiceActualizar+1){
                     innerArray.add(valor);
                     cantidadUpdates++;
@@ -682,9 +693,7 @@ public class Visitor<T> extends sqlBaseVisitor {
     @Override
     public Object visitUpdate_column_multiple(sqlParser.Update_column_multipleContext ctx) {
         
-        if (ctx.getChildCount()==1){
-            updateAll = true;
-        }
+       
         
         return super.visitUpdate_column_multiple(ctx); //To change body of generated methods, choose Tools | Templates.
     }
@@ -702,15 +711,13 @@ public class Visitor<T> extends sqlBaseVisitor {
         boolean verificadorColumna = false;
         if (tabla != null) {
             for(TuplaColumna columna : tabla.getColumnas()) {
-                System.out.println("ver");
-                System.out.println(columna.getNombre());
+             
                 if (columna.getNombre().equals(nombreColumna)) {
                     verificadorColumna = true;
                 }
             }
         }
-        System.out.println(nombreColumna);
-        System.out.println(verificadorColumna);
+     
         //si es false no existe, si es true si existe.
         return verificadorColumna;
     }

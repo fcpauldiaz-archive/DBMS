@@ -398,11 +398,13 @@ public class ANTGui extends javax.swing.JFrame {
                while ((sCurrentLine = br.readLine()) != null) {
                     
                     input+=sCurrentLine+"\n";
-                
+                    
                 }
+               compilar2(input);
             }catch(Exception e){}
             
-            this.jTextArea2.setText(input);
+            //this.jTextArea2.setText(input);
+            
             
            
         }
@@ -412,7 +414,59 @@ public class ANTGui extends javax.swing.JFrame {
        
     }
     
-    
+       public void compilar2(String in){
+          try{
+              
+            jTextArea3.setText("");
+           
+         
+
+            CharStream cs =  new ANTLRInputStream(in);
+
+           sqlLexer lexer = new sqlLexer(cs);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(DescriptiveErrorListener.INSTANCE);
+            CommonTokenStream tokens = new CommonTokenStream( lexer);
+            parser = new sqlParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
+            contexto = parser.sql2003Parser();
+            ParseTree tree = contexto;
+
+            
+
+         
+
+            // Specify our entry point
+            
+            ruleNames = parser.getRuleNames();
+            
+
+            int errorsCount = parser.getNumberOfSyntaxErrors();
+            System.out.println(errorsCount);
+            if(errorsCount == 0){
+                System.out.println("Parseo Exitoso");
+
+               JOptionPane.showMessageDialog(this, "¡Parseo Exitoso!");
+                Visitor vistor = new Visitor();
+                VisitorAdolfo vistorAdolfo = new VisitorAdolfo();
+                VisitorChuso vistorChuso = new VisitorChuso();
+                vistor.visit(tree);
+                vistorAdolfo.visit(tree);
+                vistorChuso.visit(tree);
+                System.out.println("visited");
+            }
+            else{
+                 JOptionPane.showMessageDialog(this, "¡Parseo Fallido!");
+            }
+
+        } catch (RecognitionException e) {
+            System.out.println("ERROR");
+
+        }
+       // insertarTablaIDE();
+         
+    }
     
     public void compilar(){
           try{

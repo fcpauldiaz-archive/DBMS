@@ -43,11 +43,10 @@ public class ArchivoMaestroTabla {
     }
     
       public void aumentarColumnaCount(String nombreTabla){
-        for (int i = 0;i<this.tablas.size();i++){
-            if (tablas.get(i).getNombreTabla().equals(nombreTabla)){
-                tablas.get(i).registroIncrease();
+        for (TuplaTabla tabla : this.tablas) {
+            if (tabla.getNombreTabla().equals(nombreTabla)) {
+                tabla.registroIncrease();
             }
-            
         }
     }
 }
