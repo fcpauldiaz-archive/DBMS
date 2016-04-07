@@ -594,7 +594,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(2).getText())){
+                            if(!registro.get(columna).equals(ctx.getChild(2).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -606,7 +606,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(2).getText())){
+                            if(!registro.get(columna).equals(ctx.getChild(2).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -617,10 +617,11 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                             if(operador1==operador2){
                                 listaFinal.add(indexActuales.get(i));
                             }
-                        }else
-                            if(Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(2).getText())){
+                        }else{
+                            if(registro.get(columna).equals(ctx.getChild(2).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
+                        }
                     break;
                 }
             }
@@ -686,7 +687,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(0).getText())){
+                            if(!registro.get(columna).equals(ctx.getChild(0).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -698,7 +699,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(0).getText())){
+                            if(!registro.get(columna).equals(ctx.getChild(0).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -710,7 +711,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(Integer.toString((int)Math.round((Double) registro.get(columna))).equals(ctx.getChild(0).getText())){
+                            if(registro.get(columna).equals(ctx.getChild(0).getText())){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -779,7 +780,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!Integer.toString((int)Math.round((Double) registro.get(columna1))).equals(Integer.toString((int)Math.round((Double) registro.get(columna2))))){
+                            if(!registro.get(columna1).equals(registro.get(columna2))){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -791,7 +792,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(!Integer.toString((int)Math.round((Double) registro.get(columna1))).equals(Integer.toString((int)Math.round((Double) registro.get(columna2))))){
+                            if(!(registro.get(columna1).equals(registro.get(columna2)))){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -803,7 +804,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                                 listaFinal.add(indexActuales.get(i));
                             }
                         }else
-                            if(Integer.toString((int)Math.round((Double) registro.get(columna1))).equals(Integer.toString((int)Math.round((Double) registro.get(columna2))))){
+                            if(registro.get(columna1).equals(registro.get(columna2))){
                                 listaFinal.add(indexActuales.get(i));
                             }
                     break;
@@ -845,7 +846,7 @@ public class VisitorChuso <T> extends sqlBaseVisitor {
                             DBMS.throwMessage( "String o char debe terminar con \'", ctx.getStart());
                             return "error";
                         }else
-                            return "STRING";
+                            return "CHAR";
                 }else{
                     DBMS.throwMessage( "Error de referencia, debe ir de la forma tabla.columna ", ctx.getStart());
                     return "error";
