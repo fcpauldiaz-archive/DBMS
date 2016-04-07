@@ -1824,7 +1824,7 @@ public class Visitor<T> extends sqlBaseVisitor {
                                 for(int h = 0;h<tab.getColumnas().size();h++){
                                     if(tab.getColumnas().get(h).getNombre().equals(tab.getConstraints().get(j).getReferences().get(p)))
                                         temp = h;
-                                }
+                                } 
                                 int index2 = 0;
                                 for(int h = 0;h<tabla.getColumnas().size();h++){
                                     if(tabla.getColumnas().get(h).getNombre().equals(tab.getConstraints().get(j).getReferencesForeign().getReferencesForeign().get(p)))
